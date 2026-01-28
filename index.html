@@ -856,7 +856,7 @@ body {
     // ========================================
     
     // 🔧 Configuration
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwvqkDD20tJVPO86YhM6Gv3ALZK5SHX9S_Sd5AsXAqBJxzuEZDG4mDL1EzHUJCvxlTF/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzbm7odZSoVjhvnFRfY7Cb5kdyCi5gnxrhmoiQHROQy7tYmwsYolvyTKu575si9wgHtMw/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -931,7 +931,7 @@ async function fetchPatientName() {
     const hnInput = document.getElementById('hn');
     const nameInput = document.getElementById('patientName');
     const statusText = document.getElementById('searchStatus');
-    const hnValue = hnInput.value.trim();
+    const hnValue = hnInput.value.trim().toLowerCase();
     
     // --- เงื่อนไข: ถ้าลบ HN ออก ให้ล้างชื่อทิ้งด้วย ---
     if (hnValue === "") {
@@ -1039,7 +1039,7 @@ document.getElementById('hn').addEventListener('input', fetchPatientName);
     };
 
     // 3. เริ่มส่งข้อมูล
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwvqkDD20tJVPO86YhM6Gv3ALZK5SHX9S_Sd5AsXAqBJxzuEZDG4mDL1EzHUJCvxlTF/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzbm7odZSoVjhvnFRfY7Cb5kdyCi5gnxrhmoiQHROQy7tYmwsYolvyTKu575si9wgHtMw/exec';
     
     // เปลี่ยนปุ่มเป็นสถานะกำลังบันทึกเพื่อป้องกันการกดซ้ำ
     const saveBtn = document.querySelector('button[onclick="saveOrder()"]');
