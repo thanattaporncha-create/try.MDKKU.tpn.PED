@@ -185,9 +185,10 @@ body {
             <input type="text" id="hn" placeholder="สแกนหรือพิมพ์ HN" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" autofocus>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
-            <input type="text" id="patientName" placeholder="ชื่อ นามสกุล" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all">
-          </div>
+  <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
+  <input type="text" id="patientName" placeholder="ชื่อ นามสกุล" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all">
+  <p id="searchStatus" class="text-[11px] mt-1 font-medium"></p> 
+</div>
           <div class="relative">
             <label class="block text-sm font-medium text-gray-700 mb-1">Ward</label>
             <div class="relative">
@@ -927,32 +928,51 @@ document.addEventListener('click', function(e) {
 });
 // ฟังก์ชันดึงชื่อผู้ป่วยอัตโนมัติ
 async function fetchPatientName() {
-    const hnValue = document.getElementById('hn').value.trim();
+    const hnInput = document.getElementById('hn');
     const nameInput = document.getElementById('patientName');
+    const statusText = document.getElementById('searchStatus');
+    const hnValue = hnInput.value.trim();
     
-    // จะเริ่มค้นหาเมื่อมี HN 3 ตัวขึ้นไป (หรือปรับตามเหมาะสม)
+    // --- เงื่อนไข: ถ้าลบ HN ออก ให้ล้างชื่อทิ้งด้วย ---
+    if (hnValue === "") {
+        nameInput.value = "";
+        statusText.innerText = "";
+        nameInput.classList.remove('border-blue-500', 'bg-blue-50');
+        return;
+    }
+
     if (hnValue.length >= 3) {
+        // เริ่มต้นการค้นหา: แสดงสถานะ Loading
+        statusText.innerText = "🔍 กำลังค้นหาข้อมูลเดิม...";
+        statusText.className = "text-[11px] mt-1 font-medium text-blue-600 animate-pulse";
+        
         try {
-            // แอบส่งไปถาม Script
             const response = await fetch(`${API_URL}?action=getPatientName&hn=${hnValue}`);
             const result = await response.json();
             
             if (result.patient_name) {
-                // ถ้าเจอชื่อ ให้ใส่ลงในช่องชื่อ (แต่ยังยอมให้ขิมพิมพ์แก้ได้)
+                // กรณีหาเจอ
                 nameInput.value = result.patient_name;
-                // เปลี่ยนสีขอบชั่วคราวเพื่อให้รู้ว่าระบบดึงมาให้
+                statusText.innerText = "✅ พบข้อมูลล่าสุดแล้ว";
+                statusText.className = "text-[11px] mt-1 font-medium text-green-600";
                 nameInput.classList.add('border-blue-500', 'bg-blue-50');
-                setTimeout(() => nameInput.classList.remove('bg-blue-50'), 2000);
+            } else {
+                // กรณีหาไม่เจอ
+                statusText.innerText = "❓ ไม่พบประวัติเดิม กรุณากรอกชื่อคนไข้";
+                statusText.className = "text-[11px] mt-1 font-medium text-amber-600";
+                nameInput.classList.remove('border-blue-500', 'bg-blue-50');
+                // ไม่ล้างชื่อที่อาจจะพิมพ์ค้างไว้ เผื่อคุณขิมกำลังพิมพ์เองอยู่
             }
         } catch (error) {
-            console.log("ยังไม่พบข้อมูลชื่อในฐานข้อมูลเดิม");
+            statusText.innerText = "⚠️ การเชื่อมต่อขัดข้อง";
+            statusText.className = "text-[11px] mt-1 font-medium text-red-600";
         }
     }
 }
 
-// ผูกฟังก์ชันเข้ากับช่องกรอก HN (เพิ่ม Event Listener)
-document.getElementById('hn').addEventListener('blur', fetchPatientName); 
-// blur คือทำงานเมื่อคุณขิมพิมพ์เสร็จแล้วคลิกไปที่อื่น หรือสแกนบาร์โค้ดเสร็จ
+// แนะนำให้ใช้ 'input' แทน 'blur' เพื่อความเรียลไทม์ (ถ้าช้าไปค่อยเปลี่ยนกลับเป็น blur ค่ะ)
+document.getElementById('hn').addEventListener('input', fetchPatientName);
+    
     // ========== API Functions ==========
 
  async function saveOrder() {
