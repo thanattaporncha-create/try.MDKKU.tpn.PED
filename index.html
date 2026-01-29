@@ -1230,7 +1230,7 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       // 11. อัปเดตตาราง (ปริมาตรสุทธิ และ ชื่อผลิตภัณฑ์)
      const selectedProt = document.querySelector('input[name="proteinProduct"]:checked');
 const protName = document.querySelector(`label[for="${selectedProt.id}"]`).textContent;
-document.getElementById('row-protein-name').textContent = "- " + protName;
+document.getElementById('row-protein-name').textContent = protName;
 
       const otherNameInput = document.getElementById('additiveOtherName').value;
       document.getElementById('row-other-name').textContent = otherNameInput ? "- " + otherNameInput : "- Other Additive";
