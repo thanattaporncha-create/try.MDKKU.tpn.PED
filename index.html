@@ -236,46 +236,55 @@ body {
         </div>
       </section>
 
-      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
-        <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">🧈 การให้ Fat + Vitalipid® </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
+    <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+    <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">🧈 การให้ Fat + Vitalipid® </h2>
+    
+    <div class="flex flex-wrap gap-2 mb-4 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
+        <span class="text-sm font-bold text-amber-800 w-full mb-1">เลือกผลิตภัณฑ์ไขมัน:</span>
+        <input type="radio" name="fatProduct" id="smof" value="smof" class="hidden radio-custom" checked onchange="calculateAll()">
+        <label for="smof" class="px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all hover:bg-amber-50">20% SMOF Lipid</label>
+        <input type="radio" name="fatProduct" id="intralipid" value="intralipid" class="hidden radio-custom" onchange="calculateAll()">
+        <label for="intralipid" class="px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all hover:bg-amber-50">20% Intralipid</label>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Fat ที่ต้องการให้ (Fat requirement) </label>
             <div class="relative">
-              <input type="number" id="fatTarget" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-24" inputmode="decimal" oninput="calculateAll()">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">g/kg/day</span>
+                <input type="number" id="fatTarget" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-24" inputmode="decimal" oninput="calculateFatLogic('fat_dose')">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">g/kg/day</span>
             </div>
             <div class="mt-2 flex items-center gap-2 p-2 bg-amber-50 rounded-lg border border-amber-100">
-              <input type="checkbox" id="deductVitalipid" class="w-4 h-4 rounded text-blue-600 cursor-pointer" onchange="calculateAll()">
-              <label for="deductVitalipid" class="text-[11px] text-gray-700 cursor-pointer font-medium">หัก Fat จาก Vitalipid®</label>
-              <input type="number" id="vitalipidFatValue" step="0.01" value="0.4" class="w-14 px-1 py-0.5 border border-gray-300 rounded text-xs text-center font-bold text-blue-700" oninput="calculateAll()">
-              <span class="text-[10px] text-gray-500">g/kg</span>
+                <input type="checkbox" id="deductVitalipid" class="w-4 h-4 rounded text-blue-600 cursor-pointer" onchange="calculateFatLogic('fat_dose')">
+                <label for="deductVitalipid" class="text-[11px] text-gray-700 cursor-pointer font-medium">หัก Fat จาก Vitalipid®</label>
+                <input type="number" id="vitalipidFatValue" step="0.01" value="0.4" class="w-14 px-1 py-0.5 border border-gray-300 rounded text-xs text-center font-bold text-blue-700" oninput="calculateFatLogic('fat_dose')">
+                <span class="text-[10px] text-gray-500">g/kg</span>
             </div>
-          </div>
-          <div>
+        </div>
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Net Fat สุทธิ</label>
             <div class="relative">
-              <input type="number" id="netFat" step="0.1" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-blue-50 pr-24 font-semibold text-blue-700" readonly inputmode="decimal">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">g/kg/day</span>
+                <input type="number" id="netFat" step="0.1" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-100 pr-24 font-semibold text-gray-600" readonly inputmode="decimal">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">g/kg/day</span>
             </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Fat Volume</label>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Fat Volume <span class="text-blue-600 italic">*แก้ปัดเศษ*</span></label>
             <div class="relative">
-              <input type="number" id="fatVolume" step="0.1" min="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-12" inputmode="decimal" oninput="calculateAll()">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">ml</span>
+                <input type="number" id="fatVolume" step="0.1" min="0" class="w-full px-4 py-2.5 border border-blue-300 rounded-xl bg-blue-50 font-bold text-blue-700 pr-12" inputmode="decimal" oninput="calculateFatLogic('fat_vol')">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">ml</span>
             </div>
-          </div>
-          <div>
+        </div>
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"> 🔋 Vitalipid®(Max = 10ml) </label>
             <div class="relative">
-              <input type="number" id="vitalipid" step="0.1" min="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-12 font-semibold text-blue-700" inputmode="decimal" oninput="handleVitalipidManualChange()">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">ml</span>
+                <input type="number" id="vitalipid" step="0.1" min="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-12 font-semibold text-blue-700" inputmode="decimal" oninput="handleVitalipidManualChange()">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">ml</span>
             </div>
             <p id="vitalipidMaxWarning" class="hidden text-[10px] text-red-600 mt-1 font-bold">⚠️ Max = 10 ml</p>
-          </div>
         </div>
-      </section>
+    </div>
+</section>
 
      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
         <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">💉 วิธีการให้ Fat</h2>
@@ -1120,7 +1129,7 @@ document.getElementById('hn').addEventListener('input', fetchPatientName);
       // 3. คำนวณ Fat Volume
       const fatVolInput = document.getElementById('fatVolume');
       if (document.activeElement !== fatVolInput) {
-        fatVolInput.value = roundToPlace(bw * netFat * 5, 1);
+     
       }
       const fatVolume = parseFloat(fatVolInput.value) || 0;
       
@@ -1629,6 +1638,29 @@ function handleVitalipidManualChange() {
 function handleRateManualChange() {
   isRateManual = true; 
   calculateAll();
+}
+function calculateFatLogic(source) {
+    const bw = parseFloat(document.getElementById('bw').value) || 0;
+    const isDeduct = document.getElementById('deductVitalipid').checked;
+    const vFatVal = parseFloat(document.getElementById('vitalipidFatValue').value) || 0.4;
+    const fConc = 0.20; // 20% Lipid
+    
+    let fTarget = parseFloat(document.getElementById('fatTarget').value) || 0;
+    let fVol = parseFloat(document.getElementById('fatVolume').value) || 0;
+    let netFat = 0;
+
+    if (source === 'fat_dose') {
+        netFat = isDeduct ? Math.max(0, fTarget - vFatVal) : fTarget;
+        fVol = (netFat * bw) / fConc;
+        document.getElementById('fatVolume').value = roundToPlace(fVol, 1);
+    } else if (source === 'fat_vol') {
+        netFat = (fVol * fConc) / (bw > 0 ? bw : 1);
+        fTarget = isDeduct ? netFat + vFatVal : netFat;
+        document.getElementById('fatTarget').value = roundToPlace(fTarget, 1);
+    }
+    
+    document.getElementById('netFat').value = roundToPlace(netFat, 1);
+    calculateAll(); // สั่งรัน calculateAll เดิมของคุณขิมเพื่ออัปเดตตารางและค่าอื่นๆ
 }
   </script>
 </body>
