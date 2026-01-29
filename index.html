@@ -1406,8 +1406,10 @@ if (prepWaterVol < 0) {
     const prepSplit = document.querySelector('input[name="prepSplit"]:checked').value;
     const manualRate = document.getElementById('manualFatDripRate').value || '0.0';
     
-    const selectedFat = document.querySelector('input[name="fatProduct"]:checked');
-    const fatName = selectedFat.parentElement.querySelector('.font-medium').textContent;
+   const selectedFat = document.querySelector('input[name="fatProduct"]:checked');
+const fatLabelElement = document.querySelector(`label[for="${selectedFat.id}"]`);
+const fatName = fatLabelElement ? fatLabelElement.textContent : "Fat Emulsion";
+   
     
     const totalVolPlusFlush = fatVolume + flushVolume;
     const grandTotalFatVit = totalVolPlusFlush + vitalipidVolume;
@@ -1644,6 +1646,8 @@ function calculateFatLogic(source) {
     const isDeduct = document.getElementById('deductVitalipid').checked;
     const vFatVal = parseFloat(document.getElementById('vitalipidFatValue').value) || 0.4;
     const fConc = 0.20; // 20% Lipid
+  const fatNameCell = document.getElementById('row-fat-name'); // หรือ id ของช่องชื่อ Fat ในตาราง
+if (fatNameCell) fatNameCell.textContent = "- " + fatName;
     
     let fTarget = parseFloat(document.getElementById('fatTarget').value) || 0;
     let fVol = parseFloat(document.getElementById('fatVolume').value) || 0;
