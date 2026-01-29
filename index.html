@@ -1247,7 +1247,7 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       const dextroseVolume = roundToPlace((dextrosePercent * pnVolume * 2) / 100, 1);
 
       // 10. Water (Net)
-      const allSubstances = proteinVolume + dextroseVolume + electrolytesVolume + soluvitVolume + peditraceVolume + additivesVolume;
+      const allSubstances = proteinVolume + dextroseVolume + electrolytesVolume + soluvitVolume + peditraceVolume + zincVolume + otherVol;
       const waterVolume = pnVolume - allSubstances;
 
       // 11. อัปเดตตาราง (ปริมาตรสุทธิ และ ชื่อผลิตภัณฑ์)
@@ -1275,19 +1275,17 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       document.getElementById('row-heparin-vol').textContent = heparinVolume;
       document.getElementById('row-other-vol').textContent = otherVol;
 
-      const waterVolDisplay = document.getElementById('waterVolDisplay');
-      const waterLimitWarning = document.getElementById('waterLimitWarning');
-      waterVolDisplay.textContent = roundToPlace(waterVolume, 1);
+     // จัดการการแสดงผล คอลัมน์แรก (สุทธิ)
+const waterVolDisplay = document.getElementById('waterVolDisplay');
+waterVolDisplay.textContent = roundToPlace(waterVolume, 1);
 
-      if (waterVolume < 0) {
-          waterVolDisplay.style.color = "#991b1b"; 
-          waterVolDisplay.style.fontWeight = "800";
-          waterLimitWarning.classList.remove('hidden');
-      } else {
-          waterVolDisplay.style.color = "#1d4ed8";
-          waterVolDisplay.style.fontWeight = "500";
-          waterLimitWarning.classList.add('hidden');
-      }
+if (waterVolume < 0) {
+    waterVolDisplay.style.color = "#991b1b"; // แดงเข้ม
+    waterVolDisplay.style.fontWeight = "900"; // หนาพิเศษ
+} else {
+    waterVolDisplay.style.color = "#4b5563"; // สีปกติ
+    waterVolDisplay.style.fontWeight = "400";
+}
 
       // 12. คำนวณ Column "สำหรับเตรียม" (ใช้ค่า pnPrepVol)
       const prepDextroseVol = roundToPlace((dextrosePercent * pnPrepVol * 2) / 100, 1);
@@ -1305,18 +1303,23 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       document.getElementById('prep-heparin-vol').textContent = heparinVolume;
       document.getElementById('prep-other-vol').textContent = otherVol;
 
-      const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + soluvitVolume + peditraceVolume + additivesVolume;
-      const prepWaterVol = pnPrepVol - allSubstancesPrep;
+     // หักลบยอดเตรียม (ใช้ prepDextroseVol) และไม่รวม Heparin เช่นกัน
+const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + soluvitVolume + peditraceVolume + zincVolume + otherVol;
+const prepWaterVol = pnPrepVol - allSubstancesPrep;
 
-      const prepWaterDisplay = document.getElementById('prep-waterVol');
-      prepWaterDisplay.textContent = roundToPlace(prepWaterVol, 1);
-      if (prepWaterVol < 0) {
-          prepWaterDisplay.style.color = "#991b1b";
-          prepWaterDisplay.style.fontWeight = "800";
-      } else {
-          prepWaterDisplay.style.color = "#1d4ed8";
-          prepWaterDisplay.style.fontWeight = "700";
-      }
+      // จัดการการแสดงผล คอลัมน์สอง (สำหรับเตรียม)
+const prepWaterDisplay = document.getElementById('prep-waterVol');
+const waterWarning = document.getElementById('waterLimitWarning');
+
+prepWaterDisplay.textContent = roundToPlace(prepWaterVol, 1);
+
+if (prepWaterVol < 0) {
+    prepWaterDisplay.className = "text-red-600 font-black";
+    waterWarning.classList.remove('hidden'); // โชว์ข้อความ "⚠️ เตรียมไม่ได้" แค่ตรงนี้
+} else {
+    prepWaterDisplay.className = "text-blue-700 font-bold";
+    waterWarning.classList.add('hidden');
+}
 
       // ยอดรวม
       document.getElementById('totalPNVol').textContent = roundToPlace(pnVolume, 1);
