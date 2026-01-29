@@ -383,14 +383,34 @@ body {
 
       <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
         <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">Macronutrient</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Protein</label>
-            <div class="relative">
-              <input type="number" id="proteinTarget" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-24" inputmode="decimal" oninput="calculateAll()">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">g/kg/day</span>
-            </div>
-          </div>
+        <div class="p-4 bg-purple-50 rounded-xl border border-purple-100 md:col-span-3">
+  <div class="flex flex-wrap gap-2 mb-3">
+    <span class="text-sm font-bold text-purple-800 w-full mb-1">เลือก Protein Product:</span>
+    <input type="radio" name="proteinProduct" id="aminoven" value="aminoven" class="hidden radio-custom" checked onchange="calculateAll()">
+    <label for="aminoven" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">10% Aminoven Infant</label>
+    
+    <input type="radio" name="proteinProduct" id="amiparen" value="amiparen" class="hidden radio-custom" onchange="calculateAll()">
+    <label for="amiparen" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">10% Amiparen</label>
+    
+    <input type="radio" name="proteinProduct" id="aminoplasmal" value="aminoplasmal" class="hidden radio-custom" onchange="calculateAll()">
+    <label for="aminoplasmal" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">15% Aminoplasmal</label>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block text-xs font-bold text-gray-500 mb-1">Dose (g/kg/day)</label>
+      <input type="number" id="proteinTarget" step="0.1" class="w-full px-4 py-2 border border-purple-200 rounded-lg font-bold text-purple-700" oninput="calculateProteinLogic('prot_dose')">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-gray-500 mb-1">Total (g/day)</label>
+      <input type="number" id="proteinGrams" step="0.1" class="w-full px-4 py-2 border border-purple-200 rounded-lg font-bold text-purple-700" oninput="calculateProteinLogic('prot_grams')">
+    </div>
+    <div>
+      <label class="block text-xs font-bold text-gray-500 mb-1">Protein Vol (ml) <span class="text-blue-600 italic">*ปัดเศษ*</span></label>
+      <input type="number" id="proteinVolInput" step="0.1" class="w-full px-4 py-2 border border-blue-300 rounded-lg font-bold text-blue-700 bg-blue-50" oninput="calculateProteinLogic('prot_vol')">
+    </div>
+  </div>
+</div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Fat (Net Fat)</label>
             <div class="relative">
@@ -422,58 +442,6 @@ body {
           </div>
           <div id="girWarning" class="hidden mt-2 text-sm text-amber-700 bg-amber-100 px-3 py-2 rounded-lg">
             ⚠️ GIR สูงเกินไป
-          </div>
-        </div>
-      </section>
-
-      <!-- Product Selection -->
-      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
-        <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">🧬 เลือกผลิตภัณฑ์</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="p-4 bg-purple-50 rounded-xl border border-purple-200">
-            <h3 class="font-semibold text-purple-800 mb-3 flex items-center gap-2"><span> </span> Protein Product</h3>
-            <div class="space-y-2">
-              <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-purple-100 transition-all border border-transparent hover:border-purple-300">
-                <input type="radio" name="proteinProduct" value="aminoven" class="mt-1" checked onchange="calculateAll()">
-                <div>
-                  <span class="font-medium text-gray-800">10% Aminoven® Infant</span>
-                  <p class="text-xs text-gray-500">สำหรับอายุ 0-1 เดือน</p>
-                </div>
-              </label>
-              <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-purple-100 transition-all border border-transparent hover:border-purple-300">
-                <input type="radio" name="proteinProduct" value="amiparen" onchange="calculateAll()">
-                <div>
-                  <span class="font-medium text-gray-800">10% Amiparen®</span>
-                  <p class="text-xs text-gray-500">สำหรับอายุ > 1 เดือน</p>
-                </div>
-              </label>
-              <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-purple-100 transition-all border border-transparent hover:border-purple-300">
-                <input type="radio" name="proteinProduct" value="aminoplasmal" onchange="calculateAll()">
-                <div>
-                  <span class="font-medium text-gray-800">15% Aminoplasmal®</span>
-                  <p class="text-xs text-gray-500">ความเข้มข้นสูง (ปริมาณน้อยกว่า)</p>
-                </div>
-              </label>
-            </div>
-          </div>
-          <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
-            <h3 class="font-semibold text-amber-800 mb-3 flex items-center gap-2"><span>🧈</span> Fat Product</h3>
-            <div class="space-y-2">
-              <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-amber-100 transition-all border border-transparent hover:border-amber-300">
-                <input type="radio" name="fatProduct" value="smof" class="mt-1" checked onchange="calculateAll()">
-                <div>
-                  <span class="font-medium text-gray-800">20% SMOF Lipid</span>
-                  <p class="text-xs text-gray-500">Mixed lipid emulsion</p>
-                </div>
-              </label>
-              <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-amber-100 transition-all border border-transparent hover:border-amber-300">
-                <input type="radio" name="fatProduct" value="intralipid" onchange="calculateAll()">
-                <div>
-                  <span class="font-medium text-gray-800">20% Intralipid</span>
-                  <p class="text-xs text-gray-500">Soybean oil emulsion</p>
-                </div>
-              </label>
-            </div>
           </div>
         </div>
       </section>
@@ -1252,7 +1220,7 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       // 9. Protein & Dextrose
       const protProduct = document.querySelector('input[name="proteinProduct"]:checked').value;
       const proteinGrams = bw * proteinTarget;
-      const proteinVolume = protProduct === 'aminoplasmal' ? proteinGrams / 0.15 : proteinGrams * 10;
+     const proteinVolume = parseFloat(document.getElementById('proteinVolInput').value) || 0;
       const dextroseVolume = roundToPlace((dextrosePercent * pnVolume * 2) / 100, 1);
 
       // 10. Water (Net)
@@ -1260,9 +1228,9 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       const waterVolume = pnVolume - allSubstances;
 
       // 11. อัปเดตตาราง (ปริมาตรสุทธิ และ ชื่อผลิตภัณฑ์)
-      const selectedProt = document.querySelector('input[name="proteinProduct"]:checked');
-      const protName = selectedProt.parentElement.querySelector('.font-medium').textContent;
-      document.getElementById('row-protein-name').textContent = " " + protName;
+     const selectedProt = document.querySelector('input[name="proteinProduct"]:checked');
+const protName = document.querySelector(`label[for="${selectedProt.id}"]`).textContent;
+document.getElementById('row-protein-name').textContent = "- " + protName;
 
       const otherNameInput = document.getElementById('additiveOtherName').value;
       document.getElementById('row-other-name').textContent = otherNameInput ? "- " + otherNameInput : "- Other Additive";
@@ -1665,6 +1633,35 @@ if (fatNameCell) fatNameCell.textContent = "- " + fatName;
     
     document.getElementById('netFat').value = roundToPlace(netFat, 1);
     calculateAll(); // สั่งรัน calculateAll เดิมของคุณขิมเพื่ออัปเดตตารางและค่าอื่นๆ
+}
+
+function calculateProteinLogic(source) {
+    const bw = parseFloat(document.getElementById('bw').value) || 0;
+    const protProduct = document.querySelector('input[name="proteinProduct"]:checked').value;
+    // 15% Aminoplasmal คือ 0.15, ที่เหลือคือ 10% (0.10)
+    const pConc = protProduct === 'aminoplasmal' ? 0.15 : 0.10;
+    
+    let pDose = parseFloat(document.getElementById('proteinTarget').value) || 0;
+    let pGrams = parseFloat(document.getElementById('proteinGrams').value) || 0;
+    let pVol = parseFloat(document.getElementById('proteinVolInput').value) || 0;
+
+    if (source === 'prot_dose') {
+        pGrams = pDose * bw;
+        pVol = pGrams / pConc;
+    } else if (source === 'prot_grams') {
+        pDose = bw > 0 ? pGrams / bw : 0;
+        pVol = pGrams / pConc;
+    } else if (source === 'prot_vol') {
+        pGrams = pVol * pConc;
+        pDose = bw > 0 ? pGrams / bw : 0;
+    }
+
+    // อัปเดตค่ากลับเข้า Input
+    if (source !== 'prot_dose') document.getElementById('proteinTarget').value = roundToPlace(pDose, 1);
+    if (source !== 'prot_grams') document.getElementById('proteinGrams').value = roundToPlace(pGrams, 2);
+    if (source !== 'prot_vol') document.getElementById('proteinVolInput').value = roundToPlace(pVol, 1);
+    
+    calculateAll(); // อัปเดตตารางสรุป
 }
   </script>
 </body>
