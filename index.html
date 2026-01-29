@@ -386,13 +386,13 @@ body {
         <div class="p-4 bg-purple-50 rounded-xl border border-purple-100 md:col-span-3">
   <div class="flex flex-wrap gap-2 mb-3">
     <span class="text-sm font-bold text-purple-800 w-full mb-1">เลือก Protein Product:</span>
-    <input type="radio" name="proteinProduct" id="aminoven" value="aminoven" class="hidden radio-custom" checked onchange="calculateAll()">
+    <input type="radio" name="proteinProduct" id="aminoven" value="aminoven" class="hidden radio-custom" checked onchange="calculateProteinLogic('prot_dose')">
     <label for="aminoven" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">10% Aminoven Infant</label>
     
-    <input type="radio" name="proteinProduct" id="amiparen" value="amiparen" class="hidden radio-custom" onchange="calculateAll()">
+   <input type="radio" name="proteinProduct" id="amiparen" value="amiparen" class="hidden radio-custom" onchange="calculateAll()" onchange="calculateProteinLogic('prot_dose')">
     <label for="amiparen" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">10% Amiparen</label>
     
-    <input type="radio" name="proteinProduct" id="aminoplasmal" value="aminoplasmal" class="hidden radio-custom" onchange="calculateAll()">
+    <input type="radio" name="proteinProduct" id="aminoplasmal" value="aminoplasmal" class="hidden radio-custom" onchange="calculateProteinLogic('prot_dose')">
     <label for="aminoplasmal" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">15% Aminoplasmal</label>
   </div>
 
@@ -743,13 +743,13 @@ body {
 
   <tr class="border-b border-gray-100 bg-blue-50/50">
     <td class="px-4 py-2 font-medium text-blue-700">💧 Sterile Water</td>
-    <td class="px-4 py-2 text-right font-mono">
-      <span id="waterVolDisplay" class="text-gray-600">0.0</span>
-      <span id="waterLimitWarning" class="hidden block text-[10px] text-red-800 font-bold">⚠️ เตรียมไม่ได้</span>
-    </td>
-    <td class="px-4 py-2 text-right font-mono bg-blue-50/30">
-      <span id="prep-waterVol" class="text-blue-700 font-bold">0.0</span>
-    </td>
+  <td class="px-4 py-2 text-right font-mono">
+  <span id="waterVolDisplay" class="text-gray-600">0.0</span>
+  </td>
+<td class="px-4 py-2 text-right font-mono bg-blue-50/30">
+  <span id="prep-waterVol" class="text-blue-700 font-bold">0.0</span>
+  <span id="waterLimitWarning" class="hidden block text-[10px] text-red-800 font-bold">⚠️ เตรียมไม่ได้</span>
+</td>
     <td class="text-right">-</td>
     <td class="text-right">-</td>
   </tr>
@@ -1256,12 +1256,13 @@ document.getElementById('row-protein-name').textContent = protName;
 const waterVolDisplay = document.getElementById('waterVolDisplay');
 waterVolDisplay.textContent = roundToPlace(waterVolume, 1);
 
+// คอลัมน์แรก (ปริมาตรสุทธิ) - เน้นตัวแดงหนาเมื่อติดลบ / สีฟ้าเข้มเมื่อปกติ
 if (waterVolume < 0) {
-    waterVolDisplay.style.color = "#991b1b"; // แดงเข้ม
-    waterVolDisplay.style.fontWeight = "900"; // หนาพิเศษ
+    // แดงหนาพิเศษเมื่อติดลบ
+    waterVolDisplay.className = "text-red-600 font-black"; 
 } else {
-    waterVolDisplay.style.color = "#4b5563"; // สีปกติ
-    waterVolDisplay.style.fontWeight = "400";
+    // สีฟ้าเข้ม (blue-800) ความหนาปกติเมื่อค่าเป็นบวก
+    waterVolDisplay.className = "text-blue-800 font-normal";
 }
 
       // 12. คำนวณ Column "สำหรับเตรียม" (ใช้ค่า pnPrepVol)
@@ -1292,9 +1293,10 @@ prepWaterDisplay.textContent = roundToPlace(prepWaterVol, 1);
 
 if (prepWaterVol < 0) {
     prepWaterDisplay.className = "text-red-600 font-black";
-    waterWarning.classList.remove('hidden'); // โชว์ข้อความ "⚠️ เตรียมไม่ได้" แค่ตรงนี้
+    waterWarning.classList.remove('hidden'); // โชว์ "⚠️ เตรียมไม่ได้"
 } else {
-    prepWaterDisplay.className = "text-blue-700 font-bold";
+    // เปลี่ยนจาก blue-700 เป็น blue-800 ให้เข้มสะใจเหมือนกันค่ะ
+    prepWaterDisplay.className = "text-blue-800 font-bold";
     waterWarning.classList.add('hidden');
 }
 
@@ -1507,8 +1509,9 @@ document.getElementById('phosvol').value = ''; // ล้างค่าในช
     'bw', 'totalVolume', 'fatTarget', 'proteinTarget', 'dextrosePercent',
     'phosphorus', 'sodium', 'potassium', 'magnesium', 'calcium',
     'flushVolume', 'vitalipid', 'soluvit', 'peditrace', 'zincVolume',
-    'manualFatDripRate', 'additiveOtherName', 'additiveOtherVolume', 'rateTPN'
-  ];
+    'manualFatDripRate', 'additiveOtherName', 'additiveOtherVolume', 'rateTPN',
+    'fatVolume', 'proteinGrams', 'proteinVolInput', 'netFat' // <--- เพิ่ม 4 ตัวนี้ครับ
+];
   inputsToClear.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
@@ -1519,6 +1522,7 @@ document.getElementById('phosvol').value = ''; // ล้างค่าในช
   document.getElementById('vitalipidFatValue').value = 0.4;
   document.getElementById('deductVitalipid').checked = false;
   document.getElementById('isPreterm').checked = false;
+    document.getElementById('totalFatPlusVitalipid').value = '';
 
   // 5. คืนค่า Radio Buttons
   document.querySelector('input[name="route"][value="central"]').checked = true;
@@ -1559,6 +1563,7 @@ document.getElementById('phosvol').value = ''; // ล้างค่าในช
   document.getElementById('heparinUnits').textContent = '0';
   document.getElementById('heparinVolume').textContent = '0.00';
   document.getElementById('phosvol').textContent = '0.0';
+  
 
   // 8. ซ่อน Warning และส่วนเสริมต่างๆ
   const elementsToHide = [
