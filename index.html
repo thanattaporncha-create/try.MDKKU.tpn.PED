@@ -381,7 +381,7 @@ body {
         </div>
       </section>
 
-     <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+   <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
   <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">Macronutrient</h2>
   
   <div class="p-4 bg-purple-50 rounded-xl border border-purple-100 mb-6">
@@ -400,15 +400,15 @@ body {
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
         <label class="block text-xs font-bold text-gray-500 mb-1">Dose (g/kg/day)</label>
-        <input type="number" id="proteinTarget" step="0.1" class="w-full px-4 py-2 border border-purple-200 rounded-lg font-bold text-purple-700" oninput="calculateProteinLogic('prot_dose')">
+        <input type="number" id="proteinTarget" step="any" inputmode="decimal" class="w-full px-4 py-2 border border-purple-200 rounded-lg font-bold text-purple-700" oninput="calculateProteinLogic('prot_dose')">
       </div>
       <div>
         <label class="block text-xs font-bold text-gray-500 mb-1">Total (g/day)</label>
-        <input type="number" id="proteinGrams" step="0.1" class="w-full px-4 py-2 border border-purple-200 rounded-lg font-bold text-purple-700" oninput="calculateProteinLogic('prot_grams')">
+        <input type="number" id="proteinGrams" step="any" inputmode="decimal" class="w-full px-4 py-2 border border-purple-200 rounded-lg font-bold text-purple-700" oninput="calculateProteinLogic('prot_grams')">
       </div>
       <div>
-        <label class="block text-xs font-bold text-gray-500 mb-1">Protein Vol (ml) <span class="text-blue-600 italic">*แก้ปัดเศษ*</span></label>
-        <input type="number" id="proteinVolInput" step="0.1" class="w-full px-4 py-2 border border-blue-300 rounded-lg font-bold text-blue-700 bg-blue-50" oninput="calculateProteinLogic('prot_vol')">
+        <label class="block text-xs font-bold text-gray-500 mb-1">Protein Vol (ml)</label>
+        <input type="number" id="proteinVolInput" step="any" inputmode="decimal" class="w-full px-4 py-2 border border-blue-300 rounded-lg font-bold text-blue-700 bg-blue-50" oninput="calculateProteinLogic('prot_vol')">
       </div>
     </div>
   </div>
@@ -419,17 +419,17 @@ body {
       <div>
         <label class="block text-xs font-bold text-gray-500 mb-1">% Dextrose สุทธิในถุง</label>
         <div class="relative">
-          <input type="number" id="dextrosePercent" step="0.1" class="w-full px-4 py-2 border border-blue-200 rounded-lg font-bold text-blue-700" oninput="calculateDextroseLogic('dex_percent')">
+          <input type="number" id="dextrosePercent" step="any" inputmode="decimal" class="w-full px-4 py-2 border border-blue-200 rounded-lg font-bold text-blue-700" oninput="calculateDextroseLogic('dex_percent')">
           <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">%</span>
         </div>
       </div>
       <div>
         <label class="block text-xs font-bold text-gray-500 mb-1">Total (g/day)</label>
-        <input type="number" id="dextroseGrams" step="0.1" class="w-full px-4 py-2 border border-blue-200 rounded-lg font-bold text-blue-700" oninput="calculateDextroseLogic('dex_grams')">
+        <input type="number" id="dextroseGrams" step="any" inputmode="decimal" class="w-full px-4 py-2 border border-blue-200 rounded-lg font-bold text-blue-700" oninput="calculateDextroseLogic('dex_grams')">
       </div>
       <div>
-        <label class="block text-xs font-bold text-gray-500 mb-1">50% Dex Vol (ml) <span class="text-blue-600 italic">*แก้ปัดเศษ*</span></label>
-        <input type="number" id="dextroseVolInput" step="0.1" class="w-full px-4 py-2 border border-blue-300 rounded-lg font-bold text-blue-700 bg-blue-50" oninput="calculateDextroseLogic('dex_vol')">
+        <label class="block text-xs font-bold text-gray-500 mb-1">50% Dex Vol (ml)</label>
+        <input type="number" id="dextroseVolInput" step="any" inputmode="decimal" class="w-full px-4 py-2 border border-blue-300 rounded-lg font-bold text-blue-700 bg-blue-50" oninput="calculateDextroseLogic('dex_vol')">
       </div>
     </div>
 
@@ -1653,39 +1653,11 @@ if (fatNameCell) fatNameCell.textContent = "- " + fatName;
 
 function calculateProteinLogic(source) {
     const bw = parseFloat(document.getElementById('bw').value) || 0;
-    const protProduct = document.querySelector('input[name="proteinProduct"]:checked').value;
-    // 15% Aminoplasmal คือ 0.15, ที่เหลือคือ 10% (0.10)
-    const pConc = protProduct === 'aminoplasmal' ? 0.15 : 0.10;
-    
-    let pDose = parseFloat(document.getElementById('proteinTarget').value) || 0;
-    let pGrams = parseFloat(document.getElementById('proteinGrams').value) || 0;
-    let pVol = parseFloat(document.getElementById('proteinVolInput').value) || 0;
-
-    if (source === 'prot_dose') {
-        pGrams = pDose * bw;
-        pVol = pGrams / pConc;
-    } else if (source === 'prot_grams') {
-        pDose = bw > 0 ? pGrams / bw : 0;
-        pVol = pGrams / pConc;
-    } else if (source === 'prot_vol') {
-        pGrams = pVol * pConc;
-        pDose = bw > 0 ? pGrams / bw : 0;
-    }
-
-    // อัปเดตค่ากลับเข้า Input
-    if (source !== 'prot_dose') document.getElementById('proteinTarget').value = roundToPlace(pDose, 1);
-    if (source !== 'prot_grams') document.getElementById('proteinGrams').value = roundToPlace(pGrams, 2);
-    if (source !== 'prot_vol') document.getElementById('proteinVolInput').value = roundToPlace(pVol, 1);
-    
-    calculateAll(); // อัปเดตตารางสรุป
-}
-  function calculateProteinLogic(source) {
-    const bw = parseFloat(document.getElementById('bw').value) || 0;
     const selectedProduct = document.querySelector('input[name="proteinProduct"]:checked').value;
+    const activeEl = document.activeElement.id; // บรรทัดนี้สำคัญมาก: เอาไว้เช็คว่าเรากำลังพิมพ์ช่องไหนอยู่
     
-    // กำหนดความเข้มข้นตามผลิตภัณฑ์ที่เลือก
-    let pConc = 0.10; // Default 10%
-    if (selectedProduct === 'aminoplasmal') pConc = 0.15;
+    // กำหนดความเข้มข้นตามผลิตภัณฑ์ที่เลือก (รองรับทั้ง 10% และ 15%)
+    let pConc = (selectedProduct === 'aminoplasmal') ? 0.15 : 0.10;
     
     let pDose = parseFloat(document.getElementById('proteinTarget').value) || 0;
     let pGrams = parseFloat(document.getElementById('proteinGrams').value) || 0;
@@ -1702,25 +1674,32 @@ function calculateProteinLogic(source) {
         pDose = bw > 0 ? pGrams / bw : 0;
     }
 
-    // อัปเดตค่ากลับเข้า Input โดยปัดเศษให้สวยงาม
-    document.getElementById('proteinTarget').value = roundToPlace(pDose, 1);
-    document.getElementById('proteinGrams').value = roundToPlace(pGrams, 2);
-    document.getElementById('proteinVolInput').value = roundToPlace(pVol, 1);
+    // 🔥 ส่วนที่แก้: จะไม่อัปเดตค่ากลับเข้าไปในช่องที่นิ้วเรากำลังพิมพ์อยู่ (Active Element)
+    // เพื่อให้คุณขิมพิมพ์จุดทศนิยมค้างไว้ได้โดยไม่โดนโปรแกรมลบจุดทิ้ง
+    if (activeEl !== 'proteinTarget') {
+        document.getElementById('proteinTarget').value = roundToPlace(pDose, 1);
+    }
+    if (activeEl !== 'proteinGrams') {
+        document.getElementById('proteinGrams').value = roundToPlace(pGrams, 2);
+    }
+    if (activeEl !== 'proteinVolInput') {
+        document.getElementById('proteinVolInput').value = roundToPlace(pVol, 1);
+    }
     
     calculateAll(); 
 }
-
 function calculateDextroseLogic(source) {
     const bw = parseFloat(document.getElementById('bw').value) || 0;
     const pnVol = parseFloat(document.getElementById('pnVolume').value) || 0;
+    const activeEl = document.activeElement.id; // เช็คช่องที่กำลังพิมพ์
     
     let dPercent = parseFloat(document.getElementById('dextrosePercent').value) || 0;
     let dGrams = parseFloat(document.getElementById('dextroseGrams').value) || 0;
-    let dVol50 = parseFloat(document.getElementById('dextroseVolInput').value) || 0; // ปริมาตรของ 50% Dex
+    let dVol50 = parseFloat(document.getElementById('dextroseVolInput').value) || 0;
 
     if (source === 'dex_percent') {
         dGrams = (dPercent * pnVol) / 100;
-        dVol50 = dGrams / 0.5; // g / 0.5 g/ml
+        dVol50 = dGrams / 0.5;
     } else if (source === 'dex_grams') {
         dPercent = pnVol > 0 ? (dGrams / pnVol) * 100 : 0;
         dVol50 = dGrams / 0.5;
@@ -1729,9 +1708,10 @@ function calculateDextroseLogic(source) {
         dPercent = pnVol > 0 ? (dGrams / pnVol) * 100 : 0;
     }
 
-    document.getElementById('dextrosePercent').value = roundToPlace(dPercent, 1);
-    document.getElementById('dextroseGrams').value = roundToPlace(dGrams, 1);
-    document.getElementById('dextroseVolInput').value = roundToPlace(dVol50, 1);
+    // อัปเดตค่ากลับเข้า Input "ยกเว้นช่องที่กำลังพิมพ์อยู่"
+    if (activeEl !== 'dextrosePercent') document.getElementById('dextrosePercent').value = roundToPlace(dPercent, 1);
+    if (activeEl !== 'dextroseGrams') document.getElementById('dextroseGrams').value = roundToPlace(dGrams, 1);
+    if (activeEl !== 'dextroseVolInput') document.getElementById('dextroseVolInput').value = roundToPlace(dVol50, 1);
     
     calculateAll();
 }
