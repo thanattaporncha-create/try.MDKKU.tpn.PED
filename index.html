@@ -144,6 +144,30 @@ body {
 #wardDropdown {
   z-index: 9999 !important;
 }
+/* เพิ่มขนาดตัวหนังสือในตารางสรุป */
+#compositionTable td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 15px; /* ใหญ่ขึ้นจากปกติ */
+}
+
+/* เน้นตัวเลขสรุปท้ายตาราง */
+#compositionTable .bg-gray-800 span {
+  font-size: 18px; 
+}
+
+/* ขยายขนาดตัวหนังสือในช่อง Input ของ Electrolyte */
+.electrolyte-vol-input {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  width: 70px !important; /* กว้างขึ้นเพื่อให้ตัวเลขไม่เบียด */
+}
+
+/* ปรับขนาดตัวอักษรในส่วนสรุปการเตรียม Fat */
+#prepDetails p {
+  font-size: 16px;
+  line-height: 1.6;
+}
   </style>
 </head>
 <body class="bg-gray-50">
@@ -466,69 +490,100 @@ body {
 </section>
 
       <!-- Electrolytes Section -->
-      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
-        <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">⚗️ Electrolytes</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">P (Glycophos®)</label>
-            <p class="text-xs text-gray-600 mb-2">0.5-1 mEq/kg/day</p>
-            <div class="relative mb-2">
-              <input type="number" id="phosphorus" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" inputmode="decimal" oninput="calculateAll()">
-            </div>
-            <div class="text-xs bg-blue-50 p-2 rounded-lg border border-blue-200">
-             <p class="text-gray-700">
-  <strong>Vol:</strong> 
-  <input type="number" id="phosvol" step="0.1" 
-    class="w-16 px-1 border-b border-blue-300 bg-transparent text-blue-700 font-bold focus:outline-none" 
-    oninput="isPhosVolManual = true; calculateAll()"> ml
-</p>
-              <p class="text-gray-700"><strong>Na from P:</strong> <input type="number" id="phoNa" step="0.1" class="w-16 px-1 border-b border-blue-300 bg-transparent text-blue-700 font-bold focus:outline-none" oninput="isPhosNaManual = true; calculateAll()"> mEq</p>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Na (3% NaCl)</label>
-            <p class="text-xs text-gray-600 mb-2">2-4 mEq/kg/day</p>
-            <div class="relative mb-2">
-              <input type="number" id="sodium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" inputmode="decimal" oninput="calculateAll()">
-            </div>
-            <div class="text-xs bg-blue-50 p-2 rounded-lg border border-blue-200">
-             <p class="text-gray-700"><strong>Vol:</strong> <input type="number" id="navol" step="0.1" class="w-16 px-1 border-b border-blue-300 bg-transparent text-blue-700 font-bold focus:outline-none" oninput="isNaVolManual = true; calculateAll()"> ml</p>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">K (KCl)</label>
-            <p class="text-xs text-gray-600 mb-2">2-4 mEq/kg/day</p>
-            <div class="relative mb-2">
-              <input type="number" id="potassium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" inputmode="decimal" oninput="calculateAll()">
-            </div>
-            <div class="text-xs bg-blue-50 p-2 rounded-lg border border-blue-200">
-              <p class="text-gray-700"><strong>Vol:</strong> <input type="number" id="kvol" step="0.1" class="w-16 px-1 border-b border-blue-300 bg-transparent text-blue-700 font-bold focus:outline-none" oninput="isKVolManual = true; calculateAll()"> ml</p>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Mg (50% MgSO₄)</label>
-            <p class="text-xs text-gray-600 mb-2">0.2-0.3 mmol/kg/day</p>
-            <div class="relative mb-2">
-              <input type="number" id="magnesium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" inputmode="decimal" oninput="calculateAll()">
-            </div>
-            <div class="text-xs bg-blue-50 p-2 rounded-lg border border-blue-200">
-              <p class="text-gray-700"><strong>Vol:</strong> <input type="number" id="mgvol" step="0.01" class="w-16 px-1 border-b border-blue-300 bg-transparent text-blue-700 font-bold focus:outline-none" oninput="isMgVolManual = true; calculateAll()"> ml</p>
-            </div>
-          </div>
-          <div>
-  <label class="block text-sm font-medium text-gray-700 mb-1">Ca (10% Ca Gluconate)</label>
-  <p class="text-xs text-gray-600 mb-2">4-6 ml/kg/day</p>
-  <div class="relative mb-2">
-    <input type="number" id="calcium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" inputmode="decimal" oninput="calculateAll()">
-  </div>
-  <div class="text-xs bg-blue-50 p-2 rounded-lg border border-blue-200">
-    <p class="text-gray-700"><strong>Vol:</strong> <input type="number" id="cavol" step="0.1" class="w-16 px-1 border-b border-blue-300 bg-transparent text-blue-700 font-bold focus:outline-none" oninput="isCaVolManual = true; calculateAll()"> ml</p>
-  </div>
-  <p id="caMaxWarning" class="hidden text-[10px] text-red-600 mt-1 font-bold">⚠️ Max = 10 ml</p>
-</div>
+    <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+  <h2 class="section-title text-xl font-bold text-gray-800 mb-6">⚗️ Electrolytes</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    
+    <div class="space-y-3">
+      <label class="block text-base font-bold text-gray-800">P (Glycophos®)</label>
+      <p class="text-xs text-gray-500 italic">0.5-1 mEq/kg/day</p>
+      <input type="number" id="phosphorus" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="phosvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isPhosVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
           </div>
         </div>
-      </section>
+        <div class="flex justify-between items-center pt-1 border-t border-blue-200">
+          <span class="text-[11px] font-medium text-gray-600">Na from P:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="phoNa" step="0.1" class="w-14 bg-transparent text-right text-xs font-bold text-gray-700 border-b border-gray-300 focus:outline-none" oninput="isPhosNaManual = true; calculateAll()">
+            <span class="ml-1 text-[10px] text-gray-500 font-bold">mEq</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <label class="block text-base font-bold text-gray-800">Na (3% NaCl)</label>
+      <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
+      <input type="number" id="sodium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="navol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isNaVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <label class="block text-base font-bold text-gray-800">K (KCl)</label>
+      <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
+      <input type="number" id="potassium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="kvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isKVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <label class="block text-base font-bold text-gray-800">Mg (50% MgSO₄)</label>
+      <p class="text-xs text-gray-500 italic">0.2-0.3 mmol/kg/day</p>
+      <input type="number" id="magnesium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="mgvol" step="0.01" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isMgVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <label class="block text-base font-bold text-gray-800 font-sans">Ca (10% Ca Glu)</label>
+      <p class="text-xs text-gray-500 italic">4-6 ml/kg/day</p>
+      <input type="number" id="calcium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="cavol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isCaVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+      <p id="caMaxWarning" class="hidden text-[10px] text-red-600 mt-1 font-bold animate-pulse">⚠️ Max = 10 ml</p>
+    </div>
+
+  </div>
+</section>
 
       <!-- Vitamins & Trace Elements Section -->
       <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
@@ -646,149 +701,152 @@ body {
       </section>
 
       <!-- Composition Table -->
-      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
-        <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">📊 สรุปข้อมูล Order TPN</h2>
-        <div class="overflow-x-auto rounded-xl border border-gray-200">
-          <table class="w-full text-sm">
+     <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+        <h2 class="section-title text-xl font-bold text-gray-800 mb-6">📊 สรุปข้อมูล Order TPN</h2>
+        <div class="overflow-x-auto rounded-xl border-2 border-gray-200">
+          <table class="w-full">
             <thead>
-  <tr class="table-header text-white">
-    <th class="px-4 py-3 text-left font-semibold rounded-tl-xl">องค์ประกอบ</th>
-    <th class="px-4 py-3 text-right font-semibold">ปริมาตร (ml)</th>
-    <th class="px-4 py-3 text-right font-semibold text-blue-200">สำหรับเตรียม (ml)</th>
-    <th class="px-4 py-3 text-right font-semibold">แคลอรี่ (kcal)</th>
-    <th class="px-4 py-3 text-right font-semibold rounded-tr-xl">mOsmol/L</th>
-  </tr>
-</thead>
-            <tbody id="compositionTable">
-  <tr class="border-b border-gray-100 font-bold bg-gray-50">
-    <td colspan="5" class="px-4 py-2 text-gray-800">Macronutrients</td>
-  </tr>
-  <tr class="border-b border-gray-100 hover:bg-gray-50">
-    <td id="row-protein-name" class="px-4 py-2 pl-8 text-purple-700 font-medium">Protein Product</td>
-    <td id="proteinVol" class="px-4 py-2 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-proteinVol" class="px-4 py-2 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td id="proteinCal" class="px-4 py-2 text-right font-mono">0.0</td>
-    <td id="proteinOsmol" class="px-4 py-2 text-right font-mono">0</td>
-  </tr>
-  <tr class="border-b border-gray-100 hover:bg-gray-50">
-    <td class="px-4 py-2 pl-8 text-blue-700">50% Dextrose</td>
-    <td id="dextroseVol" class="px-4 py-2 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-dextroseVol" class="px-4 py-2 text-right font-mono text-blue-600 bg-blue-50/30 font-bold">0.0</td>
-    <td id="dextroseCal" class="px-4 py-2 text-right font-mono">0.0</td>
-    <td id="dextroseOsmol" class="px-4 py-2 text-right font-mono">0</td>
-  </tr>
+              <tr class="table-header text-white text-base">
+                <th class="px-4 py-4 text-left font-bold rounded-tl-xl">องค์ประกอบ</th>
+                <th class="px-4 py-4 text-right font-bold">ปริมาตร (ml)</th>
+                <th class="px-4 py-4 text-right font-bold text-yellow-300 bg-black/10">สำหรับเตรียม (ml)</th>
+                <th class="px-4 py-4 text-right font-bold">แคลอรี่ (kcal)</th>
+                <th class="px-4 py-4 text-right font-bold rounded-tr-xl">mOsmol/L</th>
+              </tr>
+            </thead>
+            <tbody id="compositionTable" class="text-sm md:text-base">
+              <tr class="border-b-2 border-gray-100 font-bold bg-gray-50 text-gray-800">
+                <td colspan="5" class="px-4 py-3 text-lg">Macronutrients</td>
+              </tr>
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td id="row-protein-name" class="px-4 py-3 pl-8 text-purple-700 font-bold">Protein Product</td>
+                <td id="proteinVol" class="px-4 py-3 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-proteinVol" class="px-4 py-3 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-xl">0.0</td>
+                <td id="proteinCal" class="px-4 py-3 text-right font-mono">0.0</td>
+                <td id="proteinOsmol" class="px-4 py-3 text-right font-mono">0</td>
+              </tr>
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="px-4 py-3 pl-8 text-blue-700 font-bold">50% Dextrose</td>
+                <td id="dextroseVol" class="px-4 py-3 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-dextroseVol" class="px-4 py-3 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-xl">0.0</td>
+                <td id="dextroseCal" class="px-4 py-3 text-right font-mono">0.0</td>
+                <td id="dextroseOsmol" class="px-4 py-3 text-right font-mono">0</td>
+              </tr>
 
-  <tr class="border-b border-gray-100 font-bold bg-red-50/50">
-    <td colspan="5" class="px-4 py-2 text-red-800">🧂 Electrolytes (ml)</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- Glycophos (P)</td>
-    <td id="row-phos-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-phos-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td id="row-phos-osmol" class="px-4 py-1 text-right font-mono">0</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- 3% NaCl (Na)</td>
-    <td id="row-na-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-na-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td id="row-na-osmol" class="px-4 py-1 text-right font-mono">0</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- KCl (K)</td>
-    <td id="row-k-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-k-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td id="row-k-osmol" class="px-4 py-1 text-right font-mono">0</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- 50% MgSO4 (Mg)</td>
-    <td id="row-mg-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-mg-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td id="row-mg-osmol" class="px-4 py-1 text-right font-mono">0</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- 10% Ca Gluconate (Ca)</td>
-    <td id="row-ca-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-ca-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td id="row-ca-osmol" class="px-4 py-1 text-right font-mono">0</td>
-  </tr>
+              <tr class="border-b-2 border-gray-100 font-bold bg-red-50/50 text-red-800">
+                <td colspan="5" class="px-4 py-3 text-lg">🧂 Electrolytes (ml)</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- Glycophos (P)</td>
+                <td id="row-phos-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-phos-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td id="row-phos-osmol" class="px-4 py-2 text-right font-mono">0</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- 3% NaCl (Na)</td>
+                <td id="row-na-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-na-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td id="row-na-osmol" class="px-4 py-2 text-right font-mono">0</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- KCl (K)</td>
+                <td id="row-k-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-k-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td id="row-k-osmol" class="px-4 py-2 text-right font-mono">0</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- 50% MgSO4 (Mg)</td>
+                <td id="row-mg-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-mg-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td id="row-mg-osmol" class="px-4 py-2 text-right font-mono">0</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- 10% Ca Gluconate (Ca)</td>
+                <td id="row-ca-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-ca-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td id="row-ca-osmol" class="px-4 py-2 text-right font-mono">0</td>
+              </tr>
 
-  <tr class="border-b border-gray-100 font-bold bg-green-50/50">
-    <td colspan="5" class="px-4 py-2 text-green-800">💊 Vitamins & Trace Element (ml)</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- Soluvit N</td>
-    <td id="row-soluvit-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-soluvit-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td class="text-right">-</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- Peditrace</td>
-    <td id="row-peditrace-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-peditrace-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td class="text-right">-</td>
-  </tr>
+              <tr class="border-b-2 border-gray-100 font-bold bg-green-50/50 text-green-800">
+                <td colspan="5" class="px-4 py-3 text-lg">💊 Vitamins & Trace Element (ml)</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- Soluvit N</td>
+                <td id="row-soluvit-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-soluvit-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- Peditrace</td>
+                <td id="row-peditrace-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-peditrace-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td class="text-right">-</td>
+              </tr>
 
-  <tr class="border-b border-gray-100 font-bold bg-orange-50/50">
-    <td colspan="5" class="px-4 py-2 text-orange-800">🧪 Additives (ml)</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- Zinc Sulfate</td>
-    <td id="row-zinc-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-zinc-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td class="text-right">-</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td class="px-4 py-1 pl-8">- Heparin</td>
-    <td id="row-heparin-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-heparin-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td class="text-right">-</td>
-  </tr>
-  <tr class="border-b border-gray-100 text-xs">
-    <td id="row-other-name" class="px-4 py-1 pl-8">- Other Additive</td>
-    <td id="row-other-vol" class="px-4 py-1 text-right font-mono text-gray-600">0.0</td>
-    <td id="prep-other-vol" class="px-4 py-1 text-right font-mono text-blue-600 bg-blue-50/30">0.0</td>
-    <td class="text-right">-</td>
-    <td class="text-right">-</td>
-  </tr>
+              <tr class="border-b-2 border-gray-100 font-bold bg-orange-50/50 text-orange-800">
+                <td colspan="5" class="px-4 py-3 text-lg">🧪 Additives (ml)</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- Zinc Sulfate</td>
+                <td id="row-zinc-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-zinc-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td class="px-4 py-2 pl-8 font-medium">- Heparin</td>
+                <td id="row-heparin-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-heparin-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr class="border-b border-gray-100 text-sm">
+                <td id="row-other-name" class="px-4 py-2 pl-8 font-medium">- Other Additive</td>
+                <td id="row-other-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+                <td id="prep-other-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+                <td class="text-right">-</td>
+                <td class="text-right">-</td>
+              </tr>
 
-  <tr class="border-b border-gray-100 bg-blue-50/50">
-    <td class="px-4 py-2 font-medium text-blue-700">💧 Sterile Water</td>
-    <td class="px-4 py-2 text-right">
-        <input type="number" id="waterVolInput" step="0.1" class="w-20 px-1 border-b border-blue-300 bg-transparent text-right font-mono text-blue-800 focus:outline-none" oninput="isWaterManual = true; calculateAll()">
-    </td>
-    <td class="px-4 py-2 text-right bg-blue-50/30">
-        <input type="number" id="prep-waterVolInput" step="0.1" class="w-20 px-1 border-b border-blue-300 bg-transparent text-right font-mono text-blue-800 font-bold focus:outline-none" oninput="isPrepWaterManual = true; calculateAll()">
-        <span id="waterLimitWarning" class="hidden block text-[10px] text-red-800 font-bold">⚠️ เตรียมไม่ได้</span>
-    </td>
-    <td class="text-right">-</td>
-    <td class="text-right">-</td>
-</tr>
+              <tr class="border-b-2 border-gray-100 bg-blue-50/50">
+                <td class="px-4 py-4 font-bold text-blue-700 text-lg">💧 Sterile Water</td>
+                <td class="px-4 py-4 text-right">
+                    <input type="number" id="waterVolInput" step="0.1" class="w-24 px-1 border-b-2 border-blue-300 bg-transparent text-right font-mono font-bold text-blue-800 focus:outline-none" oninput="isWaterManual = true; calculateAll()">
+                </td>
+                <td class="px-4 py-4 text-right bg-blue-100/50">
+                    <input type="number" id="prep-waterVolInput" step="0.1" class="w-24 px-1 border-b-2 border-blue-400 bg-transparent text-right font-mono font-black text-blue-700 text-xl focus:outline-none" oninput="isPrepWaterManual = true; calculateAll()">
+                    <span id="waterLimitWarning" class="hidden block text-xs text-red-800 font-black mt-1">⚠️ เตรียมไม่ได้</span>
+                </td>
+                <td class="text-right">-</td>
+                <td class="text-right">-</td>
+              </tr>
 
-  <tr class="bg-gray-800 text-white font-bold">
-    <td class="px-4 py-3">สรุปข้อมูล</td>
-    <td class="px-4 py-3 text-right font-mono text-yellow-400">
-      <span id="totalPNVol">0.0</span> <span class="text-[10px] ml-1">ml</span>
-    </td>
-    <td class="px-4 py-3 text-right font-mono text-cyan-300">
-      <span id="totalPrepVolDisplay">0.0</span> <span class="text-[10px] ml-1">ml</span>
-    </td>
-    <td class="px-4 py-3 text-right font-mono">
-      <span id="totalPNCal">0.0</span> <span class="text-[10px] ml-1 text-gray-400">kcal</span>
-    </td>
-    <td class="px-4 py-3 text-right font-mono">
-      <span id="totalOsmol">0</span> <span class="text-[10px] ml-1 text-gray-400">mOsm/L</span>
-    </td>
-  </tr>
-</tbody>
+              <tr class="bg-gray-800 text-white font-bold">
+                <td class="px-4 py-5 text-xl font-bold">สรุปข้อมูล</td>
+                <td class="px-4 py-5 text-right font-mono text-yellow-400 text-xl">
+                  <span id="totalPNVol">0.0</span> <span class="text-xs ml-1">ml</span>
+                </td>
+                <td class="px-4 py-5 text-right font-mono text-cyan-300 bg-gray-700 text-2xl">
+                  <span id="totalPrepVolDisplay">0.0</span> <span class="text-xs ml-1">ml</span>
+                </td>
+                <td class="px-4 py-5 text-right font-mono text-xl">
+                  <span id="totalPNCal">0.0</span> <span class="text-xs ml-1 text-gray-400">kcal</span>
+                </td>
+                <td class="px-4 py-5 text-right font-mono text-xl">
+                  <span id="totalOsmol">0</span> <span class="text-xs ml-1 text-gray-400">mOsmol</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
           </table>
         </div>
         <div id="prepSummary" class="mt-6 p-6 success-box rounded-xl border-2 border-green-200">
@@ -973,20 +1031,20 @@ document.getElementById('hn').addEventListener('input', fetchPatientName);
     
     // ========== API Functions ==========
 
- async function saveOrder() {
+async function saveOrder() {
     // 1. ตรวจสอบข้อมูลเบื้องต้นก่อนส่ง
-    const orderDate = document.getElementById('orderDate').value; // เพิ่มบรรทัดนี้เพื่อดึงค่าวันที่
+    const orderDate = document.getElementById('orderDate').value;
     const hn = document.getElementById('hn').value;
     const patientName = document.getElementById('patientName').value;
     
-    // ปรับเงื่อนไขการตรวจสอบให้ครอบคลุม orderDate
     if (!orderDate || !hn || !patientName) {
         alert("⚠️ กรุณากรอกข้อมูลให้ครบถ้วนก่อนบันทึก:\n- วันที่ Order TPN\n- HN\n- ชื่อผู้ป่วย");
         return;
     }
-    // 2. รวบรวมข้อมูลให้ตรงกับหัวตารางใน Google Sheets (41 คอลัมน์)
+
+    // 2. รวบรวมข้อมูลให้ตรงกับหัวตารางใน Google Sheets
     const data = {
-        order_date: document.getElementById('orderDate').value,
+        order_date: orderDate,
         hn: hn,
         patient_name: patientName,
         ward: document.getElementById('ward').value,
@@ -1004,7 +1062,7 @@ document.getElementById('hn').addEventListener('input', fetchPatientName);
         magnesium: document.getElementById('magnesium').value,
         calcium: document.getElementById('calcium').value,
         
-        // Volumes (ดึงจากตารางสรุปและฟิลด์ที่เกี่ยวข้อง)
+        // Volumes
         soluvit: document.getElementById('soluvit').value,
         peditrace: document.getElementById('peditrace').value,
         vitalipid: document.getElementById('vitalipid').value,
@@ -1018,14 +1076,14 @@ document.getElementById('hn').addEventListener('input', fetchPatientName);
         protein_product: document.querySelector('input[name="proteinProduct"]:checked').value,
         fat_product: document.querySelector('input[name="fatProduct"]:checked').value,
         
-        // Results
+        // Results (ดึงจาก Element ID ที่มีตัวเลขแสดงอยู่บนจอ)
         pn_volume: document.getElementById('totalPNVol').innerText,
         fat_volume: document.getElementById('fatVolume').value,
         rate_tpn: document.getElementById('rateTPN').value,
         fat_rate: document.getElementById('manualFatDripRate').value,
-        drip_duration: 24, // ค่าคงที่ตามที่คำนวณ PN/24
+        drip_duration: 24,
         prep_dextrose_vol: document.getElementById('prep-dextroseVol').innerText,
-        prep_water_vol: document.getElementById('prep-waterVol').innerText,
+        prep_water_vol: document.getElementById('prep-waterVolInput').value, // แก้จาก prep-waterVol เป็น ID ที่มีค่าจริง
         
         // Summary
         total_calories: document.getElementById('totalCalDisplay').innerText,
@@ -1037,31 +1095,28 @@ document.getElementById('hn').addEventListener('input', fetchPatientName);
     };
 
     // 3. เริ่มส่งข้อมูล
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzbm7odZSoVjhvnFRfY7Cb5kdyCi5gnxrhmoiQHROQy7tYmwsYolvyTKu575si9wgHtMw/exec';
-    
-    // เปลี่ยนปุ่มเป็นสถานะกำลังบันทึกเพื่อป้องกันการกดซ้ำ
-    const saveBtn = document.querySelector('button[onclick="saveOrder()"]');
-    const originalBtnText = saveBtn.innerText;
+    const saveBtn = document.getElementById('saveOrderBtn');
+    const originalBtnText = saveBtn.innerHTML;
     saveBtn.disabled = true;
     saveBtn.innerText = "⏳ กำลังบันทึก...";
 
-    fetch(scriptURL, {
-        method: 'POST',
-        mode: 'no-cors', // สำคัญ: เพื่อเลี่ยงปัญหา CORS
-        body: new URLSearchParams(data)
-    })
-    .then(() => {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: new URLSearchParams(data)
+        });
+        
+        // เนื่องจากใช้ no-cors จะไม่สามารถเช็ค response.ok ได้ 
+        // แต่ถ้า fetch ทำงานเสร็จโดยไม่เข้า catch ถือว่าส่งข้อมูลออกไปแล้ว
         alert('✅ บันทึกข้อมูลสำเร็จ! ข้อมูลถูกส่งไปยังระบบ Dashboard เรียบร้อยค่ะ');
-        saveBtn.disabled = false;
-        saveBtn.innerText = originalBtnText;
-        // (Optional) สั่ง Reset ฟอร์ม หรือล้างค่า HN หลังบันทึกสำเร็จ
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error!', error.message);
-        alert('❌ เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่อีกครั้ง');
+        alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+    } finally {
         saveBtn.disabled = false;
-        saveBtn.innerText = originalBtnText;
-    });
+        saveBtn.innerHTML = originalBtnText;
+    }
 }
     function showSaveMessage(message, type) {
       let existingMsg = document.getElementById('saveMessage');
@@ -1288,21 +1343,32 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       document.getElementById('row-heparin-vol').textContent = heparinVolume;
       document.getElementById('row-other-vol').textContent = otherVol;
 
-      // 12. คำนวณ Column "สำหรับเตรียม" (ใช้ค่า pnPrepVol)
+    // 12. คำนวณ Column "สำหรับเตรียม" (ใช้ค่า pnPrepVol)
       const prepDextroseVol = roundToPlace((dextrosePercent * pnPrepVol * 2) / 100, 1);
-      document.getElementById('prep-dextroseVol').textContent = prepDextroseVol;
+      
+      // ฟังก์ชันช่วยอัปเดตค่าพร้อมขยายขนาดตัวอักษรให้ใหญ่สะใจ (helper)
+      const updatePrepCell = (id, value, isMain = false) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.textContent = value;
+          // สำหรับเตรียม: ใช้ font-black (หนาสุด) และสี blue-700 ตัวเลขใหญ่ (text-xl/text-lg)
+          el.className = `px-4 py-3 text-right font-mono font-black text-blue-700 bg-blue-100/50 ${isMain ? 'text-xl' : 'text-lg'}`;
+        }
+      };
 
-      document.getElementById('prep-proteinVol').textContent = roundToPlace(proteinVolume, 1);
-      document.getElementById('prep-phos-vol').textContent = phosVolume;
-      document.getElementById('prep-na-vol').textContent = naClVolume;
-      document.getElementById('prep-k-vol').textContent = kVolume;
-      document.getElementById('prep-mg-vol').textContent = mgVolume;
-      document.getElementById('prep-ca-vol').textContent = caVolume;
-      document.getElementById('prep-soluvit-vol').textContent = soluvitVolume;
-      document.getElementById('prep-peditrace-vol').textContent = peditraceVolume;
-      document.getElementById('prep-zinc-vol').textContent = zincVolume;
-      document.getElementById('prep-heparin-vol').textContent = heparinVolume;
-      document.getElementById('prep-other-vol').textContent = otherVol;
+      // อัปเดตตัวเลขลงตาราง (isMain = true จะขนาดใหญ่พิเศษ)
+      updatePrepCell('prep-dextroseVol', prepDextroseVol, true);
+      updatePrepCell('prep-proteinVol', roundToPlace(proteinVolume, 1), true);
+      updatePrepCell('prep-phos-vol', phosVolume);
+      updatePrepCell('prep-na-vol', naClVolume);
+      updatePrepCell('prep-k-vol', kVolume);
+      updatePrepCell('prep-mg-vol', mgVolume);
+      updatePrepCell('prep-ca-vol', caVolume);
+      updatePrepCell('prep-soluvit-vol', soluvitVolume);
+      updatePrepCell('prep-peditrace-vol', peditraceVolume);
+      updatePrepCell('prep-zinc-vol', zincVolume);
+      updatePrepCell('prep-heparin-vol', heparinVolume);
+      updatePrepCell('prep-other-vol', otherVol);
 
       // --- 12.1 คำนวณยอดสำหรับเตรียม (Prep Water) ---
       const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + soluvitVolume + peditraceVolume + zincVolume + otherVol;
@@ -1317,16 +1383,21 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       const limitWarning = document.getElementById('waterLimitWarning');
 
       if (finalPrepWaterVol < 0) {
-          prepWaterInputEl.className = "w-20 px-1 border-b border-blue-300 bg-transparent text-right font-mono text-red-600 font-black focus:outline-none";
+          prepWaterInputEl.className = "w-24 px-1 border-b-2 border-red-400 bg-transparent text-right font-mono text-red-600 font-black text-xl focus:outline-none";
           limitWarning.classList.remove('hidden');
       } else {
-          prepWaterInputEl.className = "w-20 px-1 border-b border-blue-300 bg-transparent text-right font-mono text-blue-800 font-bold focus:outline-none";
+          // ปรับช่องน้ำเตรียมให้ตัวใหญ่ (text-xl)
+          prepWaterInputEl.className = "w-24 px-1 border-b-2 border-blue-400 bg-transparent text-right font-mono text-blue-700 font-black text-xl focus:outline-none";
           limitWarning.classList.add('hidden');
       }
 
       // ยอดรวมสรุปท้ายตาราง (ใช้ยอดที่ปัดเศษแล้ว)
       document.getElementById('totalPNVol').textContent = roundToPlace(allSubstances + finalWaterVol, 1);
-      document.getElementById('totalPrepVolDisplay').textContent = roundToPlace(allSubstancesPrep + finalPrepWaterVol, 1);
+      
+      const totalPrepEl = document.getElementById('totalPrepVolDisplay');
+      totalPrepEl.textContent = roundToPlace(allSubstancesPrep + finalPrepWaterVol, 1);
+      // ขยายยอดสรุปสีฟ้าอ่อนให้ตัวเบ้งๆ (text-2xl)
+      totalPrepEl.parentElement.className = "px-4 py-5 text-right font-mono text-cyan-300 bg-gray-700 text-2xl font-black";
       
       const totalPNCal = (proteinGrams * 4) + ((dextrosePercent * pnVolume / 100) * 3.4);
       document.getElementById('totalPNCal').textContent = roundToPlace(totalPNCal, 1);
@@ -1364,7 +1435,7 @@ const phosVolume = parseFloat(phosInput.value) || 0;
       updateOrderSummary();
     }
 
-   function calculateFatAdmin() {
+ function calculateFatAdmin() {
     // 1. ดึงค่า Volume ต่างๆ
     const fatVolume = parseFloat(document.getElementById('fatVolume').value) || 0;
     const vitalipidVolume = parseFloat(document.getElementById('vitalipid').value) || 0;
@@ -1406,27 +1477,34 @@ const phosVolume = parseFloat(phosInput.value) || 0;
 
     document.getElementById('totalFatPlusVitalipid').value = roundToPlace(grandTotalFatVit, 1);
 
-    // 4. สรุปข้อความสีเขียว
+    // 4. สรุปข้อความ (ปรับปรุงสีตัวเลข Total Volume เป็นน้ำเงินเข้ม)
     const vitProdType = document.querySelector('input[name="vitProduct"]:checked').value;
     const vitNameLabel = "Vitalipid-N " + vitProdType;
 
     let prepText = `
         <p>• <strong>${fatName}</strong>: ${roundToPlace(fatVolume, 1)} ml + รวมไล่สาย (${roundToPlace(flushVolume, 0)} ml): <strong>${roundToPlace(totalVolPlusFlush, 1)}</strong> ml</p>
         <p>• ${vitNameLabel}: <strong>${roundToPlace(vitalipidVolume, 1)}</strong> ml</p>
-        <p>• Total Volume Fat + ไล่สาย + Vitalipid: <span class="text-lg font-bold">${roundToPlace(grandTotalFatVit, 1)}</span> ml</p>
+        <p class="text-lg">
+            • Total Volume Fat + ไล่สาย + Vitalipid: 
+            <span class="text-2xl font-black text-blue-800 underline ml-1">${roundToPlace(grandTotalFatVit, 1)}</span> 
+            <span class="text-blue-800 font-bold ml-1">ml</span>
+        </p>
         <p>• <strong>Calories from fat:</strong> <span class="text-amber-700 font-bold">${roundToPlace(fatCalories, 1)}</span> kcal</p>
     `;
 
     if (prepSplit === 'split') {
-        prepText += `<p>• <strong>แบ่งเตรียม:</strong> ${roundToPlace(grandTotalFatVit / 2, 1)} ml × 2 syringe/ขวด</p>`;
+        prepText += `<p>• <strong>แบ่งเตรียม:</strong> <span class="text-blue-700 font-bold">${roundToPlace(grandTotalFatVit / 2, 1)} ml × 2 syringe/ขวด</span></p>`;
     } else {
         prepText += `<p>• <strong>แบ่งเตรียม:</strong> ไม่แบ่ง</p>`;
     }
     
-    prepText += `<p>• <strong>Drip Rate:</strong> <span class="text-blue-700 font-bold">${manualRate}</span> ml/hr</p>`;
+    prepText += `<p>• <strong>Drip Rate:</strong> <span class="text-blue-700 font-bold text-lg">${manualRate}</span> ml/hr</p>`;
+    
     document.getElementById('prepDetails').innerHTML = prepText;
     updateOrderSummary();
-} // จบฟังก์ชัน calculateFatAdmin
+}
+// จบฟังก์ชัน calculateFatAdmin
+    
 // แก้ไขเฉพาะช่วงเงื่อนไข Ward ในฟังก์ชัน calculateFatAdmin ค่ะ
 if (specialWards.includes(currentWard) && !isFlushManual) {
     const sumFatVit = fatVolume + vitalipidVolume;
