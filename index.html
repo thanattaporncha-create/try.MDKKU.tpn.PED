@@ -678,67 +678,77 @@ body {
   </div>
 </section>
 
-      <!-- Additive Section -->
-      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+   <!-- Additive Section -->
+<section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
   <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">🧪 Additive</h2>
   <div class="space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
-      <div class="p-4 bg-orange-50 rounded-xl border border-orange-200">
-        <h3 class="font-bold text-orange-800 mb-3 flex items-center gap-2">
-          <span>👶🏻</span> Zinc Sulfate
-        </h3>
-        <div class="space-y-3">
-          <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-orange-100 border border-transparent has-[:checked]:border-orange-400 has-[:checked]:bg-orange-50 transition-all">
-            <input type="radio" name="zinc" value="yes" id="zincYes" class="mt-1" onchange="calculateAll()">
-            <div class="flex-1">
-              <span class="font-bold text-gray-800 block">Add Zinc Sulfate</span>
-              <p class="text-[10px] text-gray-600">500 mcg/ml = 0.3 ml × BW</p>
-            </div>
-            <div id="zincVolumeDiv" class="hidden flex items-center gap-1 animate-fade-in">
-               <input type="number" id="zincVolume" step="0.01" class="w-24 px-2 py-1.5 border-2 border-orange-300 rounded-lg text-sm font-bold text-orange-700 bg-white focus:outline-none focus:border-orange-500 transition-all" inputmode="decimal" oninput="calculateAll()">
-               <span class="text-xs font-bold text-orange-600">ml</span>
-            </div>
-          </label>
+   <!-- ✅ แบบใหม่: แยก section ออกจากกันสมบูรณ์ -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-orange-100 border border-transparent has-[:checked]:border-gray-400 has-[:checked]:bg-gray-50 transition-all">
-            <input type="radio" name="zinc" value="no" class="mt-1" checked onchange="calculateAll()">
-            <span class="font-medium text-gray-800 italic">ไม่เติม Zinc</span>
-          </label>
+    <!-- ZINC: อิสระ -->
+    <div class="p-4 bg-orange-50 rounded-xl border border-orange-200">
+        <h3 class="font-bold text-orange-800 mb-3">👶🏻 Zinc Sulfate</h3>
+        <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-orange-50 border border-transparent has-[:checked]:border-orange-400 transition-all">
+                <input type="radio" name="zinc" value="yes" onchange="calculateAll()">
+                <div>
+                    <span class="font-medium text-gray-800">Add Zinc Sulfate</span>
+                    <p class="text-xs text-gray-500">500 mcg/ml = 0.3 ml × BW</p>
+                </div>
+            </label>
+            
+            <!-- Zinc Volume Input: โชว์เฉพาะตอนเลือก Yes -->
+            <div id="zincVolumeDiv" class="hidden px-3 pb-2">
+                <div class="flex items-center gap-2 p-2 bg-orange-50 rounded-lg border border-orange-200">
+                    <span class="text-sm text-orange-700 font-medium">Volume:</span>
+                    <input type="number" id="zincvol" step="0.01" min="0"
+                           class="w-24 px-2 py-1.5 border-2 border-orange-300 rounded-lg text-sm font-bold text-orange-700 focus:outline-none focus:border-orange-500"
+                           inputmode="decimal" oninput="calculateAll()">
+                    <span class="text-sm font-bold text-orange-600">ml</span>
+                </div>
+            </div>
+
+            <label class="flex items-center gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 border border-transparent has-[:checked]:border-gray-400 transition-all">
+                <input type="radio" name="zinc" value="no" checked onchange="calculateAll()">
+                <span class="font-medium text-gray-600 italic">ไม่เติม Zinc</span>
+            </label>
         </div>
-      </div>
-
-      <div class="p-4 bg-pink-50 rounded-xl border border-pink-200">
-        <h3 class="font-semibold text-pink-800 mb-3 flex items-center gap-2">
-          <span>💉</span> Heparin
-        </h3>
-        <div class="space-y-3">
-          <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-pink-100 border border-transparent has-[:checked]:border-pink-300 has-[:checked]:bg-pink-50 transition-all">
-            <input type="radio" name="heparin" value="yes" id="heparinYes" class="mt-1" onchange="calculateAll()">
-            <div class="flex-1">
-              <span class="font-medium text-gray-800 block">เติม Heparin</span>
-              <p class="text-xs text-gray-600">1 unit/ml = 1 × PN volume</p>
-            </div>
-          </label>
-          
-          <div id="heparinValueDiv" class="hidden ml-2 p-3 bg-white rounded-lg border border-pink-100 shadow-sm animate-fade-in">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-medium text-gray-500">Units:</span>
-              <span id="heparinUnits" class="text-sm font-bold text-pink-700">0</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500">Volume (÷500)(ml):</span>
-              <span id="heparinVolume" class="text-sm font-bold text-pink-700">0.00 ml</span>
-            </div>
-          </div>
-
-          <label class="flex items-start gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-pink-100 border border-transparent has-[:checked]:border-gray-400 has-[:checked]:bg-gray-50 transition-all">
-            <input type="radio" name="heparin" value="no" class="mt-1" checked onchange="calculateAll()">
-            <span class="font-medium text-gray-800 italic">ไม่เติม Heparin</span>
-          </label>
-        </div>
-      </div>
     </div>
+
+    <!-- HEPARIN: อิสระ ไม่เกี่ยวกับ Zinc เลย -->
+    <div class="p-4 bg-pink-50 rounded-xl border border-pink-200">
+        <h3 class="font-semibold text-pink-800 mb-3">💉 Heparin</h3>
+        <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-pink-50 border border-transparent has-[:checked]:border-pink-400 transition-all">
+                <input type="radio" name="heparin" value="yes" onchange="calculateAll()">
+                <div>
+                    <span class="font-medium text-gray-800">เติม Heparin</span>
+                    <p class="text-xs text-gray-500">1 unit/ml × PN volume</p>
+                </div>
+            </label>
+
+            <!-- Heparin Display: โชว์ Units + Volume -->
+            <div id="heparinValueDiv" class="hidden px-3 pb-2">
+                <div class="p-2 bg-pink-50 rounded-lg border border-pink-200 space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">Units:</span>
+                        <span id="heparinUnits" class="text-sm font-bold text-pink-700">-</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">Volume (÷500):</span>
+                        <span id="heparinVolume" class="text-sm font-bold text-pink-700">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <label class="flex items-center gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 border border-transparent has-[:checked]:border-gray-400 transition-all">
+                <input type="radio" name="heparin" value="no" checked onchange="calculateAll()">
+                <span class="font-medium text-gray-600 italic">ไม่เติม Heparin</span>
+            </label>
+        </div>
+    </div>
+</div>
+
 
     <div class="p-4 bg-purple-50 rounded-xl border border-purple-200">
       <h3 class="font-semibold text-purple-800 mb-3 flex items-center gap-2">
@@ -747,12 +757,16 @@ body {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสาร</label>
-          <input type="text" id="additiveOtherName" placeholder="เช่น Taurine, L-Carnitine" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all shadow-sm" oninput="calculateAll()">
+          <input type="text" id="additiveOtherName" placeholder="เช่น Taurine, L-Carnitine" 
+                 class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all shadow-sm" 
+                 oninput="calculateAll()">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">ปริมาตร</label>
           <div class="relative">
-            <input type="number" id="additiveOtherVolume" step="0.1" min="0" placeholder="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-12 shadow-sm" inputmode="decimal" oninput="calculateAll()">
+            <input type="number" id="additiveOtherVolume" step="0.1" min="0" placeholder="0" 
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-12 shadow-sm" 
+                   inputmode="decimal" oninput="calculateAll()">
             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">ml</span>
           </div>
         </div>
@@ -1335,13 +1349,64 @@ function calculateAll() {
     }
     const traceVolume = parseFloat(traceInput.value) || 0;
 
-    // 8. Additives (Zinc & Heparin)
-    let heparinVolume = 0;
-    if (document.querySelector('input[name="heparin"]:checked')?.value === 'yes') {
-        heparinVolume = roundToPlace((1 * pnVolume) / 500, 2);
+   // --- 8. Additives ---
+let additivesVolume = 0;
+
+// ✅ ZINC (อิสระ)
+let zincVolume = 0;
+const zincSelection = document.querySelector('input[name="zinc"]:checked')?.value;
+const zincInput = document.getElementById('zincvol');
+const zincDiv = document.getElementById('zincVolumeDiv');
+
+if (zincSelection === 'yes') {
+    if (zincDiv) zincDiv.classList.remove('hidden');
+    // Auto-calc 0.3 × BW ถ้ายังไม่ได้พิมพ์เอง
+    if (document.activeElement !== zincInput && 
+        (!zincInput.value || parseFloat(zincInput.value) === 0)) {
+        zincInput.value = roundToPlace(0.3 * bw, 2);
     }
-    const zincVolume = parseFloat(document.getElementById('zincvol')?.value) || 0; 
-    const otherVol = parseFloat(document.getElementById('additiveOtherVolume').value) || 0;
+    zincVolume = parseFloat(zincInput.value) || 0;
+} else {
+    if (zincDiv) zincDiv.classList.add('hidden');
+    zincVolume = 0;
+    if (zincInput) zincInput.value = '';
+}
+
+// ✅ HEPARIN (อิสระ ไม่ขึ้นกับ Zinc)
+let heparinVolume = 0;
+const heparinSelection = document.querySelector('input[name="heparin"]:checked')?.value;
+const hepDiv = document.getElementById('heparinValueDiv');
+
+if (heparinSelection === 'yes') {
+    const hepUnits = roundToPlace(1 * pnVolume, 0);
+    heparinVolume = roundToPlace(hepUnits / 500, 2);
+
+    const hepUnitsEl = document.getElementById('heparinUnits');
+    const hepVolEl = document.getElementById('heparinVolume');
+
+    if (hepUnitsEl) hepUnitsEl.textContent = hepUnits + " units";
+    if (hepVolEl)   hepVolEl.textContent   = heparinVolume.toFixed(2) + " ml";
+    if (hepDiv)     hepDiv.classList.remove('hidden');
+} else {
+    if (hepDiv) hepDiv.classList.add('hidden');
+    heparinVolume = 0;
+}
+
+// Other
+const otherVol = parseFloat(document.getElementById('additiveOtherVolume').value) || 0;
+additivesVolume = zincVolume + heparinVolume + otherVol;
+
+
+// ✅ TABLE SYNC: วิ่งค่า Zinc และ Heparin ลงตารางสรุปทันที (ทั้ง Order และ Prep)
+const zincVolCell   = document.getElementById('row-zinc-vol');
+const prepZincCell  = document.getElementById('prep-zinc-vol');
+const hepVolCell    = document.getElementById('row-heparin-vol');
+const prepHepCell   = document.getElementById('prep-heparin-vol');
+
+if (zincVolCell)  zincVolCell.textContent  = roundToPlace(zincVolume, 2);
+if (prepZincCell) prepZincCell.textContent = roundToPlace(zincVolume, 2);
+if (hepVolCell)   hepVolCell.textContent   = roundToPlace(heparinVolume, 2);
+if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
 
     // 9. Protein & Dextrose
     const proteinVolume = parseFloat(document.getElementById('proteinVolInput').value) || 0;
@@ -1401,24 +1466,58 @@ function calculateAll() {
     }
     const finalPrepWaterVol = parseFloat(document.getElementById('prep-waterVolInput').value) || 0;
 
-    // 12. Osmolarity Calculation (รายบรรทัดและ Final)
-    const factor = 1000 / (pnVolume || 1);
-    const osmol_AA = (proteinVolume * 0.94); 
-    const osmol_D50 = (dextroseVolume * 2.525); 
-    const osmol_Na = (naClVolume * 1.026);
-    const osmol_K = (kVolume * 4.0);
-    const osmol_Mg = (mgVolume * 4.06);
-    const osmol_Ca = (caVolume * 0.43);
+        // 12. Osmolarity Calculation
+    const prepVol = pnPrepVol || 1;
 
-    document.getElementById('proteinOsmol').textContent = Math.round(osmol_AA * factor);
-    document.getElementById('dextroseOsmol').textContent = Math.round(osmol_D50 * factor);
-    document.getElementById('row-na-osmol').textContent = Math.round(osmol_Na * factor);
-    document.getElementById('row-k-osmol').textContent = Math.round(osmol_K * factor);
-    document.getElementById('row-mg-osmol').textContent = Math.round(osmol_Mg * factor);
-    document.getElementById('row-ca-osmol').textContent = Math.round(osmol_Ca * factor);
-    
-    const totalOsmolValue = (osmol_AA + osmol_D50 + osmol_Na + osmol_K + osmol_Mg + osmol_Ca) * factor;
+    // Amino Acid: (g × 10 × 1000) / prepVol
+    const selectedProtProductOsmol = document.querySelector('input[name="proteinProduct"]:checked').value;
+    const protConcOsmol = (selectedProtProductOsmol === 'aminoplasmal') ? 0.15 : 0.10;
+    const aaGrams = (parseFloat(document.getElementById('proteinVolInput').value) || 0) * protConcOsmol;
+    const osmol_AA = (aaGrams * 10 * 1000) / prepVol;
+
+    // Dextrose 50%: (ml ของ D50 × 2.5 × 1000) / prepVol
+    const osmol_Dex = (prepDextroseVol * 2.5 * 1000) / prepVol;
+
+    // 3% NaCl: (Vol × 1000) / prepVol
+    const osmol_Na = (naClVolume * 1000) / prepVol;
+
+    // KCl 2mEq/ml: (Vol × 4000) / prepVol
+    const osmol_K = (kVolume * 4000) / prepVol;
+
+    // 10% Ca Gluconate: (Vol × 430) / prepVol
+    const osmol_Ca = (caVolume * 430) / prepVol;
+
+    // 50% MgSO4: (Vol × 4000) / prepVol
+    const osmol_Mg = (mgVolume * 4000) / prepVol;
+
+    // Phosphate: Glycophos ×1000, K2HPO4 ×1500
+    const osmol_Phos = (phosSource === 'Glycophos')
+        ? (phosVolume * 1000) / prepVol
+        : (phosVolume * 1500) / prepVol;
+
+    // อัปเดตตารางรายบรรทัด
+    document.getElementById('proteinOsmol').textContent   = Math.round(osmol_AA);
+    document.getElementById('dextroseOsmol').textContent  = Math.round(osmol_Dex);
+    document.getElementById('row-na-osmol').textContent   = Math.round(osmol_Na);
+    document.getElementById('row-k-osmol').textContent    = Math.round(osmol_K);
+    document.getElementById('row-mg-osmol').textContent   = Math.round(osmol_Mg);
+    document.getElementById('row-ca-osmol').textContent   = Math.round(osmol_Ca);
+    document.getElementById('row-phos-osmol').textContent = Math.round(osmol_Phos);
+
+    // Total + Final Osmolarity
+    const totalOsmolValue = osmol_AA + osmol_Dex + osmol_Na + osmol_K +
+                            osmol_Mg + osmol_Ca + osmol_Phos;
+
     document.getElementById('totalOsmol').textContent = Math.round(totalOsmolValue);
+    document.getElementById('finalOsmol').textContent = Math.round(totalOsmolValue);
+
+    // Warning Peripheral > 900
+    const currentRoute = document.querySelector('input[name="route"]:checked').value;
+    const osmolWarnEl = document.getElementById('osmolWarning');
+    if (osmolWarnEl) {
+        osmolWarnEl.classList.toggle('hidden',
+            !(currentRoute === 'peripheral' && totalOsmolValue > 900));
+    }
 
     // 13. Calories & Summaries
     const pCal = proteinVolume * 0.4; 
