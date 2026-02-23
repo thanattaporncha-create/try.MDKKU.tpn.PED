@@ -1508,8 +1508,8 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
     const totalOsmolValue = osmol_AA + osmol_Dex + osmol_Na + osmol_K +
                             osmol_Mg + osmol_Ca + osmol_Phos;
 
-    document.getElementById('totalOsmol').textContent = Math.round(totalOsmolValue);
-    document.getElementById('finalOsmol').textContent = Math.round(totalOsmolValue);
+    document.getElementById('totalOsmol').textContent = '~' + Math.round(totalOsmolValue);
+    document.getElementById('finalOsmol').textContent = '~' + Math.round(totalOsmolValue);
 
     // Warning Peripheral > 900
     const currentRoute = document.querySelector('input[name="route"]:checked').value;
