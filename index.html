@@ -992,6 +992,7 @@ let isTraceVolManual = false; // เดิมอาจชื่อ isPeditraceMa
     let isPhosVolManual = false;
     let isWaterManual = false;
     let isPrepWaterManual = false;
+    let isPNFlushManual = false;
 
     // รายชื่อหอผู้ป่วย
 const wardList = [
@@ -1262,7 +1263,21 @@ function calculateAll() {
     const pnVolume = Math.max(0, totalVolume - fatVolume - vitalipidVolume);
     document.getElementById('pnVolume').value = roundToPlace(pnVolume, 1);
     
-    const pnFlush = parseFloat(document.getElementById('pnFlushVolume').value) || 0;
+    // --- เริ่ม Logic การคำนวณ PN Flush ตาม Ward ---
+    const pnFlushInput = document.getElementById('pnFlushVolume');
+    const currentWard = document.getElementById('ward').value;
+
+    if (!isPNFlushManual) {
+        if (["NICU", "2ค"].includes(currentWard)) {
+            pnFlushInput.value = ""; // ไม่ใส่ Default
+        } else {
+            // รวมถึง PICU, PICU ศสก. และ Ward อื่นๆ ให้เป็น 30
+            pnFlushInput.value = 30; 
+        }
+    }
+    // --- จบ Logic PN Flush ---
+
+    const pnFlush = parseFloat(pnFlushInput.value) || 0;
     const pnPrepVol = roundToPlace(pnVolume + pnFlush, 1);
     document.getElementById('pnPrepVolume').value = pnPrepVol;
 
@@ -1349,75 +1364,71 @@ function calculateAll() {
     }
     const traceVolume = parseFloat(traceInput.value) || 0;
 
-   // --- 8. Additives ---
-let additivesVolume = 0;
+    // --- 8. Additives ---
+    let additivesVolume = 0;
 
-// ✅ ZINC (อิสระ)
-let zincVolume = 0;
-const zincSelection = document.querySelector('input[name="zinc"]:checked')?.value;
-const zincInput = document.getElementById('zincvol');
-const zincDiv = document.getElementById('zincVolumeDiv');
+    // ✅ ZINC
+    let zincVolume = 0;
+    const zincSelection = document.querySelector('input[name="zinc"]:checked')?.value;
+    const zincInput = document.getElementById('zincvol');
+    const zincDiv = document.getElementById('zincVolumeDiv');
 
-if (zincSelection === 'yes') {
-    if (zincDiv) zincDiv.classList.remove('hidden');
-    // Auto-calc 0.3 × BW ถ้ายังไม่ได้พิมพ์เอง
-    if (document.activeElement !== zincInput && 
-        (!zincInput.value || parseFloat(zincInput.value) === 0)) {
-        zincInput.value = roundToPlace(0.3 * bw, 2);
+    if (zincSelection === 'yes') {
+        if (zincDiv) zincDiv.classList.remove('hidden');
+        if (document.activeElement !== zincInput && 
+            (!zincInput.value || parseFloat(zincInput.value) === 0)) {
+            zincInput.value = roundToPlace(0.3 * bw, 2);
+        }
+        zincVolume = parseFloat(zincInput.value) || 0;
+    } else {
+        if (zincDiv) zincDiv.classList.add('hidden');
+        zincVolume = 0;
+        if (zincInput) zincInput.value = '';
     }
-    zincVolume = parseFloat(zincInput.value) || 0;
-} else {
-    if (zincDiv) zincDiv.classList.add('hidden');
-    zincVolume = 0;
-    if (zincInput) zincInput.value = '';
-}
 
-// ✅ HEPARIN (อิสระ ไม่ขึ้นกับ Zinc)
-let heparinVolume = 0;
-const heparinSelection = document.querySelector('input[name="heparin"]:checked')?.value;
-const hepDiv = document.getElementById('heparinValueDiv');
+    // ✅ HEPARIN
+    let heparinVolume = 0;
+    const heparinSelection = document.querySelector('input[name="heparin"]:checked')?.value;
+    const hepDiv = document.getElementById('heparinValueDiv');
 
-if (heparinSelection === 'yes') {
-    const hepUnits = roundToPlace(1 * pnVolume, 0);
-    heparinVolume = roundToPlace(hepUnits / 500, 2);
+    if (heparinSelection === 'yes') {
+        const hepUnits = roundToPlace(1 * pnVolume, 0);
+        heparinVolume = roundToPlace(hepUnits / 500, 2);
 
-    const hepUnitsEl = document.getElementById('heparinUnits');
-    const hepVolEl = document.getElementById('heparinVolume');
+        const hepUnitsEl = document.getElementById('heparinUnits');
+        const hepVolEl = document.getElementById('heparinVolume');
 
-    if (hepUnitsEl) hepUnitsEl.textContent = hepUnits + " units";
-    if (hepVolEl)   hepVolEl.textContent   = heparinVolume.toFixed(2) + " ml";
-    if (hepDiv)     hepDiv.classList.remove('hidden');
-} else {
-    if (hepDiv) hepDiv.classList.add('hidden');
-    heparinVolume = 0;
-}
+        if (hepUnitsEl) hepUnitsEl.textContent = hepUnits + " units";
+        if (hepVolEl)   hepVolEl.textContent   = heparinVolume.toFixed(2) + " ml";
+        if (hepDiv)     hepDiv.classList.remove('hidden');
+    } else {
+        if (hepDiv) hepDiv.classList.add('hidden');
+        heparinVolume = 0;
+    }
 
-// Other
-const otherVol = parseFloat(document.getElementById('additiveOtherVolume').value) || 0;
-additivesVolume = zincVolume + heparinVolume + otherVol;
+    const otherVol = parseFloat(document.getElementById('additiveOtherVolume').value) || 0;
+    additivesVolume = zincVolume + heparinVolume + otherVol;
 
+    // ✅ TABLE SYNC
+    const zincVolCell   = document.getElementById('row-zinc-vol');
+    const prepZincCell  = document.getElementById('prep-zinc-vol');
+    const hepVolCell    = document.getElementById('row-heparin-vol');
+    const prepHepCell   = document.getElementById('prep-heparin-vol');
 
-// ✅ TABLE SYNC: วิ่งค่า Zinc และ Heparin ลงตารางสรุปทันที (ทั้ง Order และ Prep)
-const zincVolCell   = document.getElementById('row-zinc-vol');
-const prepZincCell  = document.getElementById('prep-zinc-vol');
-const hepVolCell    = document.getElementById('row-heparin-vol');
-const prepHepCell   = document.getElementById('prep-heparin-vol');
-
-if (zincVolCell)  zincVolCell.textContent  = roundToPlace(zincVolume, 2);
-if (prepZincCell) prepZincCell.textContent = roundToPlace(zincVolume, 2);
-if (hepVolCell)   hepVolCell.textContent   = roundToPlace(heparinVolume, 2);
-if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
+    if (zincVolCell)  zincVolCell.textContent  = roundToPlace(zincVolume, 2);
+    if (prepZincCell) prepZincCell.textContent = roundToPlace(zincVolume, 2);
+    if (hepVolCell)   hepVolCell.textContent   = roundToPlace(heparinVolume, 2);
+    if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
 
     // 9. Protein & Dextrose
     const proteinVolume = parseFloat(document.getElementById('proteinVolInput').value) || 0;
     const dextroseVolume = parseFloat(document.getElementById('dextroseVolInput').value) || 0;
 
-    // 10. Water & Totals (Order Volume)
+    // 10. Water & Totals
     const allSubstances = proteinVolume + dextroseVolume + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol + heparinVolume;
     if (!isWaterManual) { document.getElementById('waterVolInput').value = roundToPlace(pnVolume - allSubstances, 1); }
-    const finalWaterVol = parseFloat(document.getElementById('waterVolInput').value) || 0;
-
-    // 11. อัปเดตตารางสรุป (Table Update) - ส่วนการคำนวณสำหรับการเตรียม (Prep)
+    
+    // 11. อัปเดตตารางสรุป
     const selectedProt = document.querySelector('input[name="proteinProduct"]:checked');
     if (selectedProt) {
         const protLabel = document.querySelector(`label[for="${selectedProt.id}"]`).textContent;
@@ -1430,7 +1441,7 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
     const otherNameInput = document.getElementById('additiveOtherName').value;
     document.getElementById('row-other-name').textContent = otherNameInput ? "- " + otherNameInput : "- Other Additive";
 
-    // --- ใส่ค่า Volume ลงตาราง (Order) ---
+    // --- ใส่ค่า Volume ลงตาราง ---
     document.getElementById('proteinVol').textContent = roundToPlace(proteinVolume, 1);
     document.getElementById('dextroseVol').textContent = roundToPlace(dextroseVolume, 1);
     document.getElementById('row-phos-vol').textContent = phosVolume;
@@ -1444,58 +1455,40 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
     document.getElementById('row-heparin-vol').textContent = heparinVolume;
     document.getElementById('row-other-vol').textContent = otherVol;
 
-    // --- ใส่ค่าสำหรับเตรียม (Prep) --- ** LOGIC: Fixed สารอื่น, เพิ่มแค่ D50 กับ Water **
-    const prepDextroseVol = roundToPlace((dextrosePercent * pnPrepVol * 2) / 100, 1); // คำนวณ D50 ตาม % ของปริมาตรใหม่
+    // --- ใส่ค่าสำหรับเตรียม ---
+    const prepDextroseVol = roundToPlace((dextrosePercent * pnPrepVol * 2) / 100, 1); 
     
-    document.getElementById('prep-proteinVol').textContent = roundToPlace(proteinVolume, 1); // FIXED
-    document.getElementById('prep-dextroseVol').textContent = prepDextroseVol; // INCREASED
-    document.getElementById('prep-phos-vol').textContent = phosVolume; // FIXED
-    document.getElementById('prep-na-vol').textContent = naClVolume; // FIXED
-    document.getElementById('prep-k-vol').textContent = kVolume; // FIXED
-    document.getElementById('prep-mg-vol').textContent = mgVolume; // FIXED
-    document.getElementById('prep-ca-vol').textContent = caVolume; // FIXED
-    document.getElementById('prep-soluvit-vol').textContent = vitVolume; // FIXED
-    document.getElementById('prep-peditrace-vol').textContent = traceVolume; // FIXED
-    document.getElementById('prep-zinc-vol').textContent = zincVolume; // FIXED
-    document.getElementById('prep-heparin-vol').textContent = heparinVolume; // FIXED
-    document.getElementById('prep-other-vol').textContent = otherVol; // FIXED
+    document.getElementById('prep-proteinVol').textContent = roundToPlace(proteinVolume, 1);
+    document.getElementById('prep-dextroseVol').textContent = prepDextroseVol;
+    document.getElementById('prep-phos-vol').textContent = phosVolume;
+    document.getElementById('prep-na-vol').textContent = naClVolume;
+    document.getElementById('prep-k-vol').textContent = kVolume;
+    document.getElementById('prep-mg-vol').textContent = mgVolume;
+    document.getElementById('prep-ca-vol').textContent = caVolume;
+    document.getElementById('prep-soluvit-vol').textContent = vitVolume;
+    document.getElementById('prep-peditrace-vol').textContent = traceVolume;
+    document.getElementById('prep-zinc-vol').textContent = zincVolume;
+    document.getElementById('prep-heparin-vol').textContent = heparinVolume;
+    document.getElementById('prep-other-vol').textContent = otherVol;
 
     const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol + heparinVolume;
     if (!isPrepWaterManual) { 
         document.getElementById('prep-waterVolInput').value = roundToPlace(pnPrepVol - allSubstancesPrep, 1); 
     }
-    const finalPrepWaterVol = parseFloat(document.getElementById('prep-waterVolInput').value) || 0;
 
-        // 12. Osmolarity Calculation
+    // 12. Osmolarity Calculation
     const prepVol = pnPrepVol || 1;
-
-    // Amino Acid: (g × 10 × 1000) / prepVol
     const selectedProtProductOsmol = document.querySelector('input[name="proteinProduct"]:checked').value;
     const protConcOsmol = (selectedProtProductOsmol === 'aminoplasmal') ? 0.15 : 0.10;
     const aaGrams = (parseFloat(document.getElementById('proteinVolInput').value) || 0) * protConcOsmol;
     const osmol_AA = (aaGrams * 10 * 1000) / prepVol;
-
-    // Dextrose 50%: (ml ของ D50 × 2.5 × 1000) / prepVol
     const osmol_Dex = (prepDextroseVol * 2.5 * 1000) / prepVol;
-
-    // 3% NaCl: (Vol × 1000) / prepVol
     const osmol_Na = (naClVolume * 1000) / prepVol;
-
-    // KCl 2mEq/ml: (Vol × 4000) / prepVol
     const osmol_K = (kVolume * 4000) / prepVol;
-
-    // 10% Ca Gluconate: (Vol × 430) / prepVol
     const osmol_Ca = (caVolume * 430) / prepVol;
-
-    // 50% MgSO4: (Vol × 4000) / prepVol
     const osmol_Mg = (mgVolume * 4000) / prepVol;
+    const osmol_Phos = (phosSource === 'Glycophos') ? (phosVolume * 1000) / prepVol : (phosVolume * 1500) / prepVol;
 
-    // Phosphate: Glycophos ×1000, K2HPO4 ×1500
-    const osmol_Phos = (phosSource === 'Glycophos')
-        ? (phosVolume * 1000) / prepVol
-        : (phosVolume * 1500) / prepVol;
-
-    // อัปเดตตารางรายบรรทัด
     document.getElementById('proteinOsmol').textContent   = Math.round(osmol_AA);
     document.getElementById('dextroseOsmol').textContent  = Math.round(osmol_Dex);
     document.getElementById('row-na-osmol').textContent   = Math.round(osmol_Na);
@@ -1504,19 +1497,14 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
     document.getElementById('row-ca-osmol').textContent   = Math.round(osmol_Ca);
     document.getElementById('row-phos-osmol').textContent = Math.round(osmol_Phos);
 
-    // Total + Final Osmolarity
-    const totalOsmolValue = osmol_AA + osmol_Dex + osmol_Na + osmol_K +
-                            osmol_Mg + osmol_Ca + osmol_Phos;
-
+    const totalOsmolValue = osmol_AA + osmol_Dex + osmol_Na + osmol_K + osmol_Mg + osmol_Ca + osmol_Phos;
     document.getElementById('totalOsmol').textContent = '~' + Math.round(totalOsmolValue);
     document.getElementById('finalOsmol').textContent = '~' + Math.round(totalOsmolValue);
 
-    // Warning Peripheral > 900
     const currentRoute = document.querySelector('input[name="route"]:checked').value;
     const osmolWarnEl = document.getElementById('osmolWarning');
     if (osmolWarnEl) {
-        osmolWarnEl.classList.toggle('hidden',
-            !(currentRoute === 'peripheral' && totalOsmolValue > 900));
+        osmolWarnEl.classList.toggle('hidden', !(currentRoute === 'peripheral' && totalOsmolValue > 900));
     }
 
     // 13. Calories & Summaries
@@ -1536,12 +1524,15 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
     calculateFatAdmin();
     updateOrderSummary();
 }
- function calculateFatAdmin() {
+    function calculateFatAdmin() {
     // 1. ดึงค่า Volume ต่างๆ
     const fatVolume = parseFloat(document.getElementById('fatVolume').value) || 0;
     const vitalipidVolume = parseFloat(document.getElementById('vitalipid').value) || 0;
     const currentWard = document.getElementById('ward').value; 
+    const sumFatVit = fatVolume + vitalipidVolume;
+    
     const flushRadioCustom = document.querySelector('input[name="flush"][value="custom"]');
+    const flushRadioNone = document.querySelector('input[name="flush"][value="none"]');
     const flushInput = document.getElementById('flushVolume');
 
     const recommendedRate = roundToPlace((fatVolume + vitalipidVolume) / 22, 1);
@@ -1550,15 +1541,24 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
         rateLabel.textContent = `(แนะนำ = ${recommendedRate} ml/hr)`;
     }
 
-    // 2. Logic อัตโนมัติสำหรับ Ward เฉพาะ
-    const specialWards = ["2ง", "3ง", "IMC2ง"];
-    if (specialWards.includes(currentWard) && !isFlushManual) {
-        const sumFatVit = fatVolume + vitalipidVolume;
-        flushRadioCustom.checked = true;
-        flushInput.value = (sumFatVit <= 39) ? 6 : 30;
-        flushInput.classList.remove('bg-blue-50');
-        flushInput.classList.add('bg-amber-50', 'border-amber-300'); 
-    } else if (isFlushManual) {
+    // 2. Logic อัตโนมัติสำหรับ Ward
+    if (!isFlushManual) {
+        if (["NICU", "2ค"].includes(currentWard)) {
+            flushRadioNone.checked = true;
+            flushInput.value = "";
+            flushInput.classList.remove('bg-amber-50', 'border-amber-300', 'bg-blue-50', 'border-blue-400');
+        } else if (["2ง", "3ง", "IMC2ง"].includes(currentWard)) {
+            flushRadioCustom.checked = true;
+            flushInput.value = (sumFatVit <= 39) ? 6 : 30;
+            flushInput.classList.remove('bg-blue-50', 'border-blue-400');
+            flushInput.classList.add('bg-amber-50', 'border-amber-300');
+        } else if (["PICU", "PICU ศสก."].includes(currentWard)) {
+            flushRadioCustom.checked = true;
+            flushInput.value = (sumFatVit <= 55) ? 3 : 15;
+            flushInput.classList.remove('bg-blue-50', 'border-blue-400');
+            flushInput.classList.add('bg-amber-50', 'border-amber-300');
+        }
+    } else {
         flushInput.classList.remove('bg-amber-50', 'border-amber-300');
         flushInput.classList.add('bg-blue-50', 'border-blue-400');
     }
@@ -1570,7 +1570,7 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
     const manualRate = document.getElementById('manualFatDripRate').value || '0.0';
     
     const selectedFat = document.querySelector('input[name="fatProduct"]:checked');
-    const fatName = document.querySelector(`label[for="${selectedFat.id}"]`).textContent;
+    const fatName = selectedFat ? document.querySelector(`label[for="${selectedFat.id}"]`).textContent : "Fat";
     
     const totalVolPlusFlush = fatVolume + flushVolume;
     const grandTotalFatVit = totalVolPlusFlush + vitalipidVolume;
@@ -1578,7 +1578,7 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
 
     document.getElementById('totalFatPlusVitalipid').value = roundToPlace(grandTotalFatVit, 1);
 
-    // 4. สรุปข้อความ (ปรับปรุงสีตัวเลข Total Volume เป็นน้ำเงินเข้ม)
+    // 4. สรุปข้อความ
     const vitProdType = document.querySelector('input[name="vitProduct"]:checked').value;
     const vitNameLabel = "Vitalipid-N " + vitProdType;
 
@@ -1603,27 +1603,6 @@ if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
     
     document.getElementById('prepDetails').innerHTML = prepText;
     updateOrderSummary();
-}
-// จบฟังก์ชัน calculateFatAdmin
-    
-// แก้ไขเฉพาะช่วงเงื่อนไข Ward ในฟังก์ชัน calculateFatAdmin ค่ะ
-if (specialWards.includes(currentWard) && !isFlushManual) {
-    const sumFatVit = fatVolume + vitalipidVolume;
-    flushRadioCustom.checked = true;
-    
-    if (sumFatVit <= 39) {
-        flushInput.value = 6;
-    } else {
-        flushInput.value = 30;
-    }
-    
-    // เพิ่มความเจ๋ง: เปลี่ยนสีพื้นหลังให้รู้ว่าระบบ "เลือกให้เอง"
-    flushInput.classList.remove('bg-blue-50');
-    flushInput.classList.add('bg-amber-50', 'border-amber-300'); 
-} else if (isFlushManual) {
-    // ถ้าขิมพิมพ์เอง ให้เป็นสีฟ้าเข้มเพื่อให้รู้ว่า "ค่านี้ขิมกำหนดเอง"
-    flushInput.classList.remove('bg-amber-50', 'border-amber-300');
-    flushInput.classList.add('bg-blue-50', 'border-blue-400');
 }
     function updateOrderSummary() {
       const orderDate = document.getElementById('orderDate').value;
@@ -1687,121 +1666,125 @@ if (specialWards.includes(currentWard) && !isFlushManual) {
       document.getElementById('orderSummary').innerHTML = summaryHTML;
     }
 
-  function resetForm() {
-  // 1. คืนค่าสถานะ Manual Flags ทั้งหมดให้เป็น false (เพื่อให้ระบบกลับมาคำนวณออโต้)
-  isPhosNaManual = false;
-  isNaVolManual = false;
-  isKVolManual = false;
-  isMgVolManual = false;
-  isCaVolManual = false;
-  isRateManual = false;
-  isVitalipidManual = false;
-  isSoluvitManual = false;
-  isPeditraceManual = false;
-  isFlushManual = false;
-  isPhosVolManual = false;
-  isWaterManual = false;      // เพิ่มใหม่: ล้างสถานะน้ำ
-  isPrepWaterManual = false;  // เพิ่มใหม่: ล้างสถานะน้ำเตรียม
+function resetForm() {
+    // 1. คืนค่าสถานะ Manual Flags ทั้งหมดให้เป็น false
+    isPhosNaManual = false;
+    isNaVolManual = false;
+    isKVolManual = false;
+    isMgVolManual = false;
+    isCaVolManual = false;
+    isRateManual = false;
+    isVitalipidManual = false;
+    isSoluvitManual = false;
+    isPeditraceManual = false;
+    isFlushManual = false;
+    isPhosVolManual = false;
+    isWaterManual = false;
+    isPrepWaterManual = false;
 
-  // 2. คืนค่าข้อมูลพื้นฐาน
-  document.getElementById('orderDate').valueAsDate = new Date();
-  document.getElementById('hn').value = '';
-  document.getElementById('patientName').value = '';
-  document.getElementById('wardInput').value = ''; 
-  document.getElementById('ward').value = '';      
+    // 2. คืนค่าข้อมูลพื้นฐาน
+    document.getElementById('orderDate').valueAsDate = new Date();
+    document.getElementById('hn').value = '';
+    document.getElementById('patientName').value = '';
+    document.getElementById('wardInput').value = '';
+    document.getElementById('ward').value = '';
 
-  // 3. ล้างค่าในช่อง Input ทั้งหมด (รวม Dextrose ทุกช่องที่ค้าง)
-  const inputsToClear = [
-    'bw', 'totalVolume', 'fatTarget', 'proteinTarget', 'proteinGrams', 'proteinVolInput',
-    'dextrosePercent', 'dextroseGrams', 'dextroseVolInput', // ล้าง Dextrose ครบเซ็ต
-    'phosphorus', 'phosvol', 'phoNa', 'sodium', 'navol', 'potassium', 'kvol', 
-    'magnesium', 'mgvol', 'calcium', 'cavol',
-    'flushVolume', 'vitalipid', 'soluvit', 'peditrace', 'zincVolume',
-    'manualFatDripRate', 'additiveOtherName', 'additiveOtherVolume', 'rateTPN',
-    'fatVolume', 'netFat', 'waterVolInput', 'prep-waterVolInput'
-  ];
-  
-  inputsToClear.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-        el.value = '';
-        // ถ้าเป็นช่องน้ำ ให้ใส่ 0.0 ไว้เป็นพื้นฐาน
-        if (id === 'waterVolInput' || id === 'prep-waterVolInput') el.value = '0.0';
+    // 3. ล้างค่า Input (ตรวจสอบ ID ให้ตรงกับที่ใช้ใน calculateAll)
+    const inputsToClear = [
+        'bw', 'totalVolume', 'fatTarget', 'proteinTarget', 'proteinGrams', 'proteinVolInput',
+        'dextrosePercent', 'dextroseGrams', 'dextroseVolInput',
+        'phosphorus', 'phosvol', 'phoNa', 'sodium', 'navol', 'potassium', 'kvol',
+        'magnesium', 'mgvol', 'calcium', 'cavol',
+        'flushVolume', 'vitalipid', 'vitvol', 'tracevol', 'zincvol', // ใช้ id ที่ตรงกับ calculateAll
+        'manualFatDripRate', 'additiveOtherName', 'additiveOtherVolume', 'rateTPN',
+        'fatVolume', 'netFat', 'waterVolInput', 'prep-waterVolInput'
+    ];
+
+    inputsToClear.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = '';
+            // ถ้าเป็นช่องน้ำ ให้ใส่ 0.0 ไว้เป็นพื้นฐาน
+            if (id === 'waterVolInput' || id === 'prep-waterVolInput') el.value = '0.0';
+        }
+    });
+
+    // 4. คืนค่าฟิลด์พิเศษ
+    document.getElementById('pnFlushVolume').value = 30;
+    document.getElementById('vitalipidFatValue').value = 0.4;
+    document.getElementById('deductVitalipid').checked = false;
+    document.getElementById('isPreterm').checked = false;
+    document.getElementById('totalFatPlusVitalipid').value = '0.0'; // เคลียร์ตัวเลขสรุป Fat+Vit
+
+    // 5. คืนค่าปุ่มเลือก (Radio Buttons)
+    document.querySelector('input[name="route"][value="central"]').checked = true;
+    document.querySelector('input[name="proteinProduct"][value="aminoven"]').checked = true;
+    document.querySelector('input[name="fatProduct"][value="smof"]').checked = true;
+    if (document.getElementById('vitInfant')) document.getElementById('vitInfant').checked = true;
+    document.querySelector('input[name="flush"][value="none"]').checked = true;
+    document.querySelector('input[name="prepSplit"][value="none"]').checked = true;
+    document.querySelector('input[name="heparin"][value="no"]').checked = true;
+    document.querySelector('input[name="zinc"][value="no"]').checked = true;
+
+    // 6. ล้างตัวเลขในตารางสรุป (Composition Table) ให้เป็น 0.0
+    const tableCells = [
+        'proteinVol', 'prep-proteinVol', 'proteinCal', 'proteinOsmol',
+        'dextroseVol', 'prep-dextroseVol', 'dextroseCal', 'dextroseOsmol',
+        'row-phos-vol', 'prep-phos-vol', 'row-phos-osmol',
+        'row-na-vol', 'prep-na-vol', 'row-na-osmol',
+        'row-k-vol', 'prep-k-vol', 'row-k-osmol',
+        'row-mg-vol', 'prep-mg-vol', 'row-mg-osmol',
+        'row-ca-vol', 'prep-ca-vol', 'row-ca-osmol',
+        'row-soluvit-vol', 'prep-soluvit-vol',
+        'row-peditrace-vol', 'prep-peditrace-vol',
+        'row-zinc-vol', 'prep-zinc-vol',
+        'row-heparin-vol', 'prep-heparin-vol',
+        'row-other-vol', 'prep-other-vol',
+        'totalPNVol', 'totalPrepVolDisplay', 'totalPNCal', 'totalOsmol',
+        'totalPNVol_Summary' // เพิ่ม ID นี้ถ้ามีในตารางสรุป
+    ];
+    tableCells.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '0.0';
+    });
+
+    // 7. ล้างค่าสรุปอื่นๆ
+    document.getElementById('totalCalDisplay').textContent = '0.0';
+    document.getElementById('calPerKg').textContent = '0.0';
+    document.getElementById('finalOsmol').textContent = '0';
+    document.getElementById('girValue').textContent = '0.00';
+    document.getElementById('heparinUnits').textContent = '0';
+    document.getElementById('heparinVolume').textContent = '0.00';
+    
+    // เคลียร์ HTML ในส่วนแสดงผลรายละเอียดการเตรียม (ถ้ามี)
+    const prepDetails = document.getElementById('prepDetails');
+    if (prepDetails) prepDetails.innerHTML = ''; 
+
+    // 8. ซ่อน Warning ทั้งหมด
+    const elementsToHide = [
+        'girWarning', 'osmolWarning', 'caMaxWarning', 'vitalipidMaxWarning',
+        'soluvitWarning', 'peditraceWarning', 'waterLimitWarning',
+        'zincOptions', 'zincVolumeDiv', 'heparinValueDiv', 'searchStatus'
+    ];
+    elementsToHide.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+
+    document.getElementById('searchStatus').innerText = '';
+
+    // 9. คืนค่าสี Input ที่เคยเปลี่ยน
+    const flushInput = document.getElementById('flushVolume');
+    if (flushInput) {
+        flushInput.classList.remove('bg-amber-50', 'border-amber-300', 'bg-blue-50', 'border-blue-400');
+        flushInput.classList.add('bg-blue-50', 'border-blue-200');
     }
-  });
 
-  // 4. คืนค่าฟิลด์พิเศษ
-  document.getElementById('pnFlushVolume').value = 30;
-  document.getElementById('vitalipidFatValue').value = 0.4;
-  document.getElementById('deductVitalipid').checked = false;
-  document.getElementById('isPreterm').checked = false;
-  document.getElementById('totalFatPlusVitalipid').value = '';
-
-  // 5. คืนค่าปุ่มเลือก (Radio Buttons)
-  document.querySelector('input[name="route"][value="central"]').checked = true;
-  document.querySelector('input[name="proteinProduct"][value="aminoven"]').checked = true;
-  document.querySelector('input[name="fatProduct"][value="smof"]').checked = true;
-  if(document.getElementById('vitInfant')) document.getElementById('vitInfant').checked = true; // คืนค่า Vitalipid เป็น Infant
-  document.querySelector('input[name="flush"][value="none"]').checked = true;
-  document.querySelector('input[name="prepSplit"][value="none"]').checked = true;
-  document.querySelector('input[name="heparin"][value="no"]').checked = true;
-  document.querySelector('input[name="zinc"][value="no"]').checked = true;
-
-  // 6. ล้างตัวเลขในตารางสรุป (Composition Table) ให้เป็น 0
-  const tableCells = [
-    'proteinVol', 'prep-proteinVol', 'proteinCal', 'proteinOsmol',
-    'dextroseVol', 'prep-dextroseVol', 'dextroseCal', 'dextroseOsmol',
-    'row-phos-vol', 'prep-phos-vol', 'row-phos-osmol',
-    'row-na-vol', 'prep-na-vol', 'row-na-osmol',
-    'row-k-vol', 'prep-k-vol', 'row-k-osmol',
-    'row-mg-vol', 'prep-mg-vol', 'row-mg-osmol',
-    'row-ca-vol', 'prep-ca-vol', 'row-ca-osmol',
-    'row-soluvit-vol', 'prep-soluvit-vol',
-    'row-peditrace-vol', 'prep-peditrace-vol',
-    'row-zinc-vol', 'prep-zinc-vol',
-    'row-heparin-vol', 'prep-heparin-vol',
-    'row-other-vol', 'prep-other-vol',
-    'totalPNVol', 'totalPrepVolDisplay', 'totalPNCal', 'totalOsmol'
-  ];
-  tableCells.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = '0.0';
-  });
-
-  // 7. ล้างค่าสรุปอื่นๆ
-  document.getElementById('totalCalDisplay').textContent = '0.0';
-  document.getElementById('calPerKg').textContent = '0.0';
-  document.getElementById('finalOsmol').textContent = '0';
-  document.getElementById('girValue').textContent = '0.00';
-  document.getElementById('heparinUnits').textContent = '0';
-  document.getElementById('heparinVolume').textContent = '0.00';
-  if(document.getElementById('phosvol')) document.getElementById('phosvol').textContent = '0.0';
-
-  // 8. ซ่อน Warning ทั้งหมด
-  const elementsToHide = [
-    'girWarning', 'osmolWarning', 'caMaxWarning', 'vitalipidMaxWarning',
-    'soluvitWarning', 'peditraceWarning', 'waterLimitWarning',
-    'zincOptions', 'zincVolumeDiv', 'heparinValueDiv', 'searchStatus'
-  ];
-  elementsToHide.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
-  });
-  
-  // ล้างข้อความสถานะค้นหา HN ด้วย
-  document.getElementById('searchStatus').innerText = '';
-
-  // 9. คืนค่าสี Input ที่เคยเปลี่ยน (เช่นช่อง Flush)
-  const flushInput = document.getElementById('flushVolume');
-  flushInput.classList.remove('bg-amber-50', 'border-amber-300', 'bg-blue-50', 'border-blue-400');
-  flushInput.classList.add('bg-blue-50', 'border-blue-200');
-
-  // 10. สั่งคำนวณใหม่ 1 ครั้งเพื่อให้ UI แสดงสถานะเริ่มต้นที่ถูกต้อง
-  calculateAll();
-  
-  // เลื่อนหน้าจอขึ้นไปบนสุด
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  console.log("🧹 ล้างข้อมูลสะอาดเรียบร้อยแล้วค่ะคุณขิม");
+    // 10. สั่งคำนวณใหม่เพื่อให้ UI เป็นค่าเริ่มต้น 0
+    calculateAll();
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    console.log("🧹 ล้างข้อมูลสะอาดเรียบร้อยแล้วค่ะ");
 }
     // ========== Event Listeners ==========
 
@@ -1930,6 +1913,10 @@ function calculateDextroseLogic(source) {
   // เรียกคำนวณใหม่เพื่อให้วันที่ในส่วน Summary อัปเดตทันที
   if (typeof calculateAll === "function") calculateAll();
 }
+document.getElementById('pnFlushVolume').addEventListener('input', () => {
+    isPNFlushManual = true; // เมื่อขิมพิมพ์เอง ให้ล็อกค่าไว้เลย
+    calculateAll();
+});
   </script>
 </body>
 </html>
