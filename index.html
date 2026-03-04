@@ -1539,8 +1539,8 @@ function calculateAll() {
     calculateFatAdmin();
     updateOrderSummary();
 }
-    function calculateFatAdmin() {
-    // 1. ดึงค่า Volume ต่างๆ
+   function calculateFatAdmin() {
+    // 1. ดึง Element และค่าต่างๆ
     const fatVolume = parseFloat(document.getElementById('fatVolume').value) || 0;
     const vitalipidVolume = parseFloat(document.getElementById('vitalipid').value) || 0;
     const currentWard = document.getElementById('ward').value; 
@@ -1550,13 +1550,7 @@ function calculateAll() {
     const flushRadioNone = document.querySelector('input[name="flush"][value="none"]');
     const flushInput = document.getElementById('flushVolume');
 
-    const recommendedRate = roundToPlace((fatVolume + vitalipidVolume) / 22, 1);
-    const rateLabel = document.getElementById('autoFatRateLabel');
-    if (rateLabel) {
-        rateLabel.textContent = `(แนะนำ = ${recommendedRate} ml/hr)`;
-    }
-
-    // 2. Logic อัตโนมัติสำหรับ Ward
+    // 2. Logic อัตโนมัติสำหรับ Ward (เฉพาะตอนเริ่มต้น หรือยังไม่ Manual)
     if (!isFlushManual) {
         if (["NICU", "2ค"].includes(currentWard)) {
             flushRadioNone.checked = true;
@@ -1574,13 +1568,19 @@ function calculateAll() {
             flushInput.classList.add('bg-amber-50', 'border-amber-300');
         }
     } else {
+        // ถ้าเป็น Manual แล้ว ให้เปลี่ยนสีช่องให้เด่น
         flushInput.classList.remove('bg-amber-50', 'border-amber-300');
         flushInput.classList.add('bg-blue-50', 'border-blue-400');
+        
+        // **เพิ่มจุดนี้:** ถ้าพิมพ์เลขในช่อง ให้เช็ค Radio ปุ่ม custom ให้เสมอ
+        if (flushInput.value !== "") {
+            flushRadioCustom.checked = true;
+        }
     }
 
     // 3. คำนวณผลรวม
     const flushOption = document.querySelector('input[name="flush"]:checked').value;
-    const flushVolume = flushOption === 'custom' ? (parseFloat(flushInput.value) || 0) : 0;
+    const flushVolume = (flushOption === 'custom' && flushInput.value !== "") ? (parseFloat(flushInput.value) || 0) : 0;
     const prepSplit = document.querySelector('input[name="prepSplit"]:checked').value;
     const manualRate = document.getElementById('manualFatDripRate').value || '0.0';
     
@@ -1591,10 +1591,18 @@ function calculateAll() {
     const grandTotalFatVit = totalVolPlusFlush + vitalipidVolume;
     const fatCalories = fatVolume * 2; 
 
-    document.getElementById('totalFatPlusVitalipid').value = roundToPlace(grandTotalFatVit, 1);
+    // อัปเดต UI
+    const totalInput = document.getElementById('totalFatPlusVitalipid');
+    if(totalInput) totalInput.value = roundToPlace(grandTotalFatVit, 1);
+
+    const recommendedRate = roundToPlace((fatVolume + vitalipidVolume) / 22, 1);
+    const rateLabel = document.getElementById('autoFatRateLabel');
+    if (rateLabel) {
+        rateLabel.textContent = `(แนะนำ = ${recommendedRate} ml/hr)`;
+    }
 
     // 4. สรุปข้อความ
-    const vitProdType = document.querySelector('input[name="vitProduct"]:checked').value;
+    const vitProdType = document.querySelector('input[name="vitProduct"]:checked')?.value || 'N';
     const vitNameLabel = "Vitalipid-N " + vitProdType;
 
     let prepText = `
@@ -1616,7 +1624,9 @@ function calculateAll() {
     
     prepText += `<p>• <strong>Drip Rate:</strong> <span class="text-blue-700 font-bold text-lg">${manualRate}</span> ml/hr</p>`;
     
-    document.getElementById('prepDetails').innerHTML = prepText;
+    const prepDetails = document.getElementById('prepDetails');
+    if(prepDetails) prepDetails.innerHTML = prepText;
+    
     updateOrderSummary();
 }
     function updateOrderSummary() {
