@@ -1488,7 +1488,7 @@ function calculateAll() {
     const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol + heparinVolume;
     if (!isPrepWaterManual) { document.getElementById('prep-waterVolInput').value = roundToPlace(pnPrepVol - allSubstancesPrep, 1); }
 
-    // 12. Osmolarity Calculation
+   // 12. Osmolarity Calculation
     const prepVol = pnPrepVol || 1;
     const selectedProtProductOsmol = document.querySelector('input[name="proteinProduct"]:checked')?.value || 'aminoplasmal';
     const protConcOsmol = (selectedProtProductOsmol === 'aminoplasmal') ? 0.15 : 0.10;
@@ -1497,8 +1497,11 @@ function calculateAll() {
     const osmol_Dex = (prepDextroseVol * 2.5 * 1000) / prepVol;
     
     // คำนวณ Osmol ตาม Product ที่เลือก
-    const osmol_Na = (naSource === 'NaAcetate') ? (naVolume * 3000) / prepVol : (naVolume * 1000) / prepVol;
-    const osmol_K = (kSource === 'KAcetate') ? (kVolume * 3000) / prepVol : (kVolume * 4000) / prepVol;
+    // Na Acetate: 3 mmol/ml * 2 อนุภาค = 6000 mOsm/L, NaCl: 1000 mOsm/L
+    const osmol_Na = (naSource === 'NaAcetate') ? (naVolume * 6000) / prepVol : (naVolume * 1000) / prepVol;
+    
+    // K Acetate: 3 mmol/ml * 2 อนุภาค = 6000 mOsm/L, KCl: 4000 mOsm/L
+    const osmol_K = (kSource === 'KAcetate') ? (kVolume * 6000) / prepVol : (kVolume * 4000) / prepVol;
     
     const osmol_Ca = (caVolume * 430) / prepVol;
     const osmol_Mg = (mgVolume * 4000) / prepVol;
