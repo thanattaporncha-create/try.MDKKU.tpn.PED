@@ -498,144 +498,139 @@ body {
   </div>
 </section>
 
-      <!-- Electrolytes Section -->
-   <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
-    <h2 class="section-title text-xl font-bold text-gray-800 mb-6">⚗️ Electrolytes</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+     <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+  <h2 class="section-title text-xl font-bold text-gray-800 mb-6">⚗️ Electrolytes</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    
+    <div class="space-y-3">
+      <div class="flex flex-col space-y-2">
+        <label class="block text-base font-bold text-gray-800 text-center">Phosphate Source</label>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="relative">
+            <input type="radio" id="phosGlyco" name="phosSource" value="Glycophos" checked class="hidden peer" onchange="calculateAll()">
+            <label for="phosGlyco" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">Glycophos</label>
+          </div>
+          <div class="relative">
+            <input type="radio" id="phosK2HPO4" name="phosSource" value="K2HPO4" class="hidden peer" onchange="calculateAll()">
+            <label for="phosK2HPO4" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 border-gray-200 text-gray-600">K2HPO4</label>
+          </div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 italic">Dose: 0.5-1 mmol/kg/day</p>
+      <input type="number" id="phosphorus" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
       
-      <div class="space-y-3">
-        <div class="flex flex-col space-y-2">
-          <label class="block text-base font-bold text-gray-800 text-center">Phosphate Source</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="relative">
-              <input type="radio" id="phosGlyco" name="phosSource" value="Glycophos" checked class="hidden peer" onchange="calculateAll()">
-              <label for="phosGlyco" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">
-                Glycophos
-              </label>
-            </div>
-            <div class="relative">
-              <input type="radio" id="phosK2HPO4" name="phosSource" value="K2HPO4" class="hidden peer" onchange="calculateAll()">
-              <label for="phosK2HPO4" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 border-gray-200 text-gray-600">
-                K2HPO4
-              </label>
-            </div>
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="phosvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isPhosVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
           </div>
         </div>
-        <p class="text-xs text-gray-500 italic">Dose: 0.5-1 mmol/kg/day</p>
-        <input type="number" id="phosphorus" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-        
-        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-blue-800">Vol:</span>
-            <div class="flex items-baseline">
-              <input type="number" id="phosvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isPhosVolManual = true; calculateAll()">
-              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
-            </div>
+        <div id="naFromP_Row" class="flex justify-between items-center pt-1 border-t border-blue-200">
+          <span class="text-[11px] font-medium text-gray-600">Na from P:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="phoNa" step="0.1" class="w-14 bg-transparent text-right text-xs font-bold text-gray-700 border-b border-gray-300 focus:outline-none" oninput="isPhosNaManual = true; calculateAll()">
+            <span class="ml-1 text-[10px] text-gray-500 font-bold">mEq</span>
           </div>
-          <div id="naFromP_Row" class="flex justify-between items-center pt-1 border-t border-blue-200">
-            <span class="text-[11px] font-medium text-gray-600">Na from P:</span>
-            <div class="flex items-baseline">
-              <input type="number" id="phoNa" step="0.1" class="w-14 bg-transparent text-right text-xs font-bold text-gray-700 border-b border-gray-300 focus:outline-none" oninput="isPhosNaManual = true; calculateAll()">
-              <span class="ml-1 text-[10px] text-gray-500 font-bold">mEq</span>
-            </div>
-          </div>
-          <div id="kFromP_Row" class="flex justify-between items-center pt-1 border-t border-purple-200 hidden">
-            <span class="text-[11px] font-medium text-purple-600 font-bold">K from Phos:</span>
-            <div class="flex items-baseline">
-              <span id="kFromP_Val" class="text-xs font-bold text-purple-700">0.00</span>
-              <span class="ml-1 text-[10px] text-purple-500 font-bold">mEq</span>
-            </div>
+        </div>
+        <div id="kFromP_Row" class="flex justify-between items-center pt-1 border-t border-purple-200 hidden">
+          <span class="text-[11px] font-medium text-purple-600 font-bold">K from Phos:</span>
+          <div class="flex items-baseline">
+            <span id="kFromP_Val" class="text-xs font-bold text-purple-700">0.00</span>
+            <span class="ml-1 text-[10px] text-purple-500 font-bold">mEq</span>
           </div>
         </div>
       </div>
-
-      <div class="space-y-3">
-        <div class="flex flex-col space-y-2">
-          <label class="block text-base font-bold text-gray-800 text-center">Na Source</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="relative">
-              <input type="radio" id="naNaCl" name="naSource" value="NaCl" checked class="hidden peer" onchange="calculateAll()">
-              <label for="naNaCl" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">NaCl</label>
-            </div>
-            <div class="relative">
-              <input type="radio" id="naAcetate" name="naSource" value="NaAcetate" class="hidden peer" onchange="calculateAll()">
-              <label for="naAcetate" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">Na Acetate</label>
-            </div>
-          </div>
-        </div>
-        <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
-        <input type="number" id="sodium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-blue-800">Vol:</span>
-            <div class="flex items-baseline">
-              <input type="number" id="navol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isNaVolManual = true; calculateAll()">
-              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <div class="flex flex-col space-y-2">
-          <label class="block text-base font-bold text-gray-800 text-center">K Source</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="relative">
-              <input type="radio" id="kKCl" name="kSource" value="KCl" checked class="hidden peer" onchange="calculateAll()">
-              <label for="kKCl" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">KCl</label>
-            </div>
-            <div class="relative">
-              <input type="radio" id="kAcetate" name="kSource" value="KAcetate" class="hidden peer" onchange="calculateAll()">
-              <label for="kAcetate" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">K Acetate</label>
-            </div>
-          </div>
-        </div>
-        <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
-        <input type="number" id="potassium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-blue-800">Vol:</span>
-            <div class="flex items-baseline">
-              <input type="number" id="kvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isKVolManual = true; calculateAll()">
-              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <label class="block text-base font-bold text-gray-800">Mg (50% MgSO₄)</label>
-        <p class="text-xs text-gray-500 italic">0.2-0.3 mmol/kg/day</p>
-        <input type="number" id="magnesium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-blue-800">Vol:</span>
-            <div class="flex items-baseline">
-              <input type="number" id="mgvol" step="0.01" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isMgVolManual = true; calculateAll()">
-              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <label class="block text-base font-bold text-gray-800 font-sans">Ca (10% Ca Glu)</label>
-        <p class="text-xs text-gray-500 italic">4-6 ml/kg/day</p>
-        <input type="number" id="calcium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-bold text-blue-800">Vol:</span>
-            <div class="flex items-baseline">
-              <input type="number" id="cavol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isCaVolManual = true; calculateAll()">
-              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
-            </div>
-          </div>
-        </div>
-        <p id="caMaxWarning" class="hidden text-[10px] text-red-600 mt-1 font-bold animate-pulse">⚠️ Max = 10 ml</p>
-      </div>
-
     </div>
-  </section>
+
+    <div class="space-y-3">
+      <div class="flex flex-col space-y-2">
+        <label class="block text-base font-bold text-gray-800 text-center">Na Source</label>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="relative">
+            <input type="radio" id="naNaCl" name="naSource" value="NaCl" checked class="hidden peer" onchange="calculateAll()">
+            <label for="naNaCl" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600 border-green-200 text-green-600">NaCl</label>
+          </div>
+          <div class="relative">
+            <input type="radio" id="naAcetate" name="naSource" value="NaAcetate" class="hidden peer" onchange="calculateAll()">
+            <label for="naAcetate" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600 border-green-200 text-green-600">Na Acetate</label>
+          </div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
+      <input type="number" id="sodium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="navol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isNaVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <div class="flex flex-col space-y-2">
+        <label class="block text-base font-bold text-gray-800 text-center">K Source</label>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="relative">
+            <input type="radio" id="kKCl" name="kSource" value="KCl" checked class="hidden peer" onchange="calculateAll()">
+            <label for="kKCl" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 border-rose-200 text-rose-600">KCl</label>
+          </div>
+          <div class="relative">
+            <input type="radio" id="kAcetate" name="kSource" value="KAcetate" class="hidden peer" onchange="calculateAll()">
+            <label for="kAcetate" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 border-rose-200 text-rose-600">K Acetate</label>
+          </div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
+      <input type="number" id="potassium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="kvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isKVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <label class="block text-base font-bold text-gray-800">Mg (50% MgSO₄)</label>
+      <p class="text-xs text-gray-500 italic">0.2-0.3 mmol/kg/day</p>
+      <input type="number" id="magnesium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="mgvol" step="0.01" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isMgVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <label class="block text-base font-bold text-gray-800 font-sans">Ca (10% Ca Glu)</label>
+      <p class="text-xs text-gray-500 italic">4-6 ml/kg/day</p>
+      <input type="number" id="calcium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-bold text-blue-800">Vol:</span>
+          <div class="flex items-baseline">
+            <input type="number" id="cavol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isCaVolManual = true; calculateAll()">
+            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+          </div>
+        </div>
+      </div>
+      <p id="caMaxWarning" class="hidden text-[10px] text-red-600 mt-1 font-bold animate-pulse">⚠️ Max = 10 ml</p>
+    </div>
+
+  </div>
+</section>
 
       <!-- Vitamins & Trace Elements Section -->
      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
