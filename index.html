@@ -499,126 +499,143 @@ body {
 </section>
 
       <!-- Electrolytes Section -->
-    <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
-  <h2 class="section-title text-xl font-bold text-gray-800 mb-6">⚗️ Electrolytes</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-    
-   <div class="space-y-3">
-  <div class="flex flex-col space-y-2">
-    <label class="block text-base font-bold text-gray-800 text-center">Phosphate Source</label>
-    <div class="grid grid-cols-2 gap-2">
-      <div class="relative">
-        <input type="radio" id="phosGlyco" name="phosSource" value="Glycophos" checked class="hidden peer" onchange="calculateAll()">
-        <label for="phosGlyco" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">
-          Glycophos
-        </label>
-      </div>
-      <div class="relative">
-        <input type="radio" id="phosK2HPO4" name="phosSource" value="K2HPO4" class="hidden peer" onchange="calculateAll()">
-        <label for="phosK2HPO4" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 border-gray-200 text-gray-600">
-          K2HPO4
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <p class="text-xs text-gray-500 italic">Dose: 0.5-1 mmol/kg/day</p>
-  <input type="number" id="phosphorus" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-  
-  <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100 space-y-2">
-    <div class="flex justify-between items-center">
-      <span class="text-sm font-bold text-blue-800">Vol:</span>
-      <div class="flex items-baseline">
-        <input type="number" id="phosvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isPhosVolManual = true; calculateAll()">
-        <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
-      </div>
-    </div>
-
-    <div id="naFromP_Row" class="flex justify-between items-center pt-1 border-t border-blue-200">
-      <span class="text-[11px] font-medium text-gray-600">Na from P:</span>
-      <div class="flex items-baseline">
-        <input type="number" id="phoNa" step="0.1" class="w-14 bg-transparent text-right text-xs font-bold text-gray-700 border-b border-gray-300 focus:outline-none" oninput="isPhosNaManual = true; calculateAll()">
-        <span class="ml-1 text-[10px] text-gray-500 font-bold">mEq</span>
-      </div>
-    </div>
-
-    <div id="kFromP_Row" class="flex justify-between items-center pt-1 border-t border-purple-200 hidden">
-      <span class="text-[11px] font-medium text-purple-600 font-bold">K from Phos:</span>
-      <div class="flex items-baseline">
-        <span id="kFromP_Val" class="text-xs font-bold text-purple-700">0.00</span>
-        <span class="ml-1 text-[10px] text-purple-500 font-bold">mEq</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-    <div class="space-y-3">
-      <label class="block text-base font-bold text-gray-800">Na (3% NaCl)</label>
-      <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
-      <input type="number" id="sodium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+   <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+    <h2 class="section-title text-xl font-bold text-gray-800 mb-6">⚗️ Electrolytes</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
       
-      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-        <div class="flex justify-between items-center">
-          <span class="text-sm font-bold text-blue-800">Vol:</span>
-          <div class="flex items-baseline">
-            <input type="number" id="navol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isNaVolManual = true; calculateAll()">
-            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+      <div class="space-y-3">
+        <div class="flex flex-col space-y-2">
+          <label class="block text-base font-bold text-gray-800 text-center">Phosphate Source</label>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="relative">
+              <input type="radio" id="phosGlyco" name="phosSource" value="Glycophos" checked class="hidden peer" onchange="calculateAll()">
+              <label for="phosGlyco" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">
+                Glycophos
+              </label>
+            </div>
+            <div class="relative">
+              <input type="radio" id="phosK2HPO4" name="phosSource" value="K2HPO4" class="hidden peer" onchange="calculateAll()">
+              <label for="phosK2HPO4" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-xs font-bold transition-all peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 border-gray-200 text-gray-600">
+                K2HPO4
+              </label>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 italic">Dose: 0.5-1 mmol/kg/day</p>
+        <input type="number" id="phosphorus" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+        
+        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-bold text-blue-800">Vol:</span>
+            <div class="flex items-baseline">
+              <input type="number" id="phosvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isPhosVolManual = true; calculateAll()">
+              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+            </div>
+          </div>
+          <div id="naFromP_Row" class="flex justify-between items-center pt-1 border-t border-blue-200">
+            <span class="text-[11px] font-medium text-gray-600">Na from P:</span>
+            <div class="flex items-baseline">
+              <input type="number" id="phoNa" step="0.1" class="w-14 bg-transparent text-right text-xs font-bold text-gray-700 border-b border-gray-300 focus:outline-none" oninput="isPhosNaManual = true; calculateAll()">
+              <span class="ml-1 text-[10px] text-gray-500 font-bold">mEq</span>
+            </div>
+          </div>
+          <div id="kFromP_Row" class="flex justify-between items-center pt-1 border-t border-purple-200 hidden">
+            <span class="text-[11px] font-medium text-purple-600 font-bold">K from Phos:</span>
+            <div class="flex items-baseline">
+              <span id="kFromP_Val" class="text-xs font-bold text-purple-700">0.00</span>
+              <span class="ml-1 text-[10px] text-purple-500 font-bold">mEq</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="space-y-3">
-      <label class="block text-base font-bold text-gray-800">K (KCl)</label>
-      <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
-      <input type="number" id="potassium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-      
-      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-        <div class="flex justify-between items-center">
-          <span class="text-sm font-bold text-blue-800">Vol:</span>
-          <div class="flex items-baseline">
-            <input type="number" id="kvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isKVolManual = true; calculateAll()">
-            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+      <div class="space-y-3">
+        <div class="flex flex-col space-y-2">
+          <label class="block text-base font-bold text-gray-800 text-center">Na Source</label>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="relative">
+              <input type="radio" id="naNaCl" name="naSource" value="NaCl" checked class="hidden peer" onchange="calculateAll()">
+              <label for="naNaCl" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">NaCl</label>
+            </div>
+            <div class="relative">
+              <input type="radio" id="naAcetate" name="naSource" value="NaAcetate" class="hidden peer" onchange="calculateAll()">
+              <label for="naAcetate" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">Na Acetate</label>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
+        <input type="number" id="sodium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-bold text-blue-800">Vol:</span>
+            <div class="flex items-baseline">
+              <input type="number" id="navol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isNaVolManual = true; calculateAll()">
+              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="space-y-3">
-      <label class="block text-base font-bold text-gray-800">Mg (50% MgSO₄)</label>
-      <p class="text-xs text-gray-500 italic">0.2-0.3 mmol/kg/day</p>
-      <input type="number" id="magnesium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-      
-      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-        <div class="flex justify-between items-center">
-          <span class="text-sm font-bold text-blue-800">Vol:</span>
-          <div class="flex items-baseline">
-            <input type="number" id="mgvol" step="0.01" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isMgVolManual = true; calculateAll()">
-            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+      <div class="space-y-3">
+        <div class="flex flex-col space-y-2">
+          <label class="block text-base font-bold text-gray-800 text-center">K Source</label>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="relative">
+              <input type="radio" id="kKCl" name="kSource" value="KCl" checked class="hidden peer" onchange="calculateAll()">
+              <label for="kKCl" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">KCl</label>
+            </div>
+            <div class="relative">
+              <input type="radio" id="kAcetate" name="kSource" value="KAcetate" class="hidden peer" onchange="calculateAll()">
+              <label for="kAcetate" class="flex items-center justify-center px-2 py-2 border-2 rounded-xl cursor-pointer text-[10px] font-bold transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 border-gray-200 text-gray-600">K Acetate</label>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 italic">2-4 mEq/kg/day</p>
+        <input type="number" id="potassium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-bold text-blue-800">Vol:</span>
+            <div class="flex items-baseline">
+              <input type="number" id="kvol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isKVolManual = true; calculateAll()">
+              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="space-y-3">
-      <label class="block text-base font-bold text-gray-800 font-sans">Ca (10% Ca Glu)</label>
-      <p class="text-xs text-gray-500 italic">4-6 ml/kg/day</p>
-      <input type="number" id="calcium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
-      
-      <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-        <div class="flex justify-between items-center">
-          <span class="text-sm font-bold text-blue-800">Vol:</span>
-          <div class="flex items-baseline">
-            <input type="number" id="cavol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isCaVolManual = true; calculateAll()">
-            <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+      <div class="space-y-3">
+        <label class="block text-base font-bold text-gray-800">Mg (50% MgSO₄)</label>
+        <p class="text-xs text-gray-500 italic">0.2-0.3 mmol/kg/day</p>
+        <input type="number" id="magnesium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-bold text-blue-800">Vol:</span>
+            <div class="flex items-baseline">
+              <input type="number" id="mgvol" step="0.01" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isMgVolManual = true; calculateAll()">
+              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+            </div>
           </div>
         </div>
       </div>
-      <p id="caMaxWarning" class="hidden text-[10px] text-red-600 mt-1 font-bold animate-pulse">⚠️ Max = 10 ml</p>
-    </div>
 
-  </div>
-</section>
+      <div class="space-y-3">
+        <label class="block text-base font-bold text-gray-800 font-sans">Ca (10% Ca Glu)</label>
+        <p class="text-xs text-gray-500 italic">4-6 ml/kg/day</p>
+        <input type="number" id="calcium" step="0.1" min="0" placeholder="0.0" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 outline-none transition-all font-semibold text-lg" inputmode="decimal" oninput="calculateAll()">
+        <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-bold text-blue-800">Vol:</span>
+            <div class="flex items-baseline">
+              <input type="number" id="cavol" step="0.1" class="w-20 bg-transparent text-right text-xl font-black text-blue-700 border-b-2 border-blue-300 focus:outline-none focus:border-blue-600" oninput="isCaVolManual = true; calculateAll()">
+              <span class="ml-1 text-sm font-bold text-blue-700">ml</span>
+            </div>
+          </div>
+        </div>
+        <p id="caMaxWarning" class="hidden text-[10px] text-red-600 mt-1 font-bold animate-pulse">⚠️ Max = 10 ml</p>
+      </div>
+
+    </div>
+  </section>
 
       <!-- Vitamins & Trace Elements Section -->
      <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
@@ -775,188 +792,185 @@ body {
   </div>
 </section>
 
-      <!-- Composition Table -->
-    <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
-  <h2 class="section-title text-xl font-bold text-gray-800 mb-6">📊 สรุปข้อมูล Order TPN</h2>
-  <div class="overflow-x-auto rounded-xl border-2 border-gray-200">
-    <table class="w-full">
-      <thead>
-        <tr class="table-header text-white text-base bg-gray-800">
-          <th class="px-4 py-4 text-left font-bold rounded-tl-xl">องค์ประกอบ</th>
-          <th class="px-4 py-4 text-right font-bold">ปริมาตร (ml)</th>
-          <th class="px-4 py-4 text-right font-bold text-yellow-300 bg-black/10">สำหรับเตรียม (ml)</th>
-          <th class="px-4 py-4 text-right font-bold">แคลอรี่ (kcal)</th>
-          <th class="px-4 py-4 text-right font-bold rounded-tr-xl">mOsmol/L</th>
-        </tr>
-      </thead>
-      <tbody id="compositionTable" class="text-sm md:text-base">
-        <tr class="border-b-2 border-gray-100 font-bold bg-gray-50 text-gray-800">
-          <td colspan="5" class="px-4 py-3 text-lg">Macronutrients</td>
-        </tr>
-        <tr class="border-b border-gray-100 hover:bg-gray-50">
-          <td id="row-protein-name" class="px-4 py-3 pl-8 text-purple-700 font-bold">Protein Product</td>
-          <td id="proteinVol" class="px-4 py-3 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-proteinVol" class="px-4 py-3 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-xl">0.0</td>
-          <td id="proteinCal" class="px-4 py-3 text-right font-mono">0.0</td>
-          <td id="proteinOsmol" class="px-4 py-3 text-right font-mono">0</td>
-        </tr>
-        <tr class="border-b border-gray-100 hover:bg-gray-50">
-          <td class="px-4 py-3 pl-8 text-blue-700 font-bold">50% Dextrose</td>
-          <td id="dextroseVol" class="px-4 py-3 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-dextroseVol" class="px-4 py-3 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-xl">0.0</td>
-          <td id="dextroseCal" class="px-4 py-3 text-right font-mono">0.0</td>
-          <td id="dextroseOsmol" class="px-4 py-3 text-right font-mono">0</td>
-        </tr>
+     <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+    <h2 class="section-title text-xl font-bold text-gray-800 mb-6">📊 สรุปข้อมูล Order TPN</h2>
+    <div class="overflow-x-auto rounded-xl border-2 border-gray-200">
+      <table class="w-full">
+        <thead>
+          <tr class="table-header text-white text-base bg-gray-800">
+            <th class="px-4 py-4 text-left font-bold rounded-tl-xl">องค์ประกอบ</th>
+            <th class="px-4 py-4 text-right font-bold">ปริมาตร (ml)</th>
+            <th class="px-4 py-4 text-right font-bold text-yellow-300 bg-black/10">สำหรับเตรียม (ml)</th>
+            <th class="px-4 py-4 text-right font-bold">แคลอรี่ (kcal)</th>
+            <th class="px-4 py-4 text-right font-bold rounded-tr-xl">mOsmol/L</th>
+          </tr>
+        </thead>
+        <tbody id="compositionTable" class="text-sm md:text-base">
+          <tr class="border-b-2 border-gray-100 font-bold bg-gray-50 text-gray-800">
+            <td colspan="5" class="px-4 py-3 text-lg">Macronutrients</td>
+          </tr>
+          <tr class="border-b border-gray-100 hover:bg-gray-50">
+            <td id="row-protein-name" class="px-4 py-3 pl-8 text-purple-700 font-bold">Protein Product</td>
+            <td id="proteinVol" class="px-4 py-3 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-proteinVol" class="px-4 py-3 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-xl">0.0</td>
+            <td id="proteinCal" class="px-4 py-3 text-right font-mono">0.0</td>
+            <td id="proteinOsmol" class="px-4 py-3 text-right font-mono">0</td>
+          </tr>
+          <tr class="border-b border-gray-100 hover:bg-gray-50">
+            <td class="px-4 py-3 pl-8 text-blue-700 font-bold">50% Dextrose</td>
+            <td id="dextroseVol" class="px-4 py-3 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-dextroseVol" class="px-4 py-3 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-xl">0.0</td>
+            <td id="dextroseCal" class="px-4 py-3 text-right font-mono">0.0</td>
+            <td id="dextroseOsmol" class="px-4 py-3 text-right font-mono">0</td>
+          </tr>
 
-        <tr class="border-b-2 border-gray-100 font-bold bg-red-50/50 text-red-800">
-          <td colspan="5" class="px-4 py-3 text-lg">🧂 Electrolytes (ml)</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td id="row-phos-name" class="px-4 py-2 pl-8 font-medium">- Phosphorus Source</td>
-          <td id="row-phos-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-phos-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td id="row-phos-osmol" class="px-4 py-2 text-right font-mono">0</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td class="px-4 py-2 pl-8 font-medium">- 3% NaCl (Na)</td>
-          <td id="row-na-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-na-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td id="row-na-osmol" class="px-4 py-2 text-right font-mono">0</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td class="px-4 py-2 pl-8 font-medium">- KCl (K)</td>
-          <td id="row-k-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-k-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td id="row-k-osmol" class="px-4 py-2 text-right font-mono">0</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td class="px-4 py-2 pl-8 font-medium">- 50% MgSO4 (Mg)</td>
-          <td id="row-mg-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-mg-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td id="row-mg-osmol" class="px-4 py-2 text-right font-mono">0</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td class="px-4 py-2 pl-8 font-medium">- 10% Ca Gluconate (Ca)</td>
-          <td id="row-ca-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-ca-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td id="row-ca-osmol" class="px-4 py-2 text-right font-mono">0</td>
-        </tr>
+          <tr class="border-b-2 border-gray-100 font-bold bg-red-50/50 text-red-800">
+            <td colspan="5" class="px-4 py-3 text-lg">🧂 Electrolytes (ml)</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td id="row-phos-name" class="px-4 py-2 pl-8 font-medium">- Phosphorus Source</td>
+            <td id="row-phos-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-phos-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td id="row-phos-osmol" class="px-4 py-2 text-right font-mono">0</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td id="row-na-name" class="px-4 py-2 pl-8 font-medium">- NaCl</td>
+            <td id="row-na-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-na-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td id="row-na-osmol" class="px-4 py-2 text-right font-mono">0</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td id="row-k-name" class="px-4 py-2 pl-8 font-medium">- KCl</td>
+            <td id="row-k-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-k-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td id="row-k-osmol" class="px-4 py-2 text-right font-mono">0</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td class="px-4 py-2 pl-8 font-medium">- 50% MgSO4 (Mg)</td>
+            <td id="row-mg-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-mg-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td id="row-mg-osmol" class="px-4 py-2 text-right font-mono">0</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td class="px-4 py-2 pl-8 font-medium">- 10% Ca Gluconate (Ca)</td>
+            <td id="row-ca-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-ca-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td id="row-ca-osmol" class="px-4 py-2 text-right font-mono">0</td>
+          </tr>
 
-        <tr class="border-b-2 border-gray-100 font-bold bg-orange-50/50 text-orange-800">
-          <td colspan="5" class="px-4 py-3 text-lg">🧪 Vitamins & Additives (ml)</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td id="row-soluvit-name" class="px-4 py-2 pl-8 font-medium">- Soluvit N</td>
-          <td id="row-soluvit-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-soluvit-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td class="text-right">-</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td id="row-peditrace-name" class="px-4 py-2 pl-8 font-medium">- Peditrace</td>
-          <td id="row-peditrace-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-peditrace-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td class="text-right">-</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td class="px-4 py-2 pl-8 font-medium">- Zinc Sulfate</td>
-          <td id="row-zinc-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-zinc-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td class="text-right">-</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td class="px-4 py-2 pl-8 font-medium">- Heparin</td>
-          <td id="row-heparin-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-heparin-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td class="text-right">-</td>
-        </tr>
-        <tr class="border-b border-gray-100 text-sm">
-          <td id="row-other-name" class="px-4 py-2 pl-8 font-medium">- Other Additive</td>
-          <td id="row-other-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
-          <td id="prep-other-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
-          <td class="text-right">-</td>
-          <td class="text-right">-</td>
-        </tr>
+          <tr class="border-b-2 border-gray-100 font-bold bg-orange-50/50 text-orange-800">
+            <td colspan="5" class="px-4 py-3 text-lg">🧪 Vitamins & Additives (ml)</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td id="row-soluvit-name" class="px-4 py-2 pl-8 font-medium">- Soluvit N</td>
+            <td id="row-soluvit-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-soluvit-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td id="row-peditrace-name" class="px-4 py-2 pl-8 font-medium">- Peditrace</td>
+            <td id="row-peditrace-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-peditrace-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td class="px-4 py-2 pl-8 font-medium">- Zinc Sulfate</td>
+            <td id="row-zinc-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-zinc-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td class="px-4 py-2 pl-8 font-medium">- Heparin</td>
+            <td id="row-heparin-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-heparin-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+          </tr>
+          <tr class="border-b border-gray-100 text-sm">
+            <td id="row-other-name" class="px-4 py-2 pl-8 font-medium">- Other Additive</td>
+            <td id="row-other-vol" class="px-4 py-2 text-right font-mono font-bold text-gray-600">0.0</td>
+            <td id="prep-other-vol" class="px-4 py-2 text-right font-mono font-black text-blue-700 bg-blue-100/50 text-lg">0.0</td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+          </tr>
 
-        <tr class="border-b-2 border-gray-100 bg-blue-50/50">
-          <td class="px-4 py-4 font-bold text-blue-700 text-lg">💧 Sterile Water</td>
-          <td class="px-4 py-4 text-right">
-              <input type="number" id="waterVolInput" step="0.1" class="w-24 px-1 border-b-2 border-blue-300 bg-transparent text-right font-mono font-bold text-blue-800 focus:outline-none" oninput="isWaterManual = true; calculateAll()">
-          </td>
-          <td class="px-4 py-4 text-right bg-blue-100/50">
-              <input type="number" id="prep-waterVolInput" step="0.1" class="w-24 px-1 border-b-2 border-blue-400 bg-transparent text-right font-mono font-black text-blue-700 text-xl focus:outline-none" oninput="isPrepWaterManual = true; calculateAll()">
-          </td>
-          <td class="text-right">-</td>
-          <td class="text-right">-</td>
-        </tr>
+          <tr class="border-b-2 border-gray-100 bg-blue-50/50">
+            <td class="px-4 py-4 font-bold text-blue-700 text-lg">💧 Sterile Water</td>
+            <td class="px-4 py-4 text-right">
+                <input type="number" id="waterVolInput" step="0.1" class="w-24 px-1 border-b-2 border-blue-300 bg-transparent text-right font-mono font-bold text-blue-800 focus:outline-none" oninput="isWaterManual = true; calculateAll()">
+            </td>
+            <td class="px-4 py-4 text-right bg-blue-100/50">
+                <input type="number" id="prep-waterVolInput" step="0.1" class="w-24 px-1 border-b-2 border-blue-400 bg-transparent text-right font-mono font-black text-blue-700 text-xl focus:outline-none" oninput="isPrepWaterManual = true; calculateAll()">
+            </td>
+            <td class="text-right">-</td>
+            <td class="text-right">-</td>
+          </tr>
 
-        <tr class="bg-gray-800 text-white font-bold">
-          <td class="px-4 py-5 text-xl font-bold">สรุปข้อมูล</td>
-          <td class="px-4 py-5 text-right font-mono text-yellow-400 text-xl">
-            <span id="totalPNVol_Summary">0.0</span> <span class="text-xs ml-1">ml</span>
-          </td>
-          <td class="px-4 py-5 text-right font-mono text-cyan-300 bg-gray-700 text-2xl">
-            <span id="totalPrepVolDisplay">0.0</span> <span class="text-xs ml-1">ml</span>
-          </td>
-          <td class="px-4 py-5 text-right font-mono text-xl">
-            <span id="totalPNCal">0.0</span> <span class="text-xs ml-1 text-gray-400">kcal</span>
-          </td>
-          <td class="px-4 py-5 text-right font-mono text-xl">
-            <span id="totalOsmol">0</span> <span class="text-xs ml-1 text-gray-400">mOsmol</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          <tr class="bg-gray-800 text-white font-bold">
+            <td class="px-4 py-5 text-xl font-bold">สรุปข้อมูล</td>
+            <td class="px-4 py-5 text-right font-mono text-yellow-400 text-xl">
+              <span id="totalPNVol_Summary">0.0</span> <span class="text-xs ml-1">ml</span>
+            </td>
+            <td class="px-4 py-5 text-right font-mono text-cyan-300 bg-gray-700 text-2xl">
+              <span id="totalPrepVolDisplay">0.0</span> <span class="text-xs ml-1">ml</span>
+            </td>
+            <td class="px-4 py-5 text-right font-mono text-xl">
+              <span id="totalPNCal">0.0</span> <span class="text-xs ml-1 text-gray-400">kcal</span>
+            </td>
+            <td class="px-4 py-5 text-right font-mono text-xl">
+              <span id="totalOsmol">0</span> <span class="text-xs ml-1 text-gray-400">mOsmol</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div id="prepSummary" class="mt-6 p-6 success-box rounded-xl border-2 border-green-200">
+    <h4 class="font-bold text-green-800 mb-3 text-lg flex items-center gap-2">
+      <span>🧈</span> สรุปการเตรียม Fat
+    </h4>
+    <div id="prepDetails" class="text-green-700 space-y-2 text-base"></div>
   </div>
-</section>
-          </table>
-        </div>
-        <div id="prepSummary" class="mt-6 p-6 success-box rounded-xl border-2 border-green-200">
-  <h4 class="font-bold text-green-800 mb-3 text-lg flex items-center gap-2">
-    <span>🧈</span> สรุปการเตรียม Fat
-  </h4>
+
+  <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+      <div class="text-sm text-green-600 mb-1">Total Calories</div>
+      <div class="flex items-baseline gap-2">
+        <span id="totalCalDisplay" class="text-2xl font-bold text-green-700">0.0</span>
+        <span class="text-green-600">kcal/day</span>
+      </div>
+    </div>
+    <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+      <div class="text-sm text-blue-600 mb-1">Calories per kg</div>
+      <div class="flex items-baseline gap-2">
+        <span id="calPerKg" class="text-2xl font-bold text-blue-700">0.0</span>
+        <span class="text-blue-600">kcal/kg/day</span>
+      </div>
+    </div>
+    <div class="p-4 bg-purple-50 rounded-xl border border-purple-200">
+      <div class="text-sm text-purple-600 mb-1">Final Osmolarity</div>
+      <div class="flex items-baseline gap-2">
+        <span id="finalOsmol" class="text-2xl font-bold text-purple-700">0</span>
+        <span class="text-purple-600">mOsmol/L</span>
+      </div>
+    </div>
+  </div>
   
-  <div id="prepDetails" class="text-green-700 space-y-2 text-base">
-     </div>
-</div>
-        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="p-4 bg-green-50 rounded-xl border border-green-200">
-            <div class="text-sm text-green-600 mb-1">Total Calories</div>
-            <div class="flex items-baseline gap-2">
-              <span id="totalCalDisplay" class="text-2xl font-bold text-green-700">0.0</span>
-              <span class="text-green-600">kcal/day</span>
-            </div>
-          </div>
-          <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <div class="text-sm text-blue-600 mb-1">Calories per kg</div>
-            <div class="flex items-baseline gap-2">
-              <span id="calPerKg" class="text-2xl font-bold text-blue-700">0.0</span>
-              <span class="text-blue-600">kcal/kg/day</span>
-            </div>
-          </div>
-          <div class="p-4 bg-purple-50 rounded-xl border border-purple-200">
-            <div class="text-sm text-purple-600 mb-1">Final Osmolarity</div>
-            <div class="flex items-baseline gap-2">
-              <span id="finalOsmol" class="text-2xl font-bold text-purple-700">0</span>
-              <span class="text-purple-600">mOsmol/L</span>
-            </div>
-          </div>
-        </div>
-        <div id="osmolWarning" class="hidden mt-4 p-4 warning-box rounded-xl">
-          <div class="flex items-center gap-2 text-amber-800">
-            <span class="text-xl">⚠️</span>
-            <span class="font-medium">Osmolarity สูงเกินไปสำหรับ Peripheral Line (> 900 mOsmol/L) พิจารณาใช้ Central Line</span>
-          </div>
-        </div>
-      </section>
+  <div id="osmolWarning" class="hidden mt-4 p-4 warning-box rounded-xl">
+    <div class="flex items-center gap-2 text-amber-800">
+      <span class="text-xl">⚠️</span>
+      <span class="font-medium">Osmolarity สูงเกินไปสำหรับ Peripheral Line (> 900 mOsmol/L) พิจารณาใช้ Central Line</span>
+    </div>
+  </div>
   
       <!-- Save Order Button -->
       <div class="flex gap-2 justify-end mt-10 mb-8">
@@ -1269,9 +1283,8 @@ function calculateAll() {
 
     if (!isPNFlushManual) {
         if (["NICU", "2ค"].includes(currentWard)) {
-            pnFlushInput.value = ""; // ไม่ใส่ Default
+            pnFlushInput.value = ""; 
         } else {
-            // รวมถึง PICU, PICU ศสก. และ Ward อื่นๆ ให้เป็น 30
             pnFlushInput.value = 30; 
         }
     }
@@ -1301,6 +1314,10 @@ function calculateAll() {
     const phosSourceEl = document.querySelector('input[name="phosSource"]:checked');
     const phosSource = phosSourceEl ? phosSourceEl.value : 'Glycophos';
 
+    // ดึงค่า Source ที่เลือก (Na และ K)
+    const naSource = document.querySelector('input[name="naSource"]:checked')?.value || 'NaCl';
+    const kSource = document.querySelector('input[name="kSource"]:checked')?.value || 'KCl';
+
     const phosInput = document.getElementById('phosvol');
     if (!isPhosVolManual) {
         phosInput.value = (phosSource === 'K2HPO4') ? roundToPlace((phosphorus * bw) * 2, 1) : roundToPlace(phosphorus * bw, 1);
@@ -1323,14 +1340,18 @@ function calculateAll() {
         if(document.getElementById('kFromP_Val')) document.getElementById('kFromP_Val').textContent = roundToPlace(kFromPhos, 2);
     }
 
+    // คำนวณ Na Volume (ใช้ตัวหาร 3 ถ้าเป็น Acetate, ใช้ 0.5 ถ้าเป็น NaCl)
+    const naDivisor = (naSource === 'NaAcetate') ? 3 : 0.5;
     const naInput = document.getElementById('navol');
-    if (!isNaVolManual) { naInput.value = roundToPlace(Math.max(0, (sodium * bw) - phosNa) / 0.5, 1); }
-    const naClVolume = parseFloat(naInput.value) || 0;
+    if (!isNaVolManual) { naInput.value = roundToPlace(Math.max(0, (sodium * bw) - phosNa) / naDivisor, 1); }
+    const naVolume = parseFloat(naInput.value) || 0;
 
+    // คำนวณ K Volume (ใช้ตัวหาร 3 ถ้าเป็น Acetate, ใช้ 2 ถ้าเป็น KCl)
+    const kDivisor = (kSource === 'KAcetate') ? 3 : 2;
     const kInput = document.getElementById('kvol');
     if (!isKVolManual) { 
         let kRemaining = Math.max(0, (potassium * bw) - kFromPhos);
-        kInput.value = roundToPlace(kRemaining / 2, 1); 
+        kInput.value = roundToPlace(kRemaining / kDivisor, 1); 
     }
     const kVolume = parseFloat(kInput.value) || 0;
 
@@ -1347,7 +1368,7 @@ function calculateAll() {
     }
     const caVolume = parseFloat(caInput.value) || 0;
 
-    const electrolytesVolume = phosVolume + naClVolume + kVolume + mgVolume + caVolume;
+    const electrolytesVolume = phosVolume + naVolume + kVolume + mgVolume + caVolume;
 
     // 7. Vitamins & Trace
     const vitInput = document.getElementById('vitvol');
@@ -1366,8 +1387,6 @@ function calculateAll() {
 
     // --- 8. Additives ---
     let additivesVolume = 0;
-
-    // ✅ ZINC
     let zincVolume = 0;
     const zincSelection = document.querySelector('input[name="zinc"]:checked')?.value;
     const zincInput = document.getElementById('zincvol');
@@ -1375,8 +1394,7 @@ function calculateAll() {
 
     if (zincSelection === 'yes') {
         if (zincDiv) zincDiv.classList.remove('hidden');
-        if (document.activeElement !== zincInput && 
-            (!zincInput.value || parseFloat(zincInput.value) === 0)) {
+        if (document.activeElement !== zincInput && (!zincInput.value || parseFloat(zincInput.value) === 0)) {
             zincInput.value = roundToPlace(0.3 * bw, 2);
         }
         zincVolume = parseFloat(zincInput.value) || 0;
@@ -1386,7 +1404,6 @@ function calculateAll() {
         if (zincInput) zincInput.value = '';
     }
 
-    // ✅ HEPARIN
     let heparinVolume = 0;
     const heparinSelection = document.querySelector('input[name="heparin"]:checked')?.value;
     const hepDiv = document.getElementById('heparinValueDiv');
@@ -1394,13 +1411,11 @@ function calculateAll() {
     if (heparinSelection === 'yes') {
         const hepUnits = roundToPlace(1 * pnVolume, 0);
         heparinVolume = roundToPlace(hepUnits / 500, 2);
-
         const hepUnitsEl = document.getElementById('heparinUnits');
         const hepVolEl = document.getElementById('heparinVolume');
-
         if (hepUnitsEl) hepUnitsEl.textContent = hepUnits + " units";
-        if (hepVolEl)   hepVolEl.textContent   = heparinVolume.toFixed(2) + " ml";
-        if (hepDiv)     hepDiv.classList.remove('hidden');
+        if (hepVolEl) hepVolEl.textContent = heparinVolume.toFixed(2) + " ml";
+        if (hepDiv) hepDiv.classList.remove('hidden');
     } else {
         if (hepDiv) hepDiv.classList.add('hidden');
         heparinVolume = 0;
@@ -1410,17 +1425,16 @@ function calculateAll() {
     additivesVolume = zincVolume + heparinVolume + otherVol;
 
     // ✅ TABLE SYNC
-    const zincVolCell   = document.getElementById('row-zinc-vol');
-    const prepZincCell  = document.getElementById('prep-zinc-vol');
-    const hepVolCell    = document.getElementById('row-heparin-vol');
-    const prepHepCell   = document.getElementById('prep-heparin-vol');
+    const zincVolCell = document.getElementById('row-zinc-vol');
+    const prepZincCell = document.getElementById('prep-zinc-vol');
+    const hepVolCell = document.getElementById('row-heparin-vol');
+    const prepHepCell = document.getElementById('prep-heparin-vol');
 
-    if (zincVolCell)  zincVolCell.textContent  = roundToPlace(zincVolume, 2);
+    if (zincVolCell) zincVolCell.textContent = roundToPlace(zincVolume, 2);
     if (prepZincCell) prepZincCell.textContent = roundToPlace(zincVolume, 2);
-    if (hepVolCell)   hepVolCell.textContent   = roundToPlace(heparinVolume, 2);
-    if (prepHepCell)  prepHepCell.textContent  = roundToPlace(heparinVolume, 2);
+    if (hepVolCell) hepVolCell.textContent = roundToPlace(heparinVolume, 2);
+    if (prepHepCell) prepHepCell.textContent = roundToPlace(heparinVolume, 2);
 
-    // 9. Protein & Dextrose
     const proteinVolume = parseFloat(document.getElementById('proteinVolInput').value) || 0;
     const dextroseVolume = parseFloat(document.getElementById('dextroseVolInput').value) || 0;
 
@@ -1434,7 +1448,12 @@ function calculateAll() {
         const protLabel = document.querySelector(`label[for="${selectedProt.id}"]`).textContent;
         document.getElementById('row-protein-name').textContent = protLabel;
     }
+    
+    // อัปเดตชื่อ Product ในตารางสรุป
     document.getElementById('row-phos-name').textContent = (phosSource === 'Glycophos') ? "- Glycophos (P)" : "- K2HPO4 (P)";
+    document.getElementById('row-na-name').textContent = (naSource === 'NaAcetate') ? "- Na Acetate" : "- 3% NaCl (Na)";
+    document.getElementById('row-k-name').textContent = (kSource === 'KAcetate') ? "- K Acetate" : "- KCl (K)";
+    
     document.getElementById('row-soluvit-name').textContent = (vitSource === 'Soluvit') ? "- Soluvit N" : "- Cernevit";
     document.getElementById('row-peditrace-name').textContent = (traceSource === 'Peditrace') ? "- Peditrace" : "- Addamel-N";
     
@@ -1445,7 +1464,7 @@ function calculateAll() {
     document.getElementById('proteinVol').textContent = roundToPlace(proteinVolume, 1);
     document.getElementById('dextroseVol').textContent = roundToPlace(dextroseVolume, 1);
     document.getElementById('row-phos-vol').textContent = phosVolume;
-    document.getElementById('row-na-vol').textContent = naClVolume;
+    document.getElementById('row-na-vol').textContent = naVolume;
     document.getElementById('row-k-vol').textContent = kVolume;
     document.getElementById('row-mg-vol').textContent = mgVolume;
     document.getElementById('row-ca-vol').textContent = caVolume;
@@ -1461,7 +1480,7 @@ function calculateAll() {
     document.getElementById('prep-proteinVol').textContent = roundToPlace(proteinVolume, 1);
     document.getElementById('prep-dextroseVol').textContent = prepDextroseVol;
     document.getElementById('prep-phos-vol').textContent = phosVolume;
-    document.getElementById('prep-na-vol').textContent = naClVolume;
+    document.getElementById('prep-na-vol').textContent = naVolume;
     document.getElementById('prep-k-vol').textContent = kVolume;
     document.getElementById('prep-mg-vol').textContent = mgVolume;
     document.getElementById('prep-ca-vol').textContent = caVolume;
@@ -1472,29 +1491,30 @@ function calculateAll() {
     document.getElementById('prep-other-vol').textContent = otherVol;
 
     const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol + heparinVolume;
-    if (!isPrepWaterManual) { 
-        document.getElementById('prep-waterVolInput').value = roundToPlace(pnPrepVol - allSubstancesPrep, 1); 
-    }
+    if (!isPrepWaterManual) { document.getElementById('prep-waterVolInput').value = roundToPlace(pnPrepVol - allSubstancesPrep, 1); }
 
     // 12. Osmolarity Calculation
     const prepVol = pnPrepVol || 1;
-    const selectedProtProductOsmol = document.querySelector('input[name="proteinProduct"]:checked').value;
+    const selectedProtProductOsmol = document.querySelector('input[name="proteinProduct"]:checked')?.value || 'aminoplasmal';
     const protConcOsmol = (selectedProtProductOsmol === 'aminoplasmal') ? 0.15 : 0.10;
     const aaGrams = (parseFloat(document.getElementById('proteinVolInput').value) || 0) * protConcOsmol;
     const osmol_AA = (aaGrams * 10 * 1000) / prepVol;
     const osmol_Dex = (prepDextroseVol * 2.5 * 1000) / prepVol;
-    const osmol_Na = (naClVolume * 1000) / prepVol;
-    const osmol_K = (kVolume * 4000) / prepVol;
+    
+    // คำนวณ Osmol ตาม Product ที่เลือก
+    const osmol_Na = (naSource === 'NaAcetate') ? (naVolume * 3000) / prepVol : (naVolume * 1000) / prepVol;
+    const osmol_K = (kSource === 'KAcetate') ? (kVolume * 3000) / prepVol : (kVolume * 4000) / prepVol;
+    
     const osmol_Ca = (caVolume * 430) / prepVol;
     const osmol_Mg = (mgVolume * 4000) / prepVol;
     const osmol_Phos = (phosSource === 'Glycophos') ? (phosVolume * 1000) / prepVol : (phosVolume * 1500) / prepVol;
 
-    document.getElementById('proteinOsmol').textContent   = Math.round(osmol_AA);
-    document.getElementById('dextroseOsmol').textContent  = Math.round(osmol_Dex);
-    document.getElementById('row-na-osmol').textContent   = Math.round(osmol_Na);
-    document.getElementById('row-k-osmol').textContent    = Math.round(osmol_K);
-    document.getElementById('row-mg-osmol').textContent   = Math.round(osmol_Mg);
-    document.getElementById('row-ca-osmol').textContent   = Math.round(osmol_Ca);
+    document.getElementById('proteinOsmol').textContent = Math.round(osmol_AA);
+    document.getElementById('dextroseOsmol').textContent = Math.round(osmol_Dex);
+    document.getElementById('row-na-osmol').textContent = Math.round(osmol_Na);
+    document.getElementById('row-k-osmol').textContent = Math.round(osmol_K);
+    document.getElementById('row-mg-osmol').textContent = Math.round(osmol_Mg);
+    document.getElementById('row-ca-osmol').textContent = Math.round(osmol_Ca);
     document.getElementById('row-phos-osmol').textContent = Math.round(osmol_Phos);
 
     const totalOsmolValue = osmol_AA + osmol_Dex + osmol_Na + osmol_K + osmol_Mg + osmol_Ca + osmol_Phos;
