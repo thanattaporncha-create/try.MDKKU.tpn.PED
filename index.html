@@ -969,7 +969,7 @@ body {
   
       <!-- Save Order Button -->
       <div class="flex gap-2 justify-end mt-10 mb-8">
-        <button id="saveOrderBtn" onclick="saveOrder()" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all flex items-center gap-2">
+  <button id="saveOrderBtn" onclick="saveAndRedirect()" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all flex items-center gap-2">
           <span>💾</span> บันทึก Order
         </button>
       </div>
@@ -1111,75 +1111,86 @@ document.getElementById('hn').addEventListener('input', fetchPatientName);
     
  async function saveAndRedirect() {
     const saveBtn = document.getElementById('saveOrderBtn');
-    if(saveBtn) { saveBtn.disabled = true; saveBtn.innerText = "⏳ กำลังบันทึก..."; }
+    
+    // ตรวจสอบข้อมูลเบื้องต้น
+    const hn = document.getElementById('hn').value;
+    if (!hn) {
+        alert("⚠️ กรุณากรอก HN ก่อนบันทึกค่ะ");
+        return;
+    }
 
-    // รวบรวมข้อมูลให้ครบ 50 ช่อง
+    if(saveBtn) { 
+        saveBtn.disabled = true; 
+        saveBtn.innerText = "⏳ กำลังบันทึก..."; 
+    }
+
     const formData = {
         orderDate: document.getElementById('orderDate').value,
-        hn: document.getElementById('hn').value,
+        hn: hn,
         patientName: document.getElementById('patientName').value,
         ward: document.getElementById('ward').value,
         route: document.querySelector('input[name="route"]:checked')?.value,
         bw: document.getElementById('bw').value,
-        totalTpnVolume: document.getElementById('totalVolume').value,
+        totalVolume: document.getElementById('totalVolume').value,
         fatProduct: document.querySelector('input[name="fatProduct"]:checked')?.value,
         fatReq: document.getElementById('fatTarget').value,
         netFat: document.getElementById('netFat').value,
-        fatVol: document.getElementById('fatVolume').value,
-        vitalipidType: document.querySelector('input[name="vitProduct"]:checked')?.value,
+        fatVolume: document.getElementById('fatVolume').value,
+        vitProduct: document.querySelector('input[name="vitProduct"]:checked')?.value,
         vitalipidVol: document.getElementById('vitalipid').value,
-        fatFlushVol: document.getElementById('flushVolume').value || 0,
-        totalFatPrep: document.getElementById('totalFatPlusVitalipid').value,
-        isSplitBag: document.querySelector('input[name="prepSplit"]:checked')?.value,
-        fatDripRate: document.getElementById('manualFatDripRate').value,
-        pnVolumeNet: document.getElementById('pnVolume').value,
-        pnFlushVol: document.getElementById('pnFlushVolume').value,
-        pnPrepVol: document.getElementById('pnPrepVolume').value,
-        ratePn: document.getElementById('rateTPN').value,
+        flushVolume: document.getElementById('flushVolume').value || 0,
+        totalFatPlusVitalipid: document.getElementById('totalFatPlusVitalipid').value,
+        prepSplit: document.querySelector('input[name="prepSplit"]:checked')?.value,
+        manualFatDripRate: document.getElementById('manualFatDripRate').value,
+        pnVolume: document.getElementById('pnVolume').value,
+        pnFlushVolume: document.getElementById('pnFlushVolume').value,
+        pnPrepVolume: document.getElementById('pnPrepVolume').value,
+        rateTPN: document.getElementById('rateTPN').value,
         proteinProduct: document.querySelector('input[name="proteinProduct"]:checked')?.value,
-        proteinDose: document.getElementById('proteinTarget').value,
-        totalProtein: document.getElementById('proteinGrams').value,
-        proteinVol: document.getElementById('proteinVolInput').value,
-        dexPercent: document.getElementById('dextrosePercent').value,
-        totalGlucose: document.getElementById('dextroseGrams').value,
-        dex50Vol: document.getElementById('dextroseVolInput').value,
+        proteinTarget: document.getElementById('proteinTarget').value,
+        proteinGrams: document.getElementById('proteinGrams').value,
+        proteinVolInput: document.getElementById('proteinVolInput').value,
+        dextrosePercent: document.getElementById('dextrosePercent').value,
+        dextroseGrams: document.getElementById('dextroseGrams').value,
+        dextroseVolInput: document.getElementById('dextroseVolInput').value,
         phosSource: document.querySelector('input[name="phosSource"]:checked')?.value,
-        phosVol: document.getElementById('phosvol').value,
+        phosvol: document.getElementById('phosvol').value,
         naSource: document.querySelector('input[name="naSource"]:checked')?.value,
-        naVol: document.getElementById('navol').value,
+        navol: document.getElementById('navol').value,
         kSource: document.querySelector('input[name="kSource"]:checked')?.value,
-        kVol: document.getElementById('kvol').value,
-        mgVol: document.getElementById('mgvol').value,
-        caVol: document.getElementById('cavol').value,
-        vitChoice: document.querySelector('input[name="vitSource"]:checked')?.value,
-        vitVol: document.getElementById('vitvol').value,
-        traceChoice: document.querySelector('input[name="traceSource"]:checked')?.value,
-        traceVol: document.getElementById('tracevol').value,
-        addZinc: document.querySelector('input[name="zinc"]:checked')?.value,
-        zincVol: document.getElementById('zincvol').value || 0,
-        addHeparin: document.querySelector('input[name="heparin"]:checked')?.value,
-        heparinVol: document.getElementById('row-heparin-vol').innerText,
-        addName: document.getElementById('additiveOtherName').value,
-        addVol: document.getElementById('additiveOtherVolume').value,
-        totalCalories: document.getElementById('totalCalDisplay').innerText,
-        caloriesPerKg: document.getElementById('calPerKg').innerText,
-        finalOsmolarity: document.getElementById('finalOsmol').innerText
+        kvol: document.getElementById('kvol').value,
+        mgvol: document.getElementById('mgvol').value,
+        cavol: document.getElementById('cavol').value,
+        vitSource: document.querySelector('input[name="vitSource"]:checked')?.value,
+        vitvol: document.getElementById('vitvol').value,
+        traceSource: document.querySelector('input[name="traceSource"]:checked')?.value,
+        tracevol: document.getElementById('tracevol').value,
+        zinc: document.querySelector('input[name="zinc"]:checked')?.value,
+        zincvol: document.getElementById('zincvol').value || 0,
+        heparin: document.querySelector('input[name="heparin"]:checked')?.value,
+        heparinUnits: document.getElementById('heparinUnits').innerText,
+        additiveOtherName: document.getElementById('additiveOtherName').value,
+        additiveOtherVolume: document.getElementById('additiveOtherVolume').value,
+        totalCalDisplay: document.getElementById('totalCalDisplay').innerText,
+        calPerKg: document.getElementById('calPerKg').innerText,
+        finalOsmol: document.getElementById('finalOsmol').innerText
     };
 
     try {
         localStorage.setItem('currentOrderData', JSON.stringify(formData));
         
+        // ส่งข้อมูลไปยัง Google Apps Script
         await fetch(API_URL, {
             method: 'POST',
             mode: 'no-cors',
             body: JSON.stringify(formData)
         });
         
+        console.log("บันทึกสำเร็จ");
         window.location.href = "label_WS.html";
     } catch (error) {
         console.error("Error:", error);
         alert('❌ บันทึกไม่สำเร็จ: ' + error.message);
-    } finally {
         if(saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "💾 บันทึก Order"; }
     }
 }
