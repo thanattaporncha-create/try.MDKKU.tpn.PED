@@ -202,48 +202,49 @@ body {
 <main id="mainContent" class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
       
       <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in relative z-30">
-        <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">📋 ข้อมูลทั่วไป</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-  <label class="block text-sm font-medium text-gray-700 mb-1">
-    วันที่ Order TPN <span class="text-red-600 font-bold ml-1">*กดเลือกวันที่ทุกครั้ง*</span>
-  </label>
-  <div class="flex gap-1">
-    <input type="date" id="orderDate" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all bg-white">
-    <button type="button" onclick="setToday()" class="px-3 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-600 hover:text-white transition-all text-xs font-bold whitespace-nowrap shadow-sm">
-      วันนี้ 📅
-    </button>
+  <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">📋 ข้อมูลทั่วไป</h2>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <div class="lg:col-span-1">
+      <label class="block text-sm font-medium text-gray-700 mb-1">วันที่ Order TPN</label>
+      <div class="flex gap-1">
+        <input type="date" id="orderDate" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl input-focus bg-white">
+        <button type="button" onclick="setToday()" class="px-3 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-600 hover:text-white transition-all text-xs font-bold">วันนี้</button>
+      </div>
+    </div>
+
+    <div class="lg:col-span-1">
+      <label class="block text-sm font-medium text-gray-700 mb-1">HN (สแกน/พิมพ์)</label>
+      <div class="flex gap-2">
+        <input type="text" id="hn" placeholder="สแกนหรือพิมพ์ HN" 
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus" 
+               oninput="fetchPatientAndHistory()" autofocus>
+      </div>
+    </div>
+
+    <div class="lg:col-span-2">
+      <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
+      <div class="flex gap-2">
+        <input type="text" id="patientName" placeholder="ชื่อ นามสกุล" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus">
+        <button type="button" id="btnRetrieve" onclick="retrieveLastOrder()" disabled 
+                class="bg-purple-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-purple-700 disabled:bg-gray-300 transition-all whitespace-nowrap">
+          ดึง Order เดิม
+        </button>
+      </div>
+      <p id="searchStatus" class="text-[11px] mt-1 font-medium min-h-[16px]"></p>
+    </div>
+
+    <div class="lg:col-span-4 relative">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Ward</label>
+      <input type="text" id="wardInput" placeholder="ค้นหาหอผู้ป่วย..." class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus" onfocus="showWardList()" oninput="filterWardList()" autocomplete="off">
+      <input type="hidden" id="ward">
+      <div id="wardDropdown" class="hidden absolute left-0 right-0 z-[100] mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+        <div id="wardOptions" class="py-1"></div>
+      </div>
+    </div>
   </div>
-</div>
-          <div>
-  <label class="block text-sm font-medium text-gray-700 mb-1">HN (สแกนบาร์โค้ดได้)</label>
-  <div class="flex gap-2">
-    <input type="text" id="hn" placeholder="สแกนหรือพิมพ์ HN" 
-           class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" 
-           oninput="checkHistory()" autofocus>
-           
-    <button type="button" id="btnRetrieve" onclick="retrieveLastOrder()" disabled 
-            class="bg-purple-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all">
-      ดึง Order เดิม
-    </button>
-  </div>
-</div>
-  <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
-  <input type="text" id="patientName" placeholder="ชื่อ นามสกุล" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all">
-  <p id="searchStatus" class="text-[11px] mt-1 font-medium"></p> 
-</div>
-          <div class="relative">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Ward</label>
-            <div class="relative">
-              <input type="text" id="wardInput" placeholder="ค้นหาหอผู้ป่วย..." class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all" onfocus="showWardList()" oninput="filterWardList()" autocomplete="off">
-              <input type="hidden" id="ward"> 
-              <div id="wardDropdown" class="hidden absolute left-0 right-0 z-[100] mt-1 bg-white border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
-                <div id="wardOptions" class="py-1"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+</section>
 
       <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in relative z-10">
         <h2 class="section-title text-lg font-semibold text-gray-800 mb-4"> 💉 Route การให้ TPN</h2>
@@ -992,7 +993,7 @@ body {
 
 
  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzFkO_M3hRk9MDxjcK7HHTKlTnSXmWwMgmdenVxvJV1uq9nvebAIOifT6XwuTbB-fKscw/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxhVaEJ8VGP73OFzIaZ3SdHSl4hD14hdRKJ2X3g-aWUc5X4GGvcBJjOBolSTlGyjfqhQQ/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -1062,43 +1063,49 @@ body {
     });
 
     // ========== Patient Name Fetch ==========
-    async function fetchPatientName() {
-        const hnInput = document.getElementById('hn');
-        const nameInput = document.getElementById('patientName');
-        const statusText = document.getElementById('searchStatus');
-        const hnValue = hnInput.value.trim().toLowerCase();
-        
-        if (hnValue === "") {
-            nameInput.value = "";
-            statusText.innerText = "";
-            nameInput.classList.remove('border-blue-500', 'bg-blue-50');
-            return;
-        }
+    // รวมฟังก์ชันเช็คชื่อและเช็คประวัติเข้าด้วยกัน
+async function fetchPatientAndHistory() {
+    const hn = document.getElementById('hn').value.trim();
+    const nameInput = document.getElementById('patientName');
+    const statusText = document.getElementById('searchStatus');
+    const btn = document.getElementById('btnRetrieve');
 
-        if (hnValue.length >= 3) {
-            statusText.innerText = "🔍 กำลังค้นหาข้อมูลเดิม...";
-            statusText.className = "text-[11px] mt-1 font-medium text-blue-600 animate-pulse";
-            try {
-                const response = await fetch(`${API_URL}?action=getPatientName&hn=${hnValue}`);
-                const result = await response.json();
-                if (result.patient_name) {
-                    nameInput.value = result.patient_name;
-                    statusText.innerText = "✅ พบข้อมูลล่าสุดแล้ว";
-                    statusText.className = "text-[11px] mt-1 font-medium text-green-600";
-                    nameInput.classList.add('border-blue-500', 'bg-blue-50');
-                } else {
-                    statusText.innerText = "❓ ไม่พบประวัติเดิม กรุณากรอกชื่อคนไข้";
-                    statusText.className = "text-[11px] mt-1 font-medium text-amber-600";
-                    nameInput.classList.remove('border-blue-500', 'bg-blue-50');
-                }
-            } catch (error) {
-                statusText.innerText = "⚠️ การเชื่อมต่อขัดข้อง";
-                statusText.className = "text-[11px] mt-1 font-medium text-red-600";
-            }
-        }
+    // ถ้า HN สั้นไป ให้ปิดปุ่มและล้างข้อมูล
+    if (hn.length < 3) {
+        btn.disabled = true;
+        nameInput.value = "";
+        statusText.innerText = "";
+        return;
     }
 
-    document.getElementById('hn').addEventListener('input', fetchPatientName);
+    statusText.innerText = "🔍 กำลังตรวจสอบข้อมูล...";
+    statusText.className = "text-[11px] mt-1 font-medium text-blue-600 animate-pulse";
+
+    try {
+        // ดึงทั้งชื่อและเช็คประวัติในครั้งเดียว (คุณต้องปรับใน Google Apps Script ให้ return ทั้งคู่)
+        // หรือถ้าอยากให้ง่าย ให้เรียก 2 action นี้ใน fetch เดียวกันหรือแยก fetch ก็ได้ค่ะ
+        const response = await fetch(`${API_URL}?action=getPatientData&hn=${hn}`);
+        const result = await response.json();
+
+        if (result.patient_name) {
+            nameInput.value = result.patient_name;
+            statusText.innerText = "✅ พบคนไข้แล้ว";
+            statusText.className = "text-[11px] mt-1 font-medium text-green-600";
+            
+            // ถ้ามีประวัติค่อยเปิดปุ่ม
+            btn.disabled = (result.has_history !== true);
+            if(result.has_history) {
+                statusText.innerText += " (มีประวัติ TPN สามารถดึง Order เดิมได้)";
+            }
+        } else {
+            statusText.innerText = "⚠️ ไม่พบข้อมูลคนไข้ กรุณากรอกชื่อเอง";
+            statusText.className = "text-[11px] mt-1 font-medium text-amber-600";
+            btn.disabled = true;
+        }
+    } catch (error) {
+        statusText.innerText = "⚠️ ระบบขัดข้อง";
+    }
+}
 
     // ========== Save ==========
     async function saveAndRedirect() {
