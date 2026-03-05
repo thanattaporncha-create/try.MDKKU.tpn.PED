@@ -989,7 +989,7 @@ body {
     // ========================================
     
     // 🔧 Configuration
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwcx20kkJyeB5YIK4woJYxk28nez8R2aPr3HtQ0XLLMoG4zWMOTajwmreU0D5FYv3V9lg/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwbIQfDlk5jfCzGTBGGtM3Vpo16UVsZGC9St8BhDGbzA8MvY9BYIMiuTs2-SK_xbCj2GQ/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -1109,59 +1109,78 @@ async function fetchPatientName() {
 // แนะนำให้ใช้ 'input' แทน 'blur' เพื่อความเรียลไทม์ (ถ้าช้าไปค่อยเปลี่ยนกลับเป็น blur ค่ะ)
 document.getElementById('hn').addEventListener('input', fetchPatientName);
     
-    async function saveAndRedirect() {
-    // 1. ตรวจสอบข้อมูลก่อนบันทึก (จากโค้ดเดิม)
-    const orderDate = document.getElementById('orderDate').value;
-    const hn = document.getElementById('hn').value;
-    const patientName = document.getElementById('patientName').value;
+ async function saveAndRedirect() {
+    const saveBtn = document.getElementById('saveOrderBtn');
+    if(saveBtn) { saveBtn.disabled = true; saveBtn.innerText = "⏳ กำลังบันทึก..."; }
 
-    if (!orderDate || !hn || !patientName) {
-        alert("⚠️ กรุณากรอกข้อมูลสำคัญ (Date, HN, Name) ให้ครบก่อนบันทึกค่ะ");
-        return;
-    }
-
-    // 2. ปิดปุ่มกดซ้ำ (จากโค้ดเดิม)
-    const saveBtn = document.getElementById('saveOrderBtn'); // ตรวจสอบ ID ของปุ่มในหน้า HTML คุณด้วยนะคะ
-    if(saveBtn) {
-        saveBtn.disabled = true;
-        saveBtn.innerText = "⏳ กำลังบันทึก...";
-    }
-
-    // 3. รวบรวมข้อมูล (Schema ใหม่)
+    // รวบรวมข้อมูลให้ครบ 50 ช่อง
     const formData = {
-        orderDate: orderDate,
-        hn: hn,
-        patientName: patientName,
+        orderDate: document.getElementById('orderDate').value,
+        hn: document.getElementById('hn').value,
+        patientName: document.getElementById('patientName').value,
         ward: document.getElementById('ward').value,
-        // ... (ใส่ข้อมูลช่องอื่นๆ ที่เหลือทั้งหมดตามที่ลิสต์ไว้)
-        // ... 
+        route: document.querySelector('input[name="route"]:checked')?.value,
+        bw: document.getElementById('bw').value,
+        totalTpnVolume: document.getElementById('totalVolume').value,
+        fatProduct: document.querySelector('input[name="fatProduct"]:checked')?.value,
+        fatReq: document.getElementById('fatTarget').value,
+        netFat: document.getElementById('netFat').value,
+        fatVol: document.getElementById('fatVolume').value,
+        vitalipidType: document.querySelector('input[name="vitProduct"]:checked')?.value,
+        vitalipidVol: document.getElementById('vitalipid').value,
+        fatFlushVol: document.getElementById('flushVolume').value || 0,
+        totalFatPrep: document.getElementById('totalFatPlusVitalipid').value,
+        isSplitBag: document.querySelector('input[name="prepSplit"]:checked')?.value,
+        fatDripRate: document.getElementById('manualFatDripRate').value,
+        pnVolumeNet: document.getElementById('pnVolume').value,
+        pnFlushVol: document.getElementById('pnFlushVolume').value,
+        pnPrepVol: document.getElementById('pnPrepVolume').value,
+        ratePn: document.getElementById('rateTPN').value,
+        proteinProduct: document.querySelector('input[name="proteinProduct"]:checked')?.value,
+        proteinDose: document.getElementById('proteinTarget').value,
+        totalProtein: document.getElementById('proteinGrams').value,
+        proteinVol: document.getElementById('proteinVolInput').value,
+        dexPercent: document.getElementById('dextrosePercent').value,
+        totalGlucose: document.getElementById('dextroseGrams').value,
+        dex50Vol: document.getElementById('dextroseVolInput').value,
+        phosSource: document.querySelector('input[name="phosSource"]:checked')?.value,
+        phosVol: document.getElementById('phosvol').value,
+        naSource: document.querySelector('input[name="naSource"]:checked')?.value,
+        naVol: document.getElementById('navol').value,
+        kSource: document.querySelector('input[name="kSource"]:checked')?.value,
+        kVol: document.getElementById('kvol').value,
+        mgVol: document.getElementById('mgvol').value,
+        caVol: document.getElementById('cavol').value,
+        vitChoice: document.querySelector('input[name="vitSource"]:checked')?.value,
+        vitVol: document.getElementById('vitvol').value,
+        traceChoice: document.querySelector('input[name="traceSource"]:checked')?.value,
+        traceVol: document.getElementById('tracevol').value,
+        addZinc: document.querySelector('input[name="zinc"]:checked')?.value,
+        zincVol: document.getElementById('zincvol').value || 0,
+        addHeparin: document.querySelector('input[name="heparin"]:checked')?.value,
+        heparinVol: document.getElementById('row-heparin-vol').innerText,
+        addName: document.getElementById('additiveOtherName').value,
+        addVol: document.getElementById('additiveOtherVolume').value,
         totalCalories: document.getElementById('totalCalDisplay').innerText,
-        // ... 
+        caloriesPerKg: document.getElementById('calPerKg').innerText,
+        finalOsmolarity: document.getElementById('finalOsmol').innerText
     };
 
-    // 4. บันทึกและส่งข้อมูล
-    localStorage.setItem('currentOrderData', JSON.stringify(formData));
-
     try {
-        await fetch(SCRIPT_URL, {
+        localStorage.setItem('currentOrderData', JSON.stringify(formData));
+        
+        await fetch(API_URL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify(formData) // ส่งเป็น JSON ตรงตาม Apps Script ที่วางไว้ก่อนหน้า
+            body: JSON.stringify(formData)
         });
         
-        // 5. แจ้งเตือนเมื่อสำเร็จ
-        alert('✅ บันทึกข้อมูลเรียบร้อยแล้ว');
         window.location.href = "label_WS.html";
-        
     } catch (error) {
         console.error("Error:", error);
-        alert('❌ บันทึกไม่สำเร็จ แต่ระบบจะพาท่านไปยังหน้าพิมพ์ฉลากค่ะ');
-        window.location.href = "label_WS.html";
+        alert('❌ บันทึกไม่สำเร็จ: ' + error.message);
     } finally {
-        if(saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.innerText = "💾 บันทึก Order";
-        }
+        if(saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "💾 บันทึก Order"; }
     }
 }
     // ========== Helper Functions ==========
