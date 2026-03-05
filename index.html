@@ -989,7 +989,7 @@ body {
     // ========================================
     
     // 🔧 Configuration
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwUXje243vRpBLvqUfP6w-yK_C6AM3Qc2JYtkZGRYntdTdNxqgiYpFwhupZW-VtHRmz/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwcx20kkJyeB5YIK4woJYxk28nez8R2aPr3HtQ0XLLMoG4zWMOTajwmreU0D5FYv3V9lg/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -1109,122 +1109,61 @@ async function fetchPatientName() {
 // แนะนำให้ใช้ 'input' แทน 'blur' เพื่อความเรียลไทม์ (ถ้าช้าไปค่อยเปลี่ยนกลับเป็น blur ค่ะ)
 document.getElementById('hn').addEventListener('input', fetchPatientName);
     
-    // ========== API Functions ==========
-
-async function saveOrder() {
+    async function saveAndRedirect() {
+    // 1. ตรวจสอบข้อมูลก่อนบันทึก (จากโค้ดเดิม)
     const orderDate = document.getElementById('orderDate').value;
     const hn = document.getElementById('hn').value;
     const patientName = document.getElementById('patientName').value;
-    
+
     if (!orderDate || !hn || !patientName) {
-        alert("⚠️ กรุณากรอกข้อมูลสำคัญให้ครบค่ะ");
+        alert("⚠️ กรุณากรอกข้อมูลสำคัญ (Date, HN, Name) ให้ครบก่อนบันทึกค่ะ");
         return;
     }
 
-    const saveBtn = document.getElementById('saveOrderBtn');
-    saveBtn.disabled = true;
-    saveBtn.innerText = "⏳ กำลังบันทึก...";
+    // 2. ปิดปุ่มกดซ้ำ (จากโค้ดเดิม)
+    const saveBtn = document.getElementById('saveOrderBtn'); // ตรวจสอบ ID ของปุ่มในหน้า HTML คุณด้วยนะคะ
+    if(saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerText = "⏳ กำลังบันทึก...";
+    }
 
-    // รวบรวมข้อมูล "ทุกกระเบียดนิ้ว"
-    const data = {
-        order_date: orderDate,
+    // 3. รวบรวมข้อมูล (Schema ใหม่)
+    const formData = {
+        orderDate: orderDate,
         hn: hn,
-        patient_name: patientName,
+        patientName: patientName,
         ward: document.getElementById('ward').value,
-        route: document.querySelector('input[name="route"]:checked').value,
-        bw: document.getElementById('bw').value,
-        
-        // Requirements
-        total_volume: document.getElementById('totalVolume').value,
-        protein_target: document.getElementById('proteinTarget').value,
-        fat_target: document.getElementById('fatTarget').value,
-        dextrose_percent: document.getElementById('dextrosePercent').value,
-        phosphorus: document.getElementById('phosphorus').value,
-        sodium: document.getElementById('sodium').value,
-        potassium: document.getElementById('potassium').value,
-        magnesium: document.getElementById('magnesium').value,
-        calcium: document.getElementById('calcium').value,
-        
-        // Products
-        protein_product: document.querySelector('input[name="proteinProduct"]:checked').value,
-        fat_product: document.querySelector('input[name="fatProduct"]:checked').value,
-        vit_product: document.querySelector('input[name="vitProduct"]:checked').value,
-
-        // Volumes (Net)
-        pn_volume: document.getElementById('pnVolume').value,
-        protein_vol: document.getElementById('proteinVolInput').value,
-        dex_vol: document.getElementById('dextroseVolInput').value,
-        phos_vol: document.getElementById('phosvol').value || 0,
-        na_vol: document.getElementById('navol').value,
-        k_vol: document.getElementById('kvol').value,
-        mg_vol: document.getElementById('mgvol').value,
-        ca_vol: document.getElementById('cavol').value,
-        soluvit_vol: document.getElementById('soluvit').value,
-        peditrace_vol: document.getElementById('peditrace').value,
-        vitalipid_vol: document.getElementById('vitalipid').value,
-        zinc_vol: document.getElementById('zincVolume').value || 0,
-        heparin_vol: document.getElementById('row-heparin-vol').innerText,
-        additive_other_name: document.getElementById('additiveOtherName').value,
-        additive_other_volume: document.getElementById('additiveOtherVolume').value,
-        water_net: document.getElementById('waterVolInput').value,
-
-        // Prep Volumes
-        pn_prep_total: document.getElementById('pnPrepVolume').value,
-        prep_protein_vol: document.getElementById('prep-proteinVol').innerText,
-        prep_dex_50_vol: document.getElementById('prep-dextroseVol').innerText,
-        prep_phos_vol: document.getElementById('prep-phos-vol').innerText,
-        prep_na_vol: document.getElementById('prep-na-vol').innerText,
-        prep_k_vol: document.getElementById('prep-k-vol').innerText,
-        prep_mg_vol: document.getElementById('prep-mg-vol').innerText,
-        prep_ca_vol: document.getElementById('prep-ca-vol').innerText,
-        prep_water_vol: document.getElementById('prep-waterVolInput').value,
-
-        // Fat Admin
-        flush_option: document.querySelector('input[name="flush"]:checked').value,
-        flush_volume: document.getElementById('flushVolume').value || 0,
-        total_fat_vit_flush: document.getElementById('totalFatPlusVitalipid').value,
-        prep_split: document.querySelector('input[name="prepSplit"]:checked').value,
-        fat_rate: document.getElementById('manualFatDripRate').value,
-        
-        // Summary
-        rate_tpn: document.getElementById('rateTPN').value,
-        gir_result: document.getElementById('girValue').innerText,
-        total_calories: document.getElementById('totalCalDisplay').innerText,
-        cal_per_kg: document.getElementById('calPerKg').innerText,
-        final_osmolarity: document.getElementById('finalOsmol').innerText.replace('~','').trim(),
-        na_from_p_meq: document.getElementById('phoNa').value,
-        heparin_units: document.getElementById('heparinUnits').innerText
+        // ... (ใส่ข้อมูลช่องอื่นๆ ที่เหลือทั้งหมดตามที่ลิสต์ไว้)
+        // ... 
+        totalCalories: document.getElementById('totalCalDisplay').innerText,
+        // ... 
     };
 
+    // 4. บันทึกและส่งข้อมูล
+    localStorage.setItem('currentOrderData', JSON.stringify(formData));
+
     try {
-        await fetch(API_URL, {
+        await fetch(SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            body: new URLSearchParams(data)
+            body: JSON.stringify(formData) // ส่งเป็น JSON ตรงตาม Apps Script ที่วางไว้ก่อนหน้า
         });
-        alert('✅ บันทึกข้อมูล "ทุกกระเบียดนิ้ว" เรียบร้อยแล้วค่ะ!');
+        
+        // 5. แจ้งเตือนเมื่อสำเร็จ
+        alert('✅ บันทึกข้อมูลเรียบร้อยแล้ว');
+        window.location.href = "label_WS.html";
+        
     } catch (error) {
-        alert('❌ พลาดไปนิด! ลองใหม่อีกทีนะคิม');
+        console.error("Error:", error);
+        alert('❌ บันทึกไม่สำเร็จ แต่ระบบจะพาท่านไปยังหน้าพิมพ์ฉลากค่ะ');
+        window.location.href = "label_WS.html";
     } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerText = "💾 บันทึก Order";
+        if(saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerText = "💾 บันทึก Order";
+        }
     }
 }
-    function showSaveMessage(message, type) {
-      let existingMsg = document.getElementById('saveMessage');
-      if (existingMsg) existingMsg.remove();
-
-      const msgDiv = document.createElement('div');
-      msgDiv.id = 'saveMessage';
-      msgDiv.className = type === 'success' 
-        ? 'fixed top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in'
-        : 'fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in';
-      msgDiv.textContent = message;
-      document.body.appendChild(msgDiv);
-
-      setTimeout(() => msgDiv.remove(), type === 'success' ? 3000 : 5000);
-    }
-
     // ========== Helper Functions ==========
 
     function roundToPlace(num, places) {
