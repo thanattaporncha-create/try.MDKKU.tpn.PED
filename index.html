@@ -1191,6 +1191,13 @@ async function saveAndRedirect() {
     function roundToPlace(num, places) {
       const factor = Math.pow(10, places);
       return Math.round((num || 0) * factor) / factor;
+    // เพิ่มใน formData object ใน saveAndRedirect()
+phosphorus_dose: document.getElementById('phosphorus').value,
+sodium_dose:     document.getElementById('sodium').value,
+potassium_dose:  document.getElementById('potassium').value,
+magnesium_dose:  document.getElementById('magnesium').value,
+calcium_dose:    document.getElementById('calcium').value,
+flush_option:    document.querySelector('input[name="flush"]:checked')?.value || 'none'
     }
 
     // ========== Calculation Functions ==========
@@ -1922,119 +1929,118 @@ async function retrieveLastOrder() {
     const response = await fetch(`${API_URL}?action=getLastOrder&hn=${hn}`);
     const data = await response.json();
     
-    if (data) {
-        // ✅ ล็อก Manual Flags ทั้งหมดก่อน เพื่อป้องกัน calculateAll() override ค่าที่ดึงมา
-        isPhosVolManual = true;
-        isPhosNaManual = true;
-        isNaVolManual = true;
-        isKVolManual = true;
-        isMgVolManual = true;
-        isCaVolManual = true;
-        isRateManual = true;
-        isVitalipidManual = true;
-        isVitVolManual = true;
-        isTraceVolManual = true;
-        isFlushManual = true;
-        isWaterManual = true;
-        isPrepWaterManual = true;
-        isPNFlushManual = true;
+    if (!data) { alert("ไม่พบข้อมูล"); return; }
 
-        // --- ข้อมูลทั่วไป ---
-        document.getElementById('orderDate').value = data.order_date;
-        document.getElementById('patientName').value = data.patient_name;
-        document.getElementById('ward').value = data.ward;
-        document.getElementById('wardInput').value = data.ward;
-        document.getElementById('bw').value = data.bw;
-        document.getElementById('totalVolume').value = data.total_tpn_volume;
+    // ============================================
+    // STEP 1: ล้าง Manual Flags ทั้งหมดก่อน
+    // เพื่อให้ calculateAll() คำนวณใหม่ได้อิสระ
+    // ============================================
+    isPhosVolManual   = false;
+    isPhosNaManual    = false;
+    isNaVolManual     = false;
+    isKVolManual      = false;
+    isMgVolManual     = false;
+    isCaVolManual     = false;
+    isRateManual      = false;
+    isVitalipidManual = false;
+    isVitVolManual    = false;
+    isTraceVolManual  = false;
+    isFlushManual     = false;
+    isWaterManual     = false;
+    isPrepWaterManual = false;
+    isPNFlushManual   = false;
 
-        // --- Fat ---
-        document.getElementById('fatTarget').value = data.fat_req;
-        document.getElementById('netFat').value = data.net_fat;
-        document.getElementById('fatVolume').value = data.fat_vol;
-        document.getElementById('vitalipid').value = data.vitalipid_vol;
-        document.getElementById('flushVolume').value = data.fat_flush_vol;
-        document.getElementById('totalFatPlusVitalipid').value = data.total_fat_prep;
-        document.getElementById('manualFatDripRate').value = data.fat_drip_rate;
+    // ============================================
+    // STEP 2: ใส่ Radio Buttons ก่อน
+    // (ต้องทำก่อน เพราะ calculateAll() อ่านค่าจากนี้)
+    // ============================================
+    const setRadio = (name, val) => {
+        if (!val) return;
+        const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
+        if (radio) radio.checked = true;
+    };
 
-        // --- PN Volume ---
-        document.getElementById('pnVolume').value = data.pn_volume_net;
-        document.getElementById('pnFlushVolume').value = data.pn_flush_vol;
-        document.getElementById('pnPrepVolume').value = data.pn_prep_vol;
-        document.getElementById('rateTPN').value = data.rate_pn;
+    setRadio('route',          data.route);
+    setRadio('fatProduct',     data.fat_product);
+    setRadio('vitProduct',     data.vitalipid_type);
+    setRadio('prepSplit',      data.is_split_bag);
+    setRadio('proteinProduct', data.protein_product);
+    setRadio('phosSource',     data.phos_source);
+    setRadio('naSource',       data.na_source);
+    setRadio('kSource',        data.k_source);
+    setRadio('vitSource',      data.vit_choice);
+    setRadio('traceSource',    data.trace_choice);
+    setRadio('zinc',           data.add_zinc);
+    setRadio('heparin',        data.add_heparin);
+    setRadio('flush',          data.flush_option || 'none');
 
-        // --- Protein ---
-        document.getElementById('proteinTarget').value = data.protein_dose;
-        document.getElementById('proteinGrams').value = data.total_protein;
-        document.getElementById('proteinVolInput').value = data.protein_vol;
+    // ============================================
+    // STEP 3: ใส่ค่าข้อมูลทั่วไป
+    // ============================================
+    document.getElementById('orderDate').value    = data.order_date;
+    document.getElementById('patientName').value  = data.patient_name;
+    document.getElementById('ward').value         = data.ward;
+    document.getElementById('wardInput').value    = data.ward;
+    document.getElementById('bw').value           = data.bw;
+    document.getElementById('totalVolume').value  = data.total_tpn_volume;
 
-        // --- Dextrose ---
-        document.getElementById('dextrosePercent').value = data.dex_percent;
-        document.getElementById('dextroseGrams').value = data.total_glucose;
-        document.getElementById('dextroseVolInput').value = data.dex_50_vol;
+    // ============================================
+    // STEP 4: ใส่ Dose Fields (ให้ calculateAll คำนวณ Vol เอง)
+    // ============================================
 
-        // ✅ Electrolytes: ใส่ค่า Volume โดยตรง (ไม่ต้องใส่ dose เพราะล็อก Manual แล้ว)
-        document.getElementById('phosvol').value = data.phos_vol;
-        document.getElementById('navol').value = data.na_vol;
-        document.getElementById('kvol').value = data.k_vol;
-        document.getElementById('mgvol').value = data.mg_vol;
-        document.getElementById('cavol').value = data.ca_vol;
+    // Fat
+    document.getElementById('fatTarget').value   = data.fat_req;
+    document.getElementById('vitalipid').value   = data.vitalipid_vol;
+    document.getElementById('manualFatDripRate').value = data.fat_drip_rate;
 
-        // ✅ Vitamins & Trace
-        document.getElementById('vitvol').value = data.vit_vol;
-        document.getElementById('tracevol').value = data.trace_vol;
+    // PN
+    document.getElementById('pnFlushVolume').value = data.pn_flush_vol;
 
-        // ✅ Additives
+    // Protein
+    document.getElementById('proteinTarget').value  = data.protein_dose;
+    document.getElementById('proteinGrams').value   = data.total_protein;
+    document.getElementById('proteinVolInput').value = data.protein_vol;
+
+    // Dextrose
+    document.getElementById('dextrosePercent').value  = data.dex_percent;
+    document.getElementById('dextroseGrams').value    = data.total_glucose;
+    document.getElementById('dextroseVolInput').value = data.dex_50_vol;
+
+    // ✅ Electrolyte Dose (จาก AY-BD ใหม่)
+    // calculateAll() จะอ่าน dose เหล่านี้แล้วคำนวณ Vol เองอัตโนมัติ
+    document.getElementById('phosphorus').value = data.phosphorus_dose;
+    document.getElementById('sodium').value     = data.sodium_dose;
+    document.getElementById('potassium').value  = data.potassium_dose;
+    document.getElementById('magnesium').value  = data.magnesium_dose;
+    document.getElementById('calcium').value    = data.calcium_dose;
+
+    // Vitamins & Trace (ปล่อยให้ calculateAll คำนวณจาก BW)
+    // ไม่ต้องใส่ vitvol / tracevol เพราะ calculateAll จะคำนวณให้
+
+    // Additives
+    document.getElementById('additiveOtherName').value   = data.add_name;
+    document.getElementById('additiveOtherVolume').value = data.add_vol;
+
+    // Zinc Volume (ถ้าเลือก yes)
+    if (data.add_zinc === 'yes') {
         document.getElementById('zincvol').value = data.zinc_vol;
-        document.getElementById('additiveOtherName').value = data.add_name;
-        document.getElementById('additiveOtherVolume').value = data.add_vol;
-
-        // ✅ Water
-        document.getElementById('waterVolInput').value = data.water_net || 0;
-        document.getElementById('prep-waterVolInput').value = data.prep_water_vol || 0;
-
-        // --- Radio Buttons ---
-        const setRadio = (name, val) => {
-            if (!val) return;
-            const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
-            if (radio) radio.checked = true;
-        };
-
-        setRadio('route', data.route);
-        setRadio('fatProduct', data.fat_product);
-        setRadio('vitProduct', data.vitalipid_type);
-        setRadio('prepSplit', data.is_split_bag);
-        setRadio('proteinProduct', data.protein_product);
-        setRadio('phosSource', data.phos_source);
-        setRadio('naSource', data.na_source);
-        setRadio('kSource', data.k_source);
-        setRadio('vitSource', data.vit_choice);
-        setRadio('traceSource', data.trace_choice);
-        setRadio('zinc', data.add_zinc);
-        setRadio('heparin', data.add_heparin);
-        setRadio('flush', data.flush_option || 'none');
-
-        // --- แสดง/ซ่อน Zinc & Heparin Div ตามที่ดึงมา ---
         const zincDiv = document.getElementById('zincVolumeDiv');
-        if (zincDiv) zincDiv.classList.toggle('hidden', data.add_zinc !== 'yes');
-
-        const hepDiv = document.getElementById('heparinValueDiv');
-        if (hepDiv) hepDiv.classList.toggle('hidden', data.add_heparin !== 'yes');
-        
-        if (data.add_heparin === 'yes') {
-            document.getElementById('heparinUnits').textContent = data.heparin_units || '-';
-            document.getElementById('heparinVolume').textContent = data.heparin_vol || '-';
-        }
-
-        // --- อัปเดตตารางสรุปโดยตรง ---
-        document.getElementById('totalCalDisplay').textContent = data.total_calories;
-        document.getElementById('calPerKg').textContent = data.calories_per_kg;
-        document.getElementById('finalOsmol').textContent = data.final_osmolarity;
-
-        alert("✅ ดึงข้อมูลล่าสุดเรียบร้อยแล้วค่ะ!");
-        
-        // ✅ เรียก calculateAll() หลังสุด เพื่อ render ตารางให้สมบูรณ์
-        calculateAll();
+        if (zincDiv) zincDiv.classList.remove('hidden');
     }
+
+    // Flush Volume (ถ้าเลือก custom)
+    if (data.flush_option === 'custom') {
+        document.getElementById('flushVolume').value = data.fat_flush_vol;
+    }
+
+    // ============================================
+    // STEP 5: เรียก calculateAll() เพียงครั้งเดียว
+    // ทุกอย่างจะคำนวณใหม่จาก Dose ที่ใส่ไว้
+    // Water จะถูกคำนวณอัตโนมัติ ✅
+    // ============================================
+    calculateAll();
+
+    alert("✅ ดึงข้อมูลล่าสุดเรียบร้อยแล้วค่ะ!");
 }
   </script>
 </body>
