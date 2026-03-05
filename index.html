@@ -997,7 +997,7 @@ body {
     // ========================================
     
     // 🔧 Configuration
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxQFEmCk60l7ysa4aFna8eA8gC7m0c0ecGJ1vmCNu2pYvl0sxWO7YSzWuHuMkustak46w/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycby2G2kR8EhUBBiFU6rMQE5r5uGd-OtXoBCwGRrxTuqZM8Z_EuBhjpXR0-RobydLN7B4QQ/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -1917,20 +1917,37 @@ async function checkHistory() {
     btn.disabled = (result !== "found");
 }
 
-// 2. ฟังก์ชันดึงข้อมูลมา Fill ทั้ง 50 ช่อง
 async function retrieveLastOrder() {
     const hn = document.getElementById('hn').value;
     const response = await fetch(`${API_URL}?action=getLastOrder&hn=${hn}`);
     const data = await response.json();
     
     if (data) {
-        // กรอก Input
+        // ✅ ล็อก Manual Flags ทั้งหมดก่อน เพื่อป้องกัน calculateAll() override ค่าที่ดึงมา
+        isPhosVolManual = true;
+        isPhosNaManual = true;
+        isNaVolManual = true;
+        isKVolManual = true;
+        isMgVolManual = true;
+        isCaVolManual = true;
+        isRateManual = true;
+        isVitalipidManual = true;
+        isVitVolManual = true;
+        isTraceVolManual = true;
+        isFlushManual = true;
+        isWaterManual = true;
+        isPrepWaterManual = true;
+        isPNFlushManual = true;
+
+        // --- ข้อมูลทั่วไป ---
         document.getElementById('orderDate').value = data.order_date;
         document.getElementById('patientName').value = data.patient_name;
         document.getElementById('ward').value = data.ward;
         document.getElementById('wardInput').value = data.ward;
         document.getElementById('bw').value = data.bw;
         document.getElementById('totalVolume').value = data.total_tpn_volume;
+
+        // --- Fat ---
         document.getElementById('fatTarget').value = data.fat_req;
         document.getElementById('netFat').value = data.net_fat;
         document.getElementById('fatVolume').value = data.fat_vol;
@@ -1938,33 +1955,50 @@ async function retrieveLastOrder() {
         document.getElementById('flushVolume').value = data.fat_flush_vol;
         document.getElementById('totalFatPlusVitalipid').value = data.total_fat_prep;
         document.getElementById('manualFatDripRate').value = data.fat_drip_rate;
+
+        // --- PN Volume ---
         document.getElementById('pnVolume').value = data.pn_volume_net;
         document.getElementById('pnFlushVolume').value = data.pn_flush_vol;
         document.getElementById('pnPrepVolume').value = data.pn_prep_vol;
         document.getElementById('rateTPN').value = data.rate_pn;
+
+        // --- Protein ---
         document.getElementById('proteinTarget').value = data.protein_dose;
         document.getElementById('proteinGrams').value = data.total_protein;
         document.getElementById('proteinVolInput').value = data.protein_vol;
+
+        // --- Dextrose ---
         document.getElementById('dextrosePercent').value = data.dex_percent;
         document.getElementById('dextroseGrams').value = data.total_glucose;
         document.getElementById('dextroseVolInput').value = data.dex_50_vol;
+
+        // ✅ Electrolytes: ใส่ค่า Volume โดยตรง (ไม่ต้องใส่ dose เพราะล็อก Manual แล้ว)
         document.getElementById('phosvol').value = data.phos_vol;
         document.getElementById('navol').value = data.na_vol;
         document.getElementById('kvol').value = data.k_vol;
         document.getElementById('mgvol').value = data.mg_vol;
         document.getElementById('cavol').value = data.ca_vol;
+
+        // ✅ Vitamins & Trace
         document.getElementById('vitvol').value = data.vit_vol;
         document.getElementById('tracevol').value = data.trace_vol;
+
+        // ✅ Additives
         document.getElementById('zincvol').value = data.zinc_vol;
         document.getElementById('additiveOtherName').value = data.add_name;
         document.getElementById('additiveOtherVolume').value = data.add_vol;
-        document.getElementById('waterVolInput').value = data.water_net;
-        
-        // กรอก Radio Buttons
+
+        // ✅ Water
+        document.getElementById('waterVolInput').value = data.water_net || 0;
+        document.getElementById('prep-waterVolInput').value = data.prep_water_vol || 0;
+
+        // --- Radio Buttons ---
         const setRadio = (name, val) => {
+            if (!val) return;
             const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
-            if(radio) radio.checked = true;
+            if (radio) radio.checked = true;
         };
+
         setRadio('route', data.route);
         setRadio('fatProduct', data.fat_product);
         setRadio('vitProduct', data.vitalipid_type);
@@ -1977,25 +2011,28 @@ async function retrieveLastOrder() {
         setRadio('traceSource', data.trace_choice);
         setRadio('zinc', data.add_zinc);
         setRadio('heparin', data.add_heparin);
-        setRadio('flush', data.flush_option);
+        setRadio('flush', data.flush_option || 'none');
 
-        // กรอก Text ในตาราง/Display
-        document.getElementById('row-heparin-vol').innerText = data.heparin_vol;
-        document.getElementById('totalCalDisplay').innerText = data.total_calories;
-        document.getElementById('calPerKg').innerText = data.calories_per_kg;
-        document.getElementById('finalOsmol').innerText = data.final_osmolarity;
-        document.getElementById('prep-proteinVol').innerText = data.prep_protein_vol;
-        document.getElementById('prep-dextroseVol').innerText = data.prep_dex_50_vol;
-        document.getElementById('prep-phos-vol').innerText = data.prep_phos_vol;
-        document.getElementById('prep-na-vol').innerText = data.prep_na_vol;
-        document.getElementById('prep-k-vol').innerText = data.prep_k_vol;
-        document.getElementById('prep-mg-vol').innerText = data.prep_mg_vol;
-        document.getElementById('prep-ca-vol').innerText = data.prep_ca_vol;
-        document.getElementById('prep-waterVolInput').value = data.prep_water_vol;
-        document.getElementById('girValue').innerText = data.gir_result;
-        document.getElementById('heparinUnits').innerText = data.heparin_units;
+        // --- แสดง/ซ่อน Zinc & Heparin Div ตามที่ดึงมา ---
+        const zincDiv = document.getElementById('zincVolumeDiv');
+        if (zincDiv) zincDiv.classList.toggle('hidden', data.add_zinc !== 'yes');
+
+        const hepDiv = document.getElementById('heparinValueDiv');
+        if (hepDiv) hepDiv.classList.toggle('hidden', data.add_heparin !== 'yes');
+        
+        if (data.add_heparin === 'yes') {
+            document.getElementById('heparinUnits').textContent = data.heparin_units || '-';
+            document.getElementById('heparinVolume').textContent = data.heparin_vol || '-';
+        }
+
+        // --- อัปเดตตารางสรุปโดยตรง ---
+        document.getElementById('totalCalDisplay').textContent = data.total_calories;
+        document.getElementById('calPerKg').textContent = data.calories_per_kg;
+        document.getElementById('finalOsmol').textContent = data.final_osmolarity;
 
         alert("✅ ดึงข้อมูลล่าสุดเรียบร้อยแล้วค่ะ!");
+        
+        // ✅ เรียก calculateAll() หลังสุด เพื่อ render ตารางให้สมบูรณ์
         calculateAll();
     }
 }
