@@ -993,7 +993,7 @@ body {
 
 
  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzD3ADjHf4DJG0kIUEAuxByHveYDOUJwb_CU4EqEZTsu7M-QR-BGrU7LEkw2zuCc57wHQ/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzmuyodYpZh-JS86MeIOz1cIWWMvizjjd2WPTpILYM67wIkVz3yO00qsA6YE0usnHFb9w/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -1118,82 +1118,93 @@ async function fetchPatientAndHistory() {
 }
 
     // ========== Save ==========
-    async function saveAndRedirect() {
-        const saveBtn = document.getElementById('saveOrderBtn');
-        if(saveBtn) { saveBtn.disabled = true; saveBtn.innerText = "⏳ กำลังบันทึก..."; }
+  async function saveAndRedirect() {
+    // --- ส่วนที่เพิ่ม: ตรวจสอบข้อมูลก่อนบันทึก ---
+    const orderDate = document.getElementById('orderDate').value;
+    const hn = document.getElementById('hn').value.trim();
+    const patientName = document.getElementById('patientName').value.trim();
+    const ward = document.getElementById('ward').value.trim();
 
-        const formData = {
-            order_date: document.getElementById('orderDate').value,
-            hn: document.getElementById('hn').value,
-            patient_name: document.getElementById('patientName').value,
-            ward: document.getElementById('ward').value,
-            route: document.querySelector('input[name="route"]:checked')?.value,
-            bw: document.getElementById('bw').value,
-            total_tpn_volume: document.getElementById('totalVolume').value,
-            fat_product: document.querySelector('input[name="fatProduct"]:checked')?.value,
-            fat_req: document.getElementById('fatTarget').value,
-            net_fat: document.getElementById('netFat').value,
-            fat_vol: document.getElementById('fatVolume').value,
-            vitalipid_type: document.querySelector('input[name="vitProduct"]:checked')?.value,
-            vitalipid_vol: document.getElementById('vitalipid').value,
-            fat_flush_vol: document.getElementById('flushVolume').value || 0,
-            total_fat_prep: document.getElementById('totalFatPlusVitalipid').value,
-            is_split_bag: document.querySelector('input[name="prepSplit"]:checked')?.value,
-            fat_drip_rate: document.getElementById('manualFatDripRate').value,
-            pn_volume_net: document.getElementById('pnVolume').value,
-            pn_flush_vol: document.getElementById('pnFlushVolume').value,
-            pn_prep_vol: document.getElementById('pnPrepVolume').value,
-            rate_pn: document.getElementById('rateTPN').value,
-            protein_product: document.querySelector('input[name="proteinProduct"]:checked')?.value,
-            protein_dose: document.getElementById('proteinTarget').value,
-            total_protein: document.getElementById('proteinGrams').value,
-            protein_vol: document.getElementById('proteinVolInput').value,
-            dex_percent: document.getElementById('dextrosePercent').value,
-            total_glucose: document.getElementById('dextroseGrams').value,
-            dex_50_vol: document.getElementById('dextroseVolInput').value,
-            phos_source: document.querySelector('input[name="phosSource"]:checked')?.value,
-            phos_vol: document.getElementById('phosvol').value,
-            na_source: document.querySelector('input[name="naSource"]:checked')?.value,
-            na_vol: document.getElementById('navol').value,
-            k_source: document.querySelector('input[name="kSource"]:checked')?.value,
-            k_vol: document.getElementById('kvol').value,
-            mg_vol: document.getElementById('mgvol').value,
-            ca_vol: document.getElementById('cavol').value,
-            vit_choice: document.querySelector('input[name="vitSource"]:checked')?.value,
-            vit_vol: document.getElementById('vitvol').value,
-            trace_choice: document.querySelector('input[name="traceSource"]:checked')?.value,
-            trace_vol: document.getElementById('tracevol').value,
-            add_zinc: document.querySelector('input[name="zinc"]:checked')?.value,
-            zinc_vol: document.getElementById('zincvol').value || 0,
-            add_heparin: document.querySelector('input[name="heparin"]:checked')?.value,
-            heparin_vol: document.getElementById('row-heparin-vol').innerText,
-            add_name: document.getElementById('additiveOtherName').value,
-            add_vol: document.getElementById('additiveOtherVolume').value,
-            total_calories: document.getElementById('totalCalDisplay').innerText,
-            calories_per_kg: document.getElementById('calPerKg').innerText,
-            final_osmolarity: document.getElementById('finalOsmol').innerText.replace('~','').trim(),
-            // ✅ ฟิลด์ใหม่ AY-BD
-            phosphorus_dose: document.getElementById('phosphorus').value,
-            sodium_dose: document.getElementById('sodium').value,
-            potassium_dose: document.getElementById('potassium').value,
-            magnesium_dose: document.getElementById('magnesium').value,
-            calcium_dose: document.getElementById('calcium').value,
-            flush_option: document.querySelector('input[name="flush"]:checked')?.value || 'none'
-        };
-
-        try {
-            await fetch(API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(formData)
-            });
-            window.location.href = "label_WS.html";
-        } catch (error) {
-            alert('บันทึกผิดพลาด: ' + error.message);
-        } finally {
-            if(saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "💾 บันทึก Order"; }
-        }
+    if (!orderDate || !hn || !patientName || !ward) {
+        alert("⚠️ กรุณากรอกข้อมูลให้ครบถ้วนก่อนบันทึกค่ะ:\n- วันที่ Order\n- HN\n- ชื่อคนไข้\n- Ward");
+        return; // หยุดการทำงานถ้าข้อมูลไม่ครบ
     }
+    // ----------------------------------------
+
+    const saveBtn = document.getElementById('saveOrderBtn');
+    if(saveBtn) { saveBtn.disabled = true; saveBtn.innerText = "⏳ กำลังบันทึก..."; }
+
+    const formData = {
+        order_date: document.getElementById('orderDate').value,
+        hn: document.getElementById('hn').value,
+        patient_name: document.getElementById('patientName').value,
+        ward: document.getElementById('ward').value,
+        route: document.querySelector('input[name="route"]:checked')?.value,
+        bw: document.getElementById('bw').value,
+        total_tpn_volume: document.getElementById('totalVolume').value,
+        fat_product: document.querySelector('input[name="fatProduct"]:checked')?.value,
+        fat_req: document.getElementById('fatTarget').value,
+        net_fat: document.getElementById('netFat').value,
+        fat_vol: document.getElementById('fatVolume').value,
+        vitalipid_type: document.querySelector('input[name="vitProduct"]:checked')?.value,
+        vitalipid_vol: document.getElementById('vitalipid').value,
+        fat_flush_vol: document.getElementById('flushVolume').value || 0,
+        total_fat_prep: document.getElementById('totalFatPlusVitalipid').value,
+        is_split_bag: document.querySelector('input[name="prepSplit"]:checked')?.value,
+        fat_drip_rate: document.getElementById('manualFatDripRate').value,
+        pn_volume_net: document.getElementById('pnVolume').value,
+        pn_flush_vol: document.getElementById('pnFlushVolume').value,
+        pn_prep_vol: document.getElementById('pnPrepVolume').value,
+        rate_pn: document.getElementById('rateTPN').value,
+        protein_product: document.querySelector('input[name="proteinProduct"]:checked')?.value,
+        protein_dose: document.getElementById('proteinTarget').value,
+        total_protein: document.getElementById('proteinGrams').value,
+        protein_vol: document.getElementById('proteinVolInput').value,
+        dex_percent: document.getElementById('dextrosePercent').value,
+        total_glucose: document.getElementById('dextroseGrams').value,
+        dex_50_vol: document.getElementById('dextroseVolInput').value,
+        phos_source: document.querySelector('input[name="phosSource"]:checked')?.value,
+        phos_vol: document.getElementById('phosvol').value,
+        na_source: document.querySelector('input[name="naSource"]:checked')?.value,
+        na_vol: document.getElementById('navol').value,
+        k_source: document.querySelector('input[name="kSource"]:checked')?.value,
+        k_vol: document.getElementById('kvol').value,
+        mg_vol: document.getElementById('mgvol').value,
+        ca_vol: document.getElementById('cavol').value,
+        vit_choice: document.querySelector('input[name="vitSource"]:checked')?.value,
+        vit_vol: document.getElementById('vitvol').value,
+        trace_choice: document.querySelector('input[name="traceSource"]:checked')?.value,
+        trace_vol: document.getElementById('tracevol').value,
+        add_zinc: document.querySelector('input[name="zinc"]:checked')?.value,
+        zinc_vol: document.getElementById('zincvol').value || 0,
+        add_heparin: document.querySelector('input[name="heparin"]:checked')?.value,
+        heparin_vol: document.getElementById('row-heparin-vol').innerText,
+        add_name: document.getElementById('additiveOtherName').value,
+        add_vol: document.getElementById('additiveOtherVolume').value,
+        total_calories: document.getElementById('totalCalDisplay').innerText,
+        calories_per_kg: document.getElementById('calPerKg').innerText,
+        final_osmolarity: document.getElementById('finalOsmol').innerText.replace('~','').trim(),
+        phosphorus_dose: document.getElementById('phosphorus').value,
+        sodium_dose: document.getElementById('sodium').value,
+        potassium_dose: document.getElementById('potassium').value,
+        magnesium_dose: document.getElementById('magnesium').value,
+        calcium_dose: document.getElementById('calcium').value,
+        flush_option: document.querySelector('input[name="flush"]:checked')?.value || 'none'
+    };
+
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(formData)
+        });
+        window.location.href = "label_WS.html";
+    } catch (error) {
+        alert('บันทึกผิดพลาด: ' + error.message);
+    } finally {
+        if(saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "💾 บันทึก Order"; }
+    }
+}
 
     // ========== Helper ==========
     function roundToPlace(num, places) {
@@ -1757,23 +1768,30 @@ async function fetchPatientAndHistory() {
         }
     }
 
-   async function retrieveLastOrder() {
+  async function retrieveLastOrder() {
     const hn = document.getElementById('hn').value;
     const response = await fetch(`${API_URL}?action=getLastOrder&hn=${hn}`);
     const data = await response.json();
     if (!data) { alert("ไม่พบข้อมูล"); return; }
 
-    // 1. Reset all flags (ป้องกันการตีกันของค่า default)
+    // --- ส่วนที่แก้ไข: การจัดการวันที่ ---
+    if (data.order_date) {
+        const dateObj = new Date(data.order_date);
+        const yyyy = dateObj.getFullYear();
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+        document.getElementById('orderDate').value = `${yyyy}-${mm}-${dd}`;
+    }
+    // ---------------------------------
+
+    // Reset all flags
     isPhosVolManual = false; isPhosNaManual = false; isNaVolManual = false;
     isKVolManual = false; isMgVolManual = false; isCaVolManual = false;
     isRateManual = false; isVitalipidManual = false; isVitVolManual = false;
     isTraceVolManual = false; isFlushManual = false; isWaterManual = false;
     isPrepWaterManual = false; isPNFlushManual = false;
 
-    // 2. ตั้งค่าสถานะ Manual สำหรับ Flush (ถ้ามีข้อมูลการตั้งค่าเดิม)
-    if (data.flush_option === 'custom') {
-        isFlushManual = true;
-    }
+    if (data.flush_option === 'custom') { isFlushManual = true; }
 
     const setRadio = (name, val) => {
         if (!val) return;
@@ -1781,7 +1799,6 @@ async function fetchPatientAndHistory() {
         if (radio) radio.checked = true;
     };
 
-    // 3. ใส่ค่าจากฐานข้อมูลลงในหน้าจอ
     setRadio('route', data.route);
     setRadio('fatProduct', data.fat_product);
     setRadio('vitProduct', data.vitalipid_type);
@@ -1796,18 +1813,14 @@ async function fetchPatientAndHistory() {
     setRadio('heparin', data.add_heparin);
     setRadio('flush', data.flush_option || 'none');
 
-    document.getElementById('orderDate').value = data.order_date;
     document.getElementById('patientName').value = data.patient_name;
     document.getElementById('ward').value = data.ward;
     document.getElementById('wardInput').value = data.ward;
     document.getElementById('bw').value = data.bw;
     document.getElementById('totalVolume').value = data.total_tpn_volume;
-    
-    // --- จุดที่แก้ไข: ดึงค่า Fat และ Flush ---
     document.getElementById('fatTarget').value = data.fat_req;
-    document.getElementById('fatVolume').value = data.fat_vol || ''; // ดึง Fat Volume
-    document.getElementById('flushVolume').value = data.fat_flush_vol || ''; // ดึง Fat Flush
-    // ------------------------------------
+    document.getElementById('fatVolume').value = data.fat_vol || '';
+    document.getElementById('flushVolume').value = data.fat_flush_vol || '';
 
     document.getElementById('vitalipid').value = data.vitalipid_vol;
     document.getElementById('manualFatDripRate').value = data.fat_drip_rate;
@@ -1818,17 +1831,14 @@ async function fetchPatientAndHistory() {
     document.getElementById('dextrosePercent').value = data.dex_percent;
     document.getElementById('dextroseGrams').value = data.total_glucose;
     document.getElementById('dextroseVolInput').value = data.dex_50_vol;
-    
     document.getElementById('phosphorus').value = data.phosphorus_dose;
     document.getElementById('sodium').value = data.sodium_dose;
     document.getElementById('potassium').value = data.potassium_dose;
     document.getElementById('magnesium').value = data.magnesium_dose;
     document.getElementById('calcium').value = data.calcium_dose;
-
     document.getElementById('additiveOtherName').value = data.add_name || '';
     document.getElementById('additiveOtherVolume').value = data.add_vol || '';
 
-    // จัดการส่วน UI ที่ซ่อนอยู่
     if (data.add_zinc === 'yes') {
         document.getElementById('zincvol').value = data.zinc_vol;
         document.getElementById('zincVolumeDiv').classList.remove('hidden');
