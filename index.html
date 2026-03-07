@@ -993,7 +993,7 @@ body {
 
 
  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxhVaEJ8VGP73OFzIaZ3SdHSl4hD14hdRKJ2X3g-aWUc5X4GGvcBJjOBolSTlGyjfqhQQ/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzD3ADjHf4DJG0kIUEAuxByHveYDOUJwb_CU4EqEZTsu7M-QR-BGrU7LEkw2zuCc57wHQ/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -1384,12 +1384,12 @@ async function fetchPatientAndHistory() {
 
         const otherVol = parseFloat(document.getElementById('additiveOtherVolume').value) || 0;
 
-        // 9. Protein & Dextrose
+      // 9. Protein & Dextrose
         const proteinVolume = parseFloat(document.getElementById('proteinVolInput').value) || 0;
         const dextroseVolume = parseFloat(document.getElementById('dextroseVolInput').value) || 0;
 
-        // 10. Water
-        const allSubstances = proteinVolume + dextroseVolume + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol + heparinVolume;
+        // 10. Water (แก้ไข: ไม่นำ Heparin มาคำนวณหักลบปริมาตรน้ำ)
+        const allSubstances = proteinVolume + dextroseVolume + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol;
         if (!isWaterManual) {
             document.getElementById('waterVolInput').value = roundToPlace(pnVolume - allSubstances, 1);
         }
@@ -1437,11 +1437,11 @@ async function fetchPatientAndHistory() {
         document.getElementById('prep-heparin-vol').textContent = roundToPlace(heparinVolume, 2);
         document.getElementById('prep-other-vol').textContent = otherVol;
 
-        const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol + heparinVolume;
+        // (แก้ไข: ไม่นำ Heparin มาคำนวณหักลบปริมาตรน้ำสำหรับเตรียม)
+        const allSubstancesPrep = proteinVolume + prepDextroseVol + electrolytesVolume + vitVolume + traceVolume + zincVolume + otherVol;
         if (!isPrepWaterManual) {
             document.getElementById('prep-waterVolInput').value = roundToPlace(pnPrepVol - allSubstancesPrep, 1);
         }
-
         // 14. Osmolarity
         const prepVol = pnPrepVol || 1;
         const selectedProtProductOsmol = document.querySelector('input[name="proteinProduct"]:checked')?.value || 'aminoplasmal';
