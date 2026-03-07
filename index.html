@@ -1767,84 +1767,106 @@ async function fetchPatientAndHistory() {
         }
     }
 
-  async function retrieveLastOrder() {
+ async function retrieveLastOrder() {
     const hn = document.getElementById('hn').value;
-    const response = await fetch(`${API_URL}?action=getLastOrder&hn=${hn}`);
-    const data = await response.json();
-    if (!data) { alert("ไม่พบข้อมูล"); return; }
+    const btn = document.getElementById('btnRetrieve');
+    const status = document.getElementById('searchStatus');
 
-    // --- ส่วนที่แก้ไข: การจัดการวันที่ ---
-    if (data.order_date) {
-        const dateObj = new Date(data.order_date);
-        const yyyy = dateObj.getFullYear();
-        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const dd = String(dateObj.getDate()).padStart(2, '0');
-        document.getElementById('orderDate').value = `${yyyy}-${mm}-${dd}`;
+    // 1. ตั้งค่าสถานะ Loading
+    btn.disabled = true;
+    status.innerText = "⏳ กำลังดำเนินการดึง order เดิม... โปรดรอสักครู่";
+    status.className = "text-[11px] mt-1 font-medium text-blue-600 animate-pulse";
+
+    try {
+        const response = await fetch(`${API_URL}?action=getLastOrder&hn=${hn}`);
+        const data = await response.json();
+
+        if (!data || data === null) {
+            throw new Error("ไม่พบข้อมูล Order");
+        }
+
+        // 2. การจัดการวันที่
+        if (data.order_date) {
+            const dateObj = new Date(data.order_date);
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            document.getElementById('orderDate').value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Reset all flags
+        isPhosVolManual = false; isPhosNaManual = false; isNaVolManual = false;
+        isKVolManual = false; isMgVolManual = false; isCaVolManual = false;
+        isRateManual = false; isVitalipidManual = false; isVitVolManual = false;
+        isTraceVolManual = false; isFlushManual = false; isWaterManual = false;
+        isPrepWaterManual = false; isPNFlushManual = false;
+
+        if (data.flush_option === 'custom') { isFlushManual = true; }
+
+        const setRadio = (name, val) => {
+            if (!val) return;
+            const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
+            if (radio) radio.checked = true;
+        };
+
+        setRadio('route', data.route);
+        setRadio('fatProduct', data.fat_product);
+        setRadio('vitProduct', data.vitalipid_type);
+        setRadio('prepSplit', data.is_split_bag);
+        setRadio('proteinProduct', data.protein_product);
+        setRadio('phosSource', data.phos_source);
+        setRadio('naSource', data.na_source);
+        setRadio('kSource', data.k_source);
+        setRadio('vitSource', data.vit_choice);
+        setRadio('traceSource', data.trace_choice);
+        setRadio('zinc', data.add_zinc);
+        setRadio('heparin', data.add_heparin);
+        setRadio('flush', data.flush_option || 'none');
+
+        document.getElementById('patientName').value = data.patient_name;
+        document.getElementById('ward').value = data.ward;
+        document.getElementById('wardInput').value = data.ward;
+        document.getElementById('bw').value = data.bw;
+        document.getElementById('totalVolume').value = data.total_tpn_volume;
+        document.getElementById('fatTarget').value = data.fat_req;
+        document.getElementById('fatVolume').value = data.fat_vol || '';
+        document.getElementById('flushVolume').value = data.fat_flush_vol || '';
+
+        document.getElementById('vitalipid').value = data.vitalipid_vol;
+        document.getElementById('manualFatDripRate').value = data.fat_drip_rate;
+        document.getElementById('pnFlushVolume').value = data.pn_flush_vol;
+        document.getElementById('proteinTarget').value = data.protein_dose;
+        document.getElementById('proteinGrams').value = data.total_protein;
+        document.getElementById('proteinVolInput').value = data.protein_vol;
+        document.getElementById('dextrosePercent').value = data.dex_percent;
+        document.getElementById('dextroseGrams').value = data.total_glucose;
+        document.getElementById('dextroseVolInput').value = data.dex_50_vol;
+        document.getElementById('phosphorus').value = data.phosphorus_dose;
+        document.getElementById('sodium').value = data.sodium_dose;
+        document.getElementById('potassium').value = data.potassium_dose;
+        document.getElementById('magnesium').value = data.magnesium_dose;
+        document.getElementById('calcium').value = data.calcium_dose;
+        document.getElementById('additiveOtherName').value = data.add_name || '';
+        document.getElementById('additiveOtherVolume').value = data.add_vol || '';
+
+        if (data.add_zinc === 'yes') {
+            document.getElementById('zincvol').value = data.zinc_vol;
+            document.getElementById('zincVolumeDiv').classList.remove('hidden');
+        }
+
+        calculateAll();
+        
+        // 3. แจ้งเตือนความสำเร็จ
+        status.innerText = "✅ ดึงข้อมูลล่าสุดเรียบร้อยแล้วค่ะ!";
+        status.className = "text-[11px] mt-1 font-medium text-green-600";
+
+    } catch (err) {
+        status.innerText = "❌ " + err.message;
+        status.className = "text-[11px] mt-1 font-medium text-red-600";
+    } finally {
+        // 4. คืนค่าปุ่มให้กดได้เหมือนเดิม
+        btn.disabled = false;
     }
-    // ---------------------------------
-
-    // Reset all flags
-    isPhosVolManual = false; isPhosNaManual = false; isNaVolManual = false;
-    isKVolManual = false; isMgVolManual = false; isCaVolManual = false;
-    isRateManual = false; isVitalipidManual = false; isVitVolManual = false;
-    isTraceVolManual = false; isFlushManual = false; isWaterManual = false;
-    isPrepWaterManual = false; isPNFlushManual = false;
-
-    if (data.flush_option === 'custom') { isFlushManual = true; }
-
-    const setRadio = (name, val) => {
-        if (!val) return;
-        const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
-        if (radio) radio.checked = true;
-    };
-
-    setRadio('route', data.route);
-    setRadio('fatProduct', data.fat_product);
-    setRadio('vitProduct', data.vitalipid_type);
-    setRadio('prepSplit', data.is_split_bag);
-    setRadio('proteinProduct', data.protein_product);
-    setRadio('phosSource', data.phos_source);
-    setRadio('naSource', data.na_source);
-    setRadio('kSource', data.k_source);
-    setRadio('vitSource', data.vit_choice);
-    setRadio('traceSource', data.trace_choice);
-    setRadio('zinc', data.add_zinc);
-    setRadio('heparin', data.add_heparin);
-    setRadio('flush', data.flush_option || 'none');
-
-    document.getElementById('patientName').value = data.patient_name;
-    document.getElementById('ward').value = data.ward;
-    document.getElementById('wardInput').value = data.ward;
-    document.getElementById('bw').value = data.bw;
-    document.getElementById('totalVolume').value = data.total_tpn_volume;
-    document.getElementById('fatTarget').value = data.fat_req;
-    document.getElementById('fatVolume').value = data.fat_vol || '';
-    document.getElementById('flushVolume').value = data.fat_flush_vol || '';
-
-    document.getElementById('vitalipid').value = data.vitalipid_vol;
-    document.getElementById('manualFatDripRate').value = data.fat_drip_rate;
-    document.getElementById('pnFlushVolume').value = data.pn_flush_vol;
-    document.getElementById('proteinTarget').value = data.protein_dose;
-    document.getElementById('proteinGrams').value = data.total_protein;
-    document.getElementById('proteinVolInput').value = data.protein_vol;
-    document.getElementById('dextrosePercent').value = data.dex_percent;
-    document.getElementById('dextroseGrams').value = data.total_glucose;
-    document.getElementById('dextroseVolInput').value = data.dex_50_vol;
-    document.getElementById('phosphorus').value = data.phosphorus_dose;
-    document.getElementById('sodium').value = data.sodium_dose;
-    document.getElementById('potassium').value = data.potassium_dose;
-    document.getElementById('magnesium').value = data.magnesium_dose;
-    document.getElementById('calcium').value = data.calcium_dose;
-    document.getElementById('additiveOtherName').value = data.add_name || '';
-    document.getElementById('additiveOtherVolume').value = data.add_vol || '';
-
-    if (data.add_zinc === 'yes') {
-        document.getElementById('zincvol').value = data.zinc_vol;
-        document.getElementById('zincVolumeDiv').classList.remove('hidden');
-    }
-
-    calculateAll();
-    alert("✅ ดึงข้อมูลล่าสุดเรียบร้อยแล้วค่ะ!");
 }
     // ========== Initialize ==========
     document.addEventListener('DOMContentLoaded', () => {
