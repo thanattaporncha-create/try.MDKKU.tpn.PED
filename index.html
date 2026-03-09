@@ -998,7 +998,7 @@ body {
 
 
  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzmuyodYpZh-JS86MeIOz1cIWWMvizjjd2WPTpILYM67wIkVz3yO00qsA6YE0usnHFb9w/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbx4w9wF--TwiBVVLiAVXYbHZPeEw_iHasaHSMdgVMhdW4E2dsw3vvXJ09zjUdGXnrdj6w/exec';
     
     // Global variables
     let isVitalipidManual = false;
@@ -1195,6 +1195,8 @@ async function fetchPatientAndHistory() {
         magnesium_dose: document.getElementById('magnesium').value,
         calcium_dose: document.getElementById('calcium').value,
         flush_option: document.querySelector('input[name="flush"]:checked')?.value || 'none'
+        prep_dex_50_vol: document.getElementById('prep-dextroseVol').textContent,
+        prep_water_vol: document.getElementById('prep-waterVolInput').value,
     };
 
     try {
