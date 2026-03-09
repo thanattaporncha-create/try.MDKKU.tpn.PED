@@ -168,6 +168,11 @@ body {
   font-size: 16px;
   line-height: 1.6;
 }
+@media print {
+    body > *:not(#compatibilityModal) { display: none !important; }
+    #compatibilityModal { position: absolute; top: 0; left: 0; width: 100%; }
+    .no-print { display: none !important; }
+}
   </style>
 </head>
 <body class="bg-gray-50">
@@ -639,6 +644,9 @@ body {
 
   </div>
 </section>
+<button id="caPCheckBtn" onclick="openModal()" disabled class="w-full mt-4 py-3 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition-all shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+    🧪 ตรวจสอบการตกตะกอน (Ca-P Check)
+</button>
 
       <!-- Vitamins & Trace Elements Section -->
     <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
@@ -1503,7 +1511,22 @@ async function fetchPatientAndHistory() {
         document.getElementById('totalPrepVolDisplay').textContent = roundToPlace(pnPrepVol, 1);
 
         calculateFatAdmin();
-    }
+    // --- เพิ่มตรรกะเช็คปุ่มตรงนี้ค่ะ ---
+        const caPBtn = document.getElementById('caPCheckBtn');
+        if (caPBtn) {
+            const phosSource = document.querySelector('input[name="phosSource"]:checked')?.value;
+            const caVolume = parseFloat(document.getElementById('cavol').value) || 0;
+            
+            // เช็คเงื่อนไข: Phosphate ต้องเป็น K2HPO4 และ Ca ต้อง > 0
+            if (phosSource === 'K2HPO4' && caVolume > 0) {
+                caPBtn.disabled = false; // เปิดปุ่ม
+            } else {
+                caPBtn.disabled = true;  // ปิดปุ่ม
+            }
+        }
+        // -------------------------------
+    } // <--- ปีกกาปิดท้ายฟังก์ชัน calculateAll
+   
 
     // ========== calculateFatAdmin ==========
     function calculateFatAdmin() {
@@ -1874,6 +1897,131 @@ async function retrieveLastOrder() {
         document.getElementById('orderDate').valueAsDate = new Date();
         calculateAll();
     });
+   // --- ส่วนเสริมสำหรับ Compatibility Check ---
+const graphConfig = {
+    "aminoven": "https://raw.githubusercontent.com/thanattaporncha-create/try.MDKKU.tpn.PED/main/Aminovent-Infant.jpg",
+    "amiparen": "https://raw.githubusercontent.com/thanattaporncha-create/try.MDKKU.tpn.PED/main/Amiparen.png",
+    "aminoplasmal": "https://raw.githubusercontent.com/thanattaporncha-create/try.MDKKU.tpn.PED/main/Aminoplasmal.png"
+};
+
+function openModal() {
+    document.getElementById('compatibilityModal').classList.remove('hidden');
+    calculateAndFillData();
+    setupCanvas();
+}
+
+function closeModal() { document.getElementById('compatibilityModal').classList.add('hidden'); }
+
+function calculateAndFillData() {
+    const prepVol = parseFloat(document.getElementById('totalPrepVolDisplay').innerText) || 1;
+    const caVol = parseFloat(document.getElementById('cavol').value) || 0;
+    const phosVol = parseFloat(document.getElementById('phosvol').value) || 0;
+    const proteinVol = parseFloat(document.getElementById('proteinVolInput').value) || 0;
+    
+    // คำนวณ % Protein
+    const product = document.querySelector('input[name="proteinProduct"]:checked')?.value;
+    const pConc = (product === 'aminoplasmal') ? 15 : 10;
+    const proteinPercent = ((proteinVol * (pConc/100)) / prepVol) * 100;
+
+    // คำนวณค่าต่างๆ
+    const A = (0.25 * caVol * 1000) / prepVol; // Ca mmol/L
+    const B = (0.5 * phosVol * 1000) / prepVol; // P mmol/L
+    const C = A * 2; // Ca mEq/L
+    const D = (B / 3) * 4.4; // P mEq/L
+    
+    // อัตราส่วน Ca:P (ถ้า Ca > 0 ถึงจะคิด)
+    const ratio = A > 0 ? (B / A) : 0;
+    const CaP_product = A * B;
+    const CaP_sum = C + D;
+
+    const table = document.getElementById('modalTableBody');
+    table.innerHTML = `
+        <tr class="bg-gray-100"><th class="py-2 text-left">รายการ</th><th class="py-2 text-right">ผลลัพธ์</th><th class="py-2 text-right">มาตรฐาน</th></tr>
+        <tr><td class="py-2">Protein %</td><td class="py-2 text-right font-bold">${proteinPercent.toFixed(1)}%</td><td class="py-2 text-right">-</td></tr>
+        
+        <tr><td class="py-2 font-bold">Ca (mmol/L)</td>
+            <td class="py-2 text-right font-bold ${A >= 15 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${A.toFixed(2)}</td>
+            <td class="py-2 text-right">< 15</td>
+        </tr>
+        <tr><td class="py-2 font-bold">P (mmol/L)</td>
+            <td class="py-2 text-right font-bold ${B >= 30 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${B.toFixed(2)}</td>
+            <td class="py-2 text-right">< 30</td>
+        </tr>
+        <tr><td class="py-2">Ratio Ca:P</td><td class="py-2 text-right font-bold">1 : ${ratio.toFixed(1)}</td><td class="py-2 text-right">1:2</td></tr>
+        
+        <tr><td class="py-2 font-bold">Ca x P</td>
+            <td class="py-2 text-right font-bold ${CaP_product > 75 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">
+                ${CaP_product.toFixed(1)} ${CaP_product > 75 ? '❌' : '✅'}
+            </td>
+            <td class="py-2 text-right">< 75</td>
+        </tr>
+        <tr><td class="py-2 font-bold">Ca + P (mEq/L)</td>
+            <td class="py-2 text-right font-bold ${CaP_sum >= 45 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">
+                ${CaP_sum.toFixed(1)} ${CaP_sum >= 45 ? '❌' : '✅'}
+            </td>
+            <td class="py-2 text-right">< 45</td>
+        </tr>
+    `;
+}
+function setupCanvas() {
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const selected = document.querySelector('input[name="proteinProduct"]:checked')?.value || 'aminoplasmal';
+    const img = new Image();
+    
+    img.crossOrigin = "anonymous";
+    img.src = graphConfig[selected];
+    
+    img.onload = () => {
+        // ปรับขนาด Canvas ให้เท่ากับขนาดรูปจริง
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+    };
+}
+
+// ระบบวาดจุด (เราจะใช้ event listener แบบนี้ค่ะ)
+document.getElementById('graphCanvas').onmousedown = function(e) {
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    
+    // คำนวณตำแหน่งให้แม่นยำ
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // วาดจุด
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(x, y, 15, 0, 2 * Math.PI); // รัศมี 15 ใหญ่ขึ้นหน่อยให้เห็นชัด
+    ctx.fill();
+    ctx.strokeStyle = 'white'; // ขอบสีขาวให้เด่น
+    ctx.lineWidth = 2;
+    ctx.stroke();
+};
 </script>
+<div id="compatibilityModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-3xl font-bold">×</button>
+    <h2 class="text-xl font-bold mb-4 text-blue-900">ตรวจสอบการตกตะกอน (Compatibility Check)</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+        <h3 class="font-bold mb-3">สรุปค่าคำนวณ:</h3>
+        <table class="w-full text-sm">
+          <tbody id="modalTableBody" class="divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
+      <div class="relative">
+        <canvas id="graphCanvas" class="w-full border-2 border-gray-300 rounded-lg cursor-crosshair"></canvas>
+        <p class="text-[10px] text-gray-500 mt-2 italic">* คลิกเพื่อวางจุดบนกราฟ</p>
+      </div>
+    </div>
+    <div class="flex gap-2 justify-end mt-6">
+      <button onclick="clearCanvas()" class="px-4 py-2 bg-gray-200 rounded-lg">ล้างจุด</button>
+      <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">พิมพ์กราฟ (A5)</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
