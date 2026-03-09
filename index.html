@@ -641,7 +641,7 @@ body {
 </section>
 
       <!-- Vitamins & Trace Elements Section -->
-     <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
+    <section class="bg-white rounded-2xl card-shadow p-6 animate-fade-in">
   <h2 class="section-title text-lg font-semibold text-gray-800 mb-4">💊 Vitamin & Trace Elements</h2>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     
@@ -651,20 +651,23 @@ body {
         <div class="grid grid-cols-2 gap-2">
           <div class="relative">
             <input type="radio" id="vitSoluvit" name="vitSource" value="Soluvit" checked class="hidden peer" onchange="calculateAll()">
-            <label for="vitSoluvit" class="flex items-center justify-center px-2 py-1.5 border border-gray-300 rounded-lg cursor-pointer text-[11px] font-bold transition-all peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600 bg-white text-gray-600">Soluvit</label>
+            <label for="vitSoluvit" class="flex items-center justify-center px-2 py-3 border border-gray-300 rounded-lg cursor-pointer text-base font-bold transition-all peer-checked:bg-amber-400 peer-checked:text-black peer-checked:border-amber-600 bg-white text-gray-700">Soluvit-N</label>
           </div>
           <div class="relative">
             <input type="radio" id="vitCernevit" name="vitSource" value="Cernevit" class="hidden peer" onchange="calculateAll()">
-            <label for="vitCernevit" class="flex items-center justify-center px-2 py-1.5 border border-gray-300 rounded-lg cursor-pointer text-[11px] font-bold transition-all peer-checked:bg-pink-600 peer-checked:text-white peer-checked:border-pink-600 bg-white text-gray-600">Cernevit</label>
+            <label for="vitCernevit" class="flex items-center justify-center px-2 py-3 border border-gray-300 rounded-lg cursor-pointer text-base font-bold transition-all peer-checked:bg-pink-600 peer-checked:text-white peer-checked:border-pink-600 bg-white text-gray-700">Cernevit</label>
           </div>
         </div>
 
         <div>
           <div class="flex items-center gap-2">
-            <input type="number" id="vitvol" step="0.1" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all font-bold text-green-700" inputmode="decimal" oninput="isVitVolManual = true; calculateAll()">
+            <input type="number" id="vitvol" step="0.1" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl input-focus transition-all font-bold text-lg text-green-700" inputmode="decimal" oninput="isVitVolManual = true; calculateAll()">
             <span class="text-gray-600 whitespace-nowrap font-medium">ml</span>
           </div>
-          <p id="vitHint" class="text-xs text-gray-600 mt-1">= 1 × BW (Max 10 ml)</p>
+          <div class="mt-3 space-y-1 border-t border-green-200 pt-2">
+            <p class="text-xs font-bold text-red-600">Soluvit-N = 1ml/kg (Max 10 ml)</p>
+            <p class="text-xs font-bold text-red-600">Cernevit = 1ml/kg (Max 5 ml)</p>
+          </div>
           <p id="vitWarning" class="hidden text-xs text-red-600 mt-1 font-semibold">⚠️ เกินค่าสูงสุด!</p>
         </div>
       </div>
@@ -676,20 +679,23 @@ body {
         <div class="grid grid-cols-2 gap-2">
           <div class="relative">
             <input type="radio" id="tracePeditrace" name="traceSource" value="Peditrace" checked class="hidden peer" onchange="calculateAll()">
-            <label for="tracePeditrace" class="flex items-center justify-center px-2 py-1.5 border border-gray-300 rounded-lg cursor-pointer text-[11px] font-bold transition-all peer-checked:bg-cyan-600 peer-checked:text-white peer-checked:border-cyan-600 bg-white text-gray-600">Peditrace</label>
+            <label for="tracePeditrace" class="flex items-center justify-center px-2 py-3 border border-gray-300 rounded-lg cursor-pointer text-base font-bold transition-all peer-checked:bg-cyan-600 peer-checked:text-white peer-checked:border-cyan-600 bg-white text-gray-700">Peditrace</label>
           </div>
           <div class="relative">
             <input type="radio" id="traceAddamel" name="traceSource" value="Addamel" class="hidden peer" onchange="calculateAll()">
-            <label for="traceAddamel" class="flex items-center justify-center px-2 py-1.5 border border-gray-300 rounded-lg cursor-pointer text-[11px] font-bold transition-all peer-checked:bg-teal-600 peer-checked:text-white peer-checked:border-teal-600 bg-white text-gray-600">Addamel-N</label>
+            <label for="traceAddamel" class="flex items-center justify-center px-2 py-3 border border-gray-300 rounded-lg cursor-pointer text-base font-bold transition-all peer-checked:bg-teal-600 peer-checked:text-white peer-checked:border-teal-600 bg-white text-gray-700">Addamel-N</label>
           </div>
         </div>
 
         <div>
           <div class="flex items-center gap-2">
-            <input type="number" id="tracevol" step="0.1" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all font-bold text-cyan-700" inputmode="decimal" oninput="isTraceVolManual = true; calculateAll()">
+            <input type="number" id="tracevol" step="0.1" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl input-focus transition-all font-bold text-lg text-cyan-700" inputmode="decimal" oninput="isTraceVolManual = true; calculateAll()">
             <span class="text-gray-600 whitespace-nowrap font-medium">ml</span>
           </div>
-          <p id="traceHint" class="text-xs text-gray-600 mt-1">= 1 × BW (Max 15 ml)</p>
+          <div class="mt-3 space-y-1 border-t border-cyan-200 pt-2">
+            <p class="text-xs font-bold text-red-600">Peditrace = 1ml/kg หรือ (Zinc req x BW) ÷ 250 ml (Max 15 ml)</p>
+            <p class="text-xs font-bold text-red-600">Addamel-N = 10 ml/day (Max 10 ml)</p>
+          </div>
           <p id="traceWarning" class="hidden text-xs text-red-600 mt-1 font-semibold">⚠️ เกินค่าสูงสุด!</p>
         </div>
       </div>
