@@ -1904,102 +1904,112 @@ const graphConfig = {
     "aminoplasmal": "https://raw.githubusercontent.com/thanattaporncha-create/try.MDKKU.tpn.PED/main/Aminoplasmal.png"
 };
 
-function openModal() {
-    document.getElementById('compatibilityModal').classList.remove('hidden');
-    calculateAndFillData();
-    setupCanvas();
-}
+// --- ฟังก์ชันดึงข้อมูลและเตรียมกราฟ ---
+    function closeModal() {
+        const modal = document.getElementById('compatibilityModal');
+        modal.classList.add('hidden');
+    }
 
-function closeModal() { document.getElementById('compatibilityModal').classList.add('hidden'); }
+    // 2. ล้างจุด (แก้ปัญหาล้างไม่ได้)
+    function clearCanvas() {
+        setupCanvas(); // สั่งให้วาดรูปใหม่ทับจุดเก่าทั้งหมด
+    }
 
-function calculateAndFillData() {
+    // 3. ระบบ Plotting (แก้ปัญหาจุดไม่ตรงที่จิ้ม)
+    function setupCanvas() {
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const selected = document.querySelector('input[name="proteinProduct"]:checked')?.value || 'aminoplasmal';
+        const img = new Image();
+        
+        img.crossOrigin = "anonymous";
+        img.src = graphConfig[selected];
+        
+        img.onload = () => {
+            // ตั้งค่าขนาดให้ตรงกับรูปภาพจริง
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            // ใส่ Event Listener ตรงนี้เพื่อให้มันทำงานสัมพันธ์กับขนาด Canvas จริง
+            canvas.onmousedown = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                
+                // คำนวณสเกลให้แม่นยำ (แก้ปัญหาจุดขึ้น random)
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                const x = (e.clientX - rect.left) * scaleX;
+                const y = (e.clientY - rect.top) * scaleY;
+                
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(x, y, 15, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            };
+        };
+    }
+
+    // 4. คำนวณค่าใน Modal
+ function calculateAndFillData() {
     const prepVol = parseFloat(document.getElementById('totalPrepVolDisplay').innerText) || 1;
     const caVol = parseFloat(document.getElementById('cavol').value) || 0;
     const phosVol = parseFloat(document.getElementById('phosvol').value) || 0;
     const proteinVol = parseFloat(document.getElementById('proteinVolInput').value) || 0;
     
+    // ดึงชื่อ Product และคำนวณ g Protein
+    const selectedRadio = document.querySelector('input[name="proteinProduct"]:checked');
+    const proteinLabel = selectedRadio ? document.querySelector(`label[for="${selectedRadio.id}"]`).textContent : "ไม่ระบุ";
+    const pConc = (selectedRadio?.value === 'aminoplasmal') ? 0.15 : 0.10;
+    const proteinGrams = proteinVol * pConc;
+    
     // คำนวณ % Protein
-    const product = document.querySelector('input[name="proteinProduct"]:checked')?.value;
-    const pConc = (product === 'aminoplasmal') ? 15 : 10;
-    const proteinPercent = ((proteinVol * (pConc/100)) / prepVol) * 100;
+    const proteinPercent = (proteinGrams / prepVol) * 100;
 
-    // คำนวณค่าต่างๆ
+    // คำนวณค่า Electrolytes
     const A = (0.25 * caVol * 1000) / prepVol; // Ca mmol/L
     const B = (0.5 * phosVol * 1000) / prepVol; // P mmol/L
-    const C = A * 2; // Ca mEq/L
-    const D = (B / 3) * 4.4; // P mEq/L
-    
-    // อัตราส่วน Ca:P (ถ้า Ca > 0 ถึงจะคิด)
     const ratio = A > 0 ? (B / A) : 0;
     const CaP_product = A * B;
-    const CaP_sum = C + D;
+    const CaP_sum = (A * 2) + ((B / 3) * 4.4); // Ca+P (mEq/L)
 
     const table = document.getElementById('modalTableBody');
     table.innerHTML = `
         <tr class="bg-gray-100"><th class="py-2 text-left">รายการ</th><th class="py-2 text-right">ผลลัพธ์</th><th class="py-2 text-right">มาตรฐาน</th></tr>
+        
+        <tr class="border-b border-gray-200">
+            <td class="py-2 font-bold text-blue-700">${proteinLabel}</td>
+            <td class="py-2 text-right font-bold text-blue-700">${proteinGrams.toFixed(2)} g</td>
+            <td class="py-2 text-right">-</td>
+        </tr>
         <tr><td class="py-2">Protein %</td><td class="py-2 text-right font-bold">${proteinPercent.toFixed(1)}%</td><td class="py-2 text-right">-</td></tr>
         
         <tr><td class="py-2 font-bold">Ca (mmol/L)</td>
             <td class="py-2 text-right font-bold ${A >= 15 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${A.toFixed(2)}</td>
-            <td class="py-2 text-right">< 15</td>
-        </tr>
+            <td class="py-2 text-right">< 15</td></tr>
         <tr><td class="py-2 font-bold">P (mmol/L)</td>
             <td class="py-2 text-right font-bold ${B >= 30 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${B.toFixed(2)}</td>
-            <td class="py-2 text-right">< 30</td>
-        </tr>
+            <td class="py-2 text-right">< 30</td></tr>
+        
         <tr><td class="py-2">Ratio Ca:P</td><td class="py-2 text-right font-bold">1 : ${ratio.toFixed(1)}</td><td class="py-2 text-right">1:2</td></tr>
         
         <tr><td class="py-2 font-bold">Ca x P</td>
-            <td class="py-2 text-right font-bold ${CaP_product > 75 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">
-                ${CaP_product.toFixed(1)} ${CaP_product > 75 ? '❌' : '✅'}
-            </td>
-            <td class="py-2 text-right">< 75</td>
-        </tr>
-        <tr><td class="py-2 font-bold">Ca + P (mEq/L)</td>
-            <td class="py-2 text-right font-bold ${CaP_sum >= 45 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">
-                ${CaP_sum.toFixed(1)} ${CaP_sum >= 45 ? '❌' : '✅'}
-            </td>
-            <td class="py-2 text-right">< 45</td>
-        </tr>
+            <td class="py-2 text-right font-bold ${CaP_product > 75 ? 'text-red-600' : 'text-green-600'}">${CaP_product.toFixed(1)}</td>
+            <td class="py-2 text-right">< 75</td></tr>
     `;
 }
-function setupCanvas() {
-    const canvas = document.getElementById('graphCanvas');
-    const ctx = canvas.getContext('2d');
-    const selected = document.querySelector('input[name="proteinProduct"]:checked')?.value || 'aminoplasmal';
-    const img = new Image();
-    
-    img.crossOrigin = "anonymous";
-    img.src = graphConfig[selected];
-    
-    img.onload = () => {
-        // ปรับขนาด Canvas ให้เท่ากับขนาดรูปจริง
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-    };
-}
 
-// ระบบวาดจุด (เราจะใช้ event listener แบบนี้ค่ะ)
-document.getElementById('graphCanvas').onmousedown = function(e) {
-    const canvas = document.getElementById('graphCanvas');
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    
-    // คำนวณตำแหน่งให้แม่นยำ
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // วาดจุด
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.arc(x, y, 15, 0, 2 * Math.PI); // รัศมี 15 ใหญ่ขึ้นหน่อยให้เห็นชัด
-    ctx.fill();
-    ctx.strokeStyle = 'white'; // ขอบสีขาวให้เด่น
-    ctx.lineWidth = 2;
-    ctx.stroke();
-};
+    // 5. เรียกใช้ Modal
+    function openModal() {
+        document.getElementById('compatibilityModal').classList.remove('hidden');
+        calculateAndFillData();
+        setupCanvas();
+    }
 </script>
+
 <div id="compatibilityModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
   <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
     <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-3xl font-bold">×</button>
