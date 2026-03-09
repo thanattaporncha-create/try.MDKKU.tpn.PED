@@ -1194,9 +1194,9 @@ async function fetchPatientAndHistory() {
         potassium_dose: document.getElementById('potassium').value,
         magnesium_dose: document.getElementById('magnesium').value,
         calcium_dose: document.getElementById('calcium').value,
-        flush_option: document.querySelector('input[name="flush"]:checked')?.value || 'none'
-        prep_dex_50_vol: document.getElementById('prep-dextroseVol').textContent,
-        prep_water_vol: document.getElementById('prep-waterVolInput').value,
+       flush_option: document.querySelector('input[name="flush"]:checked')?.value || 'none', // ใส่คอมม่าตรงนี้!
+        prep_dex_vol: document.getElementById('prep-dextroseVol').textContent, // แก้ชื่อให้ตรงกับ .gs
+        prep_water_vol: document.getElementById('prep-waterVolInput').value // แก้ชื่อให้ตรงกับ .gs
     };
 
     try {
