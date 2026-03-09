@@ -1767,7 +1767,7 @@ async function fetchPatientAndHistory() {
         }
     }
 
- async function retrieveLastOrder() {
+async function retrieveLastOrder() {
     const hn = document.getElementById('hn').value;
     const btn = document.getElementById('btnRetrieve');
     const status = document.getElementById('searchStatus');
@@ -1785,14 +1785,7 @@ async function fetchPatientAndHistory() {
             throw new Error("ไม่พบข้อมูล Order");
         }
 
-        // 2. การจัดการวันที่
-        if (data.order_date) {
-            const dateObj = new Date(data.order_date);
-            const yyyy = dateObj.getFullYear();
-            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const dd = String(dateObj.getDate()).padStart(2, '0');
-            document.getElementById('orderDate').value = `${yyyy}-${mm}-${dd}`;
-        }
+        // --- ลบบล็อกจัดการวันที่ออก เพื่อให้คงค่า Today() เอาไว้ ---
 
         // Reset all flags
         isPhosVolManual = false; isPhosNaManual = false; isNaVolManual = false;
