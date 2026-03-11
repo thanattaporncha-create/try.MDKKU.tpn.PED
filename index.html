@@ -58,6 +58,12 @@
       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
       border-left: 4px solid #f59e0b;
     }
+    /* คลาสใหม่สำหรับแจ้งเตือนอันตราย (สีแดง) */
+.danger-box {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+}
     
     .success-box {
       background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
@@ -173,6 +179,29 @@ body {
     #compatibilityModal { position: absolute; top: 0; left: 0; width: 100%; }
     .no-print { display: none !important; }
 }
+/* แถบสีแดงน่ากลัวๆ สำหรับ Ca-P Check */
+    .danger-box {
+        background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+        border: 2px solid #f56565;
+        color: #c53030;
+        animation: pulse-red 2s infinite;
+    }
+    @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(245, 101, 101, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0); }
+    }
+
+    /* ตั้งค่าสำหรับการพิมพ์ A4 */
+    @media print {
+        @page { size: A4; margin: 1cm; }
+        body * { visibility: hidden; }
+        #compatibilityModal, #compatibilityModal * { visibility: visible; }
+        #compatibilityModal { position: absolute; left: 0; top: 0; width: 100%; }
+        .no-print { display: none !important; }
+        #printPatientHeader { display: block !important; }
+        button { display: none !important; }
+    }
   </style>
 </head>
 <body class="bg-gray-50">
@@ -1960,59 +1989,86 @@ const graphConfig = {
     const phosVol = parseFloat(document.getElementById('phosvol').value) || 0;
     const proteinVol = parseFloat(document.getElementById('proteinVolInput').value) || 0;
     
-    // ดึงชื่อ Product และคำนวณ g Protein
     const selectedRadio = document.querySelector('input[name="proteinProduct"]:checked');
     const proteinLabel = selectedRadio ? document.querySelector(`label[for="${selectedRadio.id}"]`).textContent : "ไม่ระบุ";
     const pConc = (selectedRadio?.value === 'aminoplasmal') ? 0.15 : 0.10;
     const proteinGrams = proteinVol * pConc;
-    
-    // คำนวณ % Protein
     const proteinPercent = (proteinGrams / prepVol) * 100;
 
-    // คำนวณค่า Electrolytes
     const A = (0.25 * caVol * 1000) / prepVol; // Ca mmol/L
     const B = (0.5 * phosVol * 1000) / prepVol; // P mmol/L
     const ratio = A > 0 ? (B / A) : 0;
     const CaP_product = A * B;
-    const CaP_sum = (A * 2) + ((B / 3) * 4.4); // Ca+P (mEq/L)
+
+    // ตรวจสอบเงื่อนไขความปลอดภัย
+    const isSafe = (A < 15 && B < 30 && CaP_product < 75);
+    const statusDiv = document.getElementById('caPStatusAlert');
+    
+    if (isSafe) {
+        statusDiv.className = "mt-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700";
+        statusDiv.innerHTML = "✅ <b>ผ่านการตรวจสอบ:</b> ค่าคำนวณอยู่ในเกณฑ์มาตรฐาน";
+    } else {
+        statusDiv.className = "mt-4 p-4 rounded-xl danger-box font-bold";
+        statusDiv.innerHTML = `❌ <b>ตรวจสอบการตกตะกอน (Ca-P Check) ไม่ผ่าน!</b><br>
+            <small>ต้องผ่านทั้งค่าคำนวณ และการ plot กราฟ หากไม่ผ่านแนะนำดังนี้:</small>
+            <ul class="list-disc ml-5 mt-2 text-sm">
+                <li>โทร consult แพทย์เพื่อแจ้งว่าเคสนี้มีความเสี่ยงตกตะกอน</li>
+                <li><b>แนวทางแก้ไข:</b> เพิ่ม bag volume PN, OFF Ca gluconate (แยกเส้น), เปลี่ยนเป็น Glycophos, หรือ split เป็น 2 Bag</li>
+            </ul>`;
+    }
 
     const table = document.getElementById('modalTableBody');
     table.innerHTML = `
         <tr class="bg-gray-100"><th class="py-2 text-left">รายการ</th><th class="py-2 text-right">ผลลัพธ์</th><th class="py-2 text-right">มาตรฐาน</th></tr>
-        
         <tr class="border-b border-gray-200">
             <td class="py-2 font-bold text-blue-700">${proteinLabel}</td>
             <td class="py-2 text-right font-bold text-blue-700">${proteinGrams.toFixed(2)} g</td>
             <td class="py-2 text-right">-</td>
         </tr>
         <tr><td class="py-2">Protein %</td><td class="py-2 text-right font-bold">${proteinPercent.toFixed(1)}%</td><td class="py-2 text-right">-</td></tr>
-        
         <tr><td class="py-2 font-bold">Ca (mmol/L)</td>
             <td class="py-2 text-right font-bold ${A >= 15 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${A.toFixed(2)}</td>
             <td class="py-2 text-right">< 15</td></tr>
         <tr><td class="py-2 font-bold">P (mmol/L)</td>
             <td class="py-2 text-right font-bold ${B >= 30 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${B.toFixed(2)}</td>
             <td class="py-2 text-right">< 30</td></tr>
-        
         <tr><td class="py-2">Ratio Ca:P</td><td class="py-2 text-right font-bold">1 : ${ratio.toFixed(1)}</td><td class="py-2 text-right">1:2</td></tr>
-        
         <tr><td class="py-2 font-bold">Ca x P</td>
             <td class="py-2 text-right font-bold ${CaP_product > 75 ? 'text-red-600' : 'text-green-600'}">${CaP_product.toFixed(1)}</td>
             <td class="py-2 text-right">< 75</td></tr>
     `;
 }
 
-    // 5. เรียกใช้ Modal
-    function openModal() {
-        document.getElementById('compatibilityModal').classList.remove('hidden');
-        calculateAndFillData();
-        setupCanvas();
-    }
+function prepareAndPrint() {
+    // ดึงข้อมูลคนไข้มาใส่ใน Header สำหรับพิมพ์
+    document.getElementById('print_hn').innerText = document.getElementById('hn').value || '-';
+    document.getElementById('print_name').innerText = document.getElementById('patientName').value || '-';
+    document.getElementById('print_ward').innerText = document.getElementById('wardInput').value || '-';
+    document.getElementById('print_date').innerText = document.getElementById('orderDate').value || '-';
+    window.print();
+}
+
+function openModal() {
+    document.getElementById('compatibilityModal').classList.remove('hidden');
+    calculateAndFillData();
+    setupCanvas();
+}
 </script>
 
 <div id="compatibilityModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
-    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-3xl font-bold">×</button>
+  <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl relative">
+    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-3xl font-bold no-print">×</button>
+    
+    <div id="printPatientHeader" class="hidden border-b-2 border-gray-800 pb-4 mb-4">
+        <h1 class="text-2xl font-bold text-center mb-4">TPN Compatibility Report</h1>
+        <div class="grid grid-cols-2 gap-y-2 text-sm">
+            <div><b>ชื่อ-นามสกุล:</b> <span id="print_name"></span></div>
+            <div><b>HN:</b> <span id="print_hn"></span></div>
+            <div><b>Ward:</b> <span id="print_ward"></span></div>
+            <div><b>วันที่สั่ง:</b> <span id="print_date"></span></div>
+        </div>
+    </div>
+
     <h2 class="text-xl font-bold mb-4 text-blue-900">ตรวจสอบการตกตะกอน (Compatibility Check)</h2>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -2021,15 +2077,17 @@ const graphConfig = {
         <table class="w-full text-sm">
           <tbody id="modalTableBody" class="divide-y divide-gray-200"></tbody>
         </table>
+        <div id="caPStatusAlert"></div>
       </div>
       <div class="relative">
         <canvas id="graphCanvas" class="w-full border-2 border-gray-300 rounded-lg cursor-crosshair"></canvas>
-        <p class="text-[10px] text-gray-500 mt-2 italic">* คลิกเพื่อวางจุดบนกราฟ</p>
+        <p class="text-[10px] text-gray-500 mt-2 italic no-print">* คลิกเพื่อวางจุดบนกราฟ</p>
       </div>
     </div>
-    <div class="flex gap-2 justify-end mt-6">
+
+    <div class="flex gap-2 justify-end mt-6 no-print">
       <button onclick="clearCanvas()" class="px-4 py-2 bg-gray-200 rounded-lg">ล้างจุด</button>
-      <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">พิมพ์กราฟ (A5)</button>
+      <button onclick="prepareAndPrint()" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow-lg hover:bg-red-700">พิมพ์ผลการตรวจสอบ (A4)</button>
     </div>
   </div>
 </div>
