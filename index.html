@@ -192,44 +192,86 @@ body {
         100% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0); }
     }
 
-  @media print {
-    /* ตั้งค่ากระดาษ A4 */
-    @page { size: A4; margin: 15mm; }
-    
-    /* ซ่อนทุกอย่างยกเว้น Modal */
+@media print {
+    /* 1. ตั้งค่าหน้ากระดาษ A4 แนวตั้ง และล้าง Margin มาตรฐานของ Browser ออก */
+    @page { 
+        size: A4 portrait; 
+        margin: 0; 
+    }
+
+    /* 2. ซ่อนส่วนที่ไม่เกี่ยวข้องทั้งหมด */
     body * { visibility: hidden; }
     #compatibilityModal, #compatibilityModal * { visibility: visible; }
     
-    /* จัดตำแหน่ง Modal ให้เริ่มที่มุมซ้ายบนของกระดาษ */
+    /* 3. จัด Layout หน้าพิมพ์ให้เป็น A4 เต็มแผ่น */
     #compatibilityModal {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 0;
-        background: white;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 210mm !important; /* บังคับความกว้าง A4 */
+        min-height: 297mm !important; /* บังคับความสูง A4 */
+        padding: 15mm 15mm !important; /* เว้นระยะขอบกระดาษจริง 1.5 ซม. รอบด้าน */
+        margin: 0 !important;
+        background: white !important;
+        box-sizing: border-box !important;
+        display: block !important;
     }
 
-    /* ขยายเนื้อหาข้างในให้เต็มความกว้าง */
+    /* บังคับ Container ด้านในให้เต็มพื้นที่ */
     #compatibilityModal > div {
         width: 100% !important;
         max-width: none !important;
+        max-height: none !important;
+        overflow: visible !important;
         box-shadow: none !important;
         border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
-    /* ซ่อนปุ่มต่างๆ และกากบาทตอนพิมพ์ */
-    .no-print { display: none !important; }
-    
-    /* บังคับให้กราฟแสดงผล */
+    /* 4. ปรับตารางคำนวณให้ประหยัดพื้นที่ (ป้องกันเนื้อหาดันกันจนชื่อคนไข้หาย) */
+    #modalTableBody tr td {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        line-height: 1.1 !important;
+        font-size: 13px !important; /* ขนาดกำลังดีสำหรับ A4 */
+    }
+
+    /* 5. ขยายกราฟให้ใหญ่และจัดวางให้อยู่กึ่งกลาง */
     #graphCanvas {
         width: 100% !important;
-        max-width: 500px;
+        max-width: 500px !important; /* บังคับขนาดไม่ให้ล้นขอบขวา */
         height: auto !important;
-        display: block;
-        margin: 0 auto;
+        display: block !important;
+        margin: 10px auto !important;
+    }
+
+    /* 6. ปรับแถบแจ้งเตือน (Danger Box) ให้ดูชัดเจนแต่ไม่กินพื้นที่ */
+    #caPStatusAlert {
+        margin-top: 10px !important;
+        padding: 10px !important;
+        font-size: 13px !important;
+        line-height: 1.3 !important;
+        border: 2px solid #ef4444 !important; /* บังคับขอบแดงตอนพิมพ์ */
+        background-color: #fef2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* 7. ซ่อนปุ่มกดเลือก และปุ่มสั่งการต่างๆ ไม่ให้เห็นในกระดาษ */
+    .no-print, #userSelectionArea, button { 
+        display: none !important; 
+    }
+
+    /* เน้น Header ชื่อคนไข้ให้เด่นชัด */
+    #printHeader {
+        display: block !important;
+        border-bottom: 2px solid #000 !important;
+        margin-bottom: 20px !important;
+        padding-bottom: 10px !important;
     }
 }
+
   </style>
 </head>
 <body class="bg-gray-50">
@@ -2032,7 +2074,7 @@ function showDangerStatus(targetDiv) {
         <small>ต้องผ่านทั้งค่าคำนวณ และการ plot กราฟ หากไม่ผ่านแนะนำดังนี้:</small>
         <ul class="list-disc ml-5 mt-2 text-sm font-normal">
             <li>โทร consult แพทย์เพื่อแจ้งว่าเคสนี้มีความเสี่ยงตกตะกอน</li>
-            <li><b>แนวทางแก้ไข:</b> เพิ่ม bag volume PN, OFF Ca gluconate (แยกเส้น), เปลี่ยนเป็น Glycophos, หรือ split เป็น 2 Bag</li>
+            <li><b>แนวทางแก้ไข:</b> เพิ่ม volume ของ Bag PN, OFF Ca gluconate ไปเลย, OFF K2HPO4 แล้วเปลี่ยนเป็น Glycophos, หรือ split bag (แยกbagไปเลย ไม่ผสม Ca กับ P)</li>
         </ul>`;
 }
 
@@ -2047,6 +2089,7 @@ function setUserDecision(decision) {
         showDangerStatus(statusDiv);
     }
 }
+   
 
 function calculateAndFillData() {
     const prepVol = parseFloat(document.getElementById('totalPrepVolDisplay').innerText) || 1;
@@ -2081,7 +2124,7 @@ function calculateAndFillData() {
 
     if (isSafeCalc) {
         statusDiv.className = "mt-4 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-700";
-        statusDiv.innerHTML = "✅ <b>ผ่านการตรวจสอบ:</b> ค่าคำนวณอยู่ในเกณฑ์มาตรฐาน <br><span class='text-red-600 animate-pulse font-bold'>กรุณา Plot graph ด้านล่างเพื่อยืนยันผล</span>";
+        statusDiv.innerHTML = "<b>ผลการตรวจสอบเบื้องต้น:</b> ค่าคำนวณอยู่ในเกณฑ์ ✅ <br><span class='text-red-600 animate-pulse font-bold'>กรุณา Plot กราฟ เพื่อยืนยันผล</span>";
         if(selectionArea) selectionArea.classList.remove('hidden'); 
     } else {
         showDangerStatus(statusDiv);
@@ -2104,17 +2147,17 @@ function calculateAndFillData() {
         <tr class="border-b border-gray-200">
             <td class="py-2 px-2 font-medium">Protein %</td>
             <td class="py-2 px-2 text-right font-bold">${proteinPercent.toFixed(2)}%</td>
-            <td class="py-2 px-2 text-right">-</td>
+            <td class="py-2 px-2 text-right">นำค่าไปใช้อ่านกราฟ</td>
         </tr>
         <tr class="border-b border-gray-100">
             <td class="py-2 px-2 font-medium">Ca (mmol/L)</td>
             <td class="py-2 px-2 text-right font-bold ${A_mmol >= 15 ? 'text-red-600 bg-red-50' : 'text-green-700'}">${A_mmol.toFixed(2)}</td>
-            <td class="py-2 px-2 text-right text-gray-500">< 15</td>
+            <td class="py-2 px-2 text-right">นำค่าไป Plot กราฟ</td>
         </tr>
         <tr class="border-b border-gray-100">
             <td class="py-2 px-2 font-medium">P (mmol/L)</td>
             <td class="py-2 px-2 text-right font-bold ${B_mmol >= 30 ? 'text-red-600 bg-red-50' : 'text-green-700'}">${B_mmol.toFixed(2)}</td>
-            <td class="py-2 px-2 text-right text-gray-500">< 30</td>
+            <td class="py-2 px-2 text-right">นำค่าไป Plot กราฟ</td>
         </tr>
         <tr class="border-b border-gray-100">
             <td class="py-2 px-2 font-medium italic">Ratio Ca:P</td>
@@ -2151,33 +2194,34 @@ function openModal() {
 }
 
 function printA4() {
-    // 1. ดึงข้อมูลและแปลงวันที่เป็นไทย
+    // ดึงค่ามาใส่ก่อนเสมอ ไม่ว่าจะผ่านหรือไม่ผ่าน
     const rawDate = document.getElementById('orderDate').value;
     const thaiDate = formatThaiDate(rawDate);
     
-    // ใส่ค่าลงใน Header สำหรับพิมพ์
-    const pName = document.getElementById('p_name') || document.getElementById('print_name');
-    const pHn = document.getElementById('p_hn') || document.getElementById('print_hn');
-    const pWard = document.getElementById('p_ward') || document.getElementById('print_ward');
-    const pDate = document.getElementById('p_date') || document.getElementById('print_date');
+    // ตรวจสอบชื่อ ID ให้ตรงกับ HTML ด้านบน (p_name, p_hn, p_ward, p_date)
+    document.getElementById('p_name').innerText = document.getElementById('patientName').value || '-';
+    document.getElementById('p_hn').innerText = document.getElementById('hn').value || '-';
+    document.getElementById('p_ward').innerText = document.getElementById('wardInput').value || '-';
+    document.getElementById('p_date').innerText = thaiDate;
 
-    if(pName) pName.innerText = document.getElementById('patientName').value || '-';
-    if(pHn) pHn.innerText = document.getElementById('hn').value || '-';
-    if(pWard) pWard.innerText = document.getElementById('wardInput').value || '-';
-    if(pDate) pDate.innerText = thaiDate;
+    // ถ้าเป็นเคสที่ต้องเลือกผล แต่ยังไม่เลือก ให้เตือน (แต่ยังคงค่าชื่อไว้ข้างบนแล้ว)
+    const selectionArea = document.getElementById('userSelectionArea');
+    if (!selectionArea.classList.contains('hidden') && userSelection === null) {
+        alert("⚠️ กรุณากดเลือก 'ไม่ตกตะกอน' หรือ 'เสี่ยงตกตะกอน' ก่อนสั่งพิมพ์ค่ะ");
+        return;
+    }
 
-    // 2. สั่งพิมพ์
     window.print();
 }
 </script>
 
 <div id="compatibilityModal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl relative">
+  <div class="bg-white rounded-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto p-6 md:p-8 shadow-2xl relative">
     <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-3xl font-bold no-print">×</button>
     
-    <div id="printHeader" class="hidden print:block border-b-2 border-gray-800 pb-4 mb-6">
-        <h1 class="text-2xl font-bold text-center mb-4">รายงานตรวจสอบการตกตะกอน TPN</h1>
-        <div class="grid grid-cols-2 gap-4 text-lg">
+    <div id="printHeader" class="hidden print:block border-b-2 border-gray-800 pb-2 mb-4">
+        <h1 class="text-xl font-bold text-center mb-2">รายงานตรวจสอบการตกตะกอน TPN (Ca-P Compatibility)</h1>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
             <div><b>ชื่อ-นามสกุล:</b> <span id="p_name"></span></div>
             <div><b>HN:</b> <span id="p_hn"></span></div>
             <div><b>Ward:</b> <span id="p_ward"></span></div>
@@ -2185,24 +2229,35 @@ function printA4() {
         </div>
     </div>
 
-    <h2 class="text-xl font-bold mb-4 text-blue-900 no-print">ตรวจสอบการตกตะกอน (Compatibility Check)</h2>
+    <h2 class="text-lg font-bold mb-4 text-blue-900 no-print">ตรวจสอบการตกตะกอน (Compatibility Check)</h2>
     
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
       <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-        <h3 class="font-bold mb-3">สรุปค่าคำนวณ:</h3>
-        <table class="w-full text-sm">
+        <h3 class="font-bold mb-2 text-sm">สรุปค่าคำนวณ:</h3>
+        <table class="w-full text-[13px]">
           <tbody id="modalTableBody" class="divide-y divide-gray-200"></tbody>
         </table>
-        <div id="caPStatusAlert" class="mt-4"></div>
       </div>
-      <div class="relative">
-        <canvas id="graphCanvas" class="w-full border-2 border-gray-300 rounded-lg"></canvas>
+
+      <div class="flex flex-col gap-4">
+        <div class="relative w-full">
+          <canvas id="graphCanvas" class="w-full border-2 border-gray-300 rounded-lg shadow-sm"></canvas>
+        </div>
+        
+        <div id="caPStatusAlert" class="text-sm"></div>
+        <div id="userSelectionArea" class="hidden p-3 border-2 border-dashed border-blue-200 rounded-xl bg-blue-50/50 no-print">
+            <p class="text-xs font-bold mb-2 text-center text-gray-700">ยืนยันผลจากการ Plot Graph:</p>
+            <div class="flex gap-2 justify-center">
+                <button onclick="setUserDecision('safe')" class="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-bold text-sm shadow-md transition-all">ไม่ตกตะกอน</button>
+                <button onclick="setUserDecision('danger')" class="flex-1 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold text-sm shadow-md transition-all">เสี่ยงตกตะกอน</button>
+            </div>
+        </div>
       </div>
     </div>
 
-    <div class="flex gap-2 justify-end mt-6 no-print">
-      <button onclick="clearCanvas()" class="px-4 py-2 bg-gray-200 rounded-lg">ล้างจุด</button>
-      <button onclick="printA4()" class="px-6 py-2 bg-red-600 text-white rounded-lg shadow-lg font-bold">พิมพ์ผล (A4)</button>
+    <div class="flex gap-2 justify-end mt-6 pt-4 border-t border-gray-100 no-print">
+      <button onclick="clearCanvas()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all font-medium">ล้างจุดบนกราฟ</button>
+      <button onclick="printA4()" class="px-8 py-2 bg-red-600 text-white rounded-lg shadow-lg font-bold hover:bg-red-700 transition-all">พิมพ์รายงาน A4</button>
     </div>
   </div>
 </div>
