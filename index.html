@@ -192,16 +192,44 @@ body {
         100% { box-shadow: 0 0 0 0 rgba(245, 101, 101, 0); }
     }
 
-    /* ตั้งค่าสำหรับการพิมพ์ A4 */
-    @media print {
-        @page { size: A4; margin: 1cm; }
-        body * { visibility: hidden; }
-        #compatibilityModal, #compatibilityModal * { visibility: visible; }
-        #compatibilityModal { position: absolute; left: 0; top: 0; width: 100%; }
-        .no-print { display: none !important; }
-        #printPatientHeader { display: block !important; }
-        button { display: none !important; }
+  @media print {
+    /* ตั้งค่ากระดาษ A4 */
+    @page { size: A4; margin: 15mm; }
+    
+    /* ซ่อนทุกอย่างยกเว้น Modal */
+    body * { visibility: hidden; }
+    #compatibilityModal, #compatibilityModal * { visibility: visible; }
+    
+    /* จัดตำแหน่ง Modal ให้เริ่มที่มุมซ้ายบนของกระดาษ */
+    #compatibilityModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        background: white;
     }
+
+    /* ขยายเนื้อหาข้างในให้เต็มความกว้าง */
+    #compatibilityModal > div {
+        width: 100% !important;
+        max-width: none !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* ซ่อนปุ่มต่างๆ และกากบาทตอนพิมพ์ */
+    .no-print { display: none !important; }
+    
+    /* บังคับให้กราฟแสดงผล */
+    #graphCanvas {
+        width: 100% !important;
+        max-width: 500px;
+        height: auto !important;
+        display: block;
+        margin: 0 auto;
+    }
+}
   </style>
 </head>
 <body class="bg-gray-50">
@@ -1983,75 +2011,163 @@ const graphConfig = {
     }
 
     // 4. คำนวณค่าใน Modal
- function calculateAndFillData() {
+ let userSelection = null; // ตัวแปรเก็บค่าการเลือกของ User
+
+function formatThaiDate(dateString) {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    const months = [
+        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear() + 543;
+    return `${day} ${month} ${year}`;
+}
+
+function showDangerStatus(targetDiv) {
+    targetDiv.className = "mt-4 p-4 rounded-xl danger-box font-bold";
+    targetDiv.innerHTML = `❌ <b>ตรวจสอบการตกตะกอน (Ca-P Check) ไม่ผ่าน!</b><br>
+        <small>ต้องผ่านทั้งค่าคำนวณ และการ plot กราฟ หากไม่ผ่านแนะนำดังนี้:</small>
+        <ul class="list-disc ml-5 mt-2 text-sm font-normal">
+            <li>โทร consult แพทย์เพื่อแจ้งว่าเคสนี้มีความเสี่ยงตกตะกอน</li>
+            <li><b>แนวทางแก้ไข:</b> เพิ่ม bag volume PN, OFF Ca gluconate (แยกเส้น), เปลี่ยนเป็น Glycophos, หรือ split เป็น 2 Bag</li>
+        </ul>`;
+}
+
+function setUserDecision(decision) {
+    userSelection = decision;
+    const statusDiv = document.getElementById('caPStatusAlert');
+    
+    if (decision === 'safe') {
+        statusDiv.className = "mt-4 p-4 rounded-xl bg-green-100 border-2 border-green-500 text-green-800 font-bold text-center";
+        statusDiv.innerHTML = "✅ ผลการตรวจสอบ: ไม่ตกตะกอน สามารถเตรียมได้";
+    } else {
+        showDangerStatus(statusDiv);
+    }
+}
+
+function calculateAndFillData() {
     const prepVol = parseFloat(document.getElementById('totalPrepVolDisplay').innerText) || 1;
     const caVol = parseFloat(document.getElementById('cavol').value) || 0;
     const phosVol = parseFloat(document.getElementById('phosvol').value) || 0;
     const proteinVol = parseFloat(document.getElementById('proteinVolInput').value) || 0;
     
+    // 1. คำนวณ Protein
     const selectedRadio = document.querySelector('input[name="proteinProduct"]:checked');
     const proteinLabel = selectedRadio ? document.querySelector(`label[for="${selectedRadio.id}"]`).textContent : "ไม่ระบุ";
     const pConc = (selectedRadio?.value === 'aminoplasmal') ? 0.15 : 0.10;
     const proteinGrams = proteinVol * pConc;
     const proteinPercent = (proteinGrams / prepVol) * 100;
 
-    const A = (0.25 * caVol * 1000) / prepVol; // Ca mmol/L
-    const B = (0.5 * phosVol * 1000) / prepVol; // P mmol/L
-    const ratio = A > 0 ? (B / A) : 0;
-    const CaP_product = A * B;
+    // 2. คำนวณหน่วย mmol/L
+    const A_mmol = (0.25 * caVol * 1000) / prepVol; // Ca mmol/L
+    const B_mmol = (0.5 * phosVol * 1000) / prepVol; // P mmol/L
+    const ratio = A_mmol > 0 ? (B_mmol / A_mmol) : 0;
+    const CaP_product = A_mmol * B_mmol;
 
-    // ตรวจสอบเงื่อนไขความปลอดภัย
-    const isSafe = (A < 15 && B < 30 && CaP_product < 75);
-    const statusDiv = document.getElementById('caPStatusAlert');
+    // 3. คำนวณหน่วย mEq/L ตามสูตรที่ขิมระบุ
+    const Ca_mEq = A_mmol * 2;              // Ca (mEq/L) = mmol * 2
+    const P_mEq = (B_mmol / 3) * 4.4;      // P (mEq/L) = (mmol/3) * 4.4
+    const Sum_mEq = Ca_mEq + P_mEq;         // ผลรวม mEq/L
+
+    // 4. ตรวจสอบเงื่อนไขความปลอดภัย (ต้องผ่านทุกข้อ)
+    const isSafeCalc = (A_mmol < 15 && B_mmol < 30 && CaP_product <= 75 && Sum_mEq <= 45);
     
-    if (isSafe) {
-        statusDiv.className = "mt-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700";
-        statusDiv.innerHTML = "✅ <b>ผ่านการตรวจสอบ:</b> ค่าคำนวณอยู่ในเกณฑ์มาตรฐาน";
+    const statusDiv = document.getElementById('caPStatusAlert');
+    const selectionArea = document.getElementById('userSelectionArea');
+    userSelection = null; 
+
+    if (isSafeCalc) {
+        statusDiv.className = "mt-4 p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-700";
+        statusDiv.innerHTML = "✅ <b>ผ่านการตรวจสอบ:</b> ค่าคำนวณอยู่ในเกณฑ์มาตรฐาน <br><span class='text-red-600 animate-pulse font-bold'>กรุณา Plot graph ด้านล่างเพื่อยืนยันผล</span>";
+        if(selectionArea) selectionArea.classList.remove('hidden'); 
     } else {
-        statusDiv.className = "mt-4 p-4 rounded-xl danger-box font-bold";
-        statusDiv.innerHTML = `❌ <b>ตรวจสอบการตกตะกอน (Ca-P Check) ไม่ผ่าน!</b><br>
-            <small>ต้องผ่านทั้งค่าคำนวณ และการ plot กราฟ หากไม่ผ่านแนะนำดังนี้:</small>
-            <ul class="list-disc ml-5 mt-2 text-sm">
-                <li>โทร consult แพทย์เพื่อแจ้งว่าเคสนี้มีความเสี่ยงตกตะกอน</li>
-                <li><b>แนวทางแก้ไข:</b> เพิ่ม bag volume PN, OFF Ca gluconate (แยกเส้น), เปลี่ยนเป็น Glycophos, หรือ split เป็น 2 Bag</li>
-            </ul>`;
+        showDangerStatus(statusDiv);
+        if(selectionArea) selectionArea.classList.add('hidden'); 
     }
 
+    // 5. สร้างตารางสรุปผล
     const table = document.getElementById('modalTableBody');
     table.innerHTML = `
-        <tr class="bg-gray-100"><th class="py-2 text-left">รายการ</th><th class="py-2 text-right">ผลลัพธ์</th><th class="py-2 text-right">มาตรฐาน</th></tr>
-        <tr class="border-b border-gray-200">
-            <td class="py-2 font-bold text-blue-700">${proteinLabel}</td>
-            <td class="py-2 text-right font-bold text-blue-700">${proteinGrams.toFixed(2)} g</td>
-            <td class="py-2 text-right">-</td>
+        <tr class="bg-gray-100 text-gray-700">
+            <th class="py-2 text-left px-2">รายการ</th>
+            <th class="py-2 text-right px-2">ผลลัพธ์</th>
+            <th class="py-2 text-right px-2">มาตรฐาน</th>
         </tr>
-        <tr><td class="py-2">Protein %</td><td class="py-2 text-right font-bold">${proteinPercent.toFixed(1)}%</td><td class="py-2 text-right">-</td></tr>
-        <tr><td class="py-2 font-bold">Ca (mmol/L)</td>
-            <td class="py-2 text-right font-bold ${A >= 15 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${A.toFixed(2)}</td>
-            <td class="py-2 text-right">< 15</td></tr>
-        <tr><td class="py-2 font-bold">P (mmol/L)</td>
-            <td class="py-2 text-right font-bold ${B >= 30 ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'} px-2 rounded">${B.toFixed(2)}</td>
-            <td class="py-2 text-right">< 30</td></tr>
-        <tr><td class="py-2">Ratio Ca:P</td><td class="py-2 text-right font-bold">1 : ${ratio.toFixed(1)}</td><td class="py-2 text-right">1:2</td></tr>
-        <tr><td class="py-2 font-bold">Ca x P</td>
-            <td class="py-2 text-right font-bold ${CaP_product > 75 ? 'text-red-600' : 'text-green-600'}">${CaP_product.toFixed(1)}</td>
-            <td class="py-2 text-right">< 75</td></tr>
+        <tr class="border-b border-gray-200">
+            <td class="py-2 px-2 font-bold text-blue-700">${proteinLabel}</td>
+            <td class="py-2 px-2 text-right font-bold text-blue-700">${proteinGrams.toFixed(2)} g</td>
+            <td class="py-2 px-2 text-right">-</td>
+        </tr>
+        <tr class="border-b border-gray-200">
+            <td class="py-2 px-2 font-medium">Protein %</td>
+            <td class="py-2 px-2 text-right font-bold">${proteinPercent.toFixed(2)}%</td>
+            <td class="py-2 px-2 text-right">-</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+            <td class="py-2 px-2 font-medium">Ca (mmol/L)</td>
+            <td class="py-2 px-2 text-right font-bold ${A_mmol >= 15 ? 'text-red-600 bg-red-50' : 'text-green-700'}">${A_mmol.toFixed(2)}</td>
+            <td class="py-2 px-2 text-right text-gray-500">< 15</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+            <td class="py-2 px-2 font-medium">P (mmol/L)</td>
+            <td class="py-2 px-2 text-right font-bold ${B_mmol >= 30 ? 'text-red-600 bg-red-50' : 'text-green-700'}">${B_mmol.toFixed(2)}</td>
+            <td class="py-2 px-2 text-right text-gray-500">< 30</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+            <td class="py-2 px-2 font-medium italic">Ratio Ca:P</td>
+            <td class="py-2 px-2 text-right font-bold">1 : ${ratio.toFixed(2)}</td>
+            <td class="py-2 px-2 text-right text-gray-500">1 : 2</td>
+        </tr>
+        <tr class="border-b border-gray-200 bg-blue-50/30">
+            <td class="py-2 px-2 font-bold text-blue-800">Ca x P (mmol/L)</td>
+            <td class="py-2 px-2 text-right font-bold ${CaP_product > 75 ? 'text-red-600' : 'text-green-700'}">${CaP_product.toFixed(1)}</td>
+            <td class="py-2 px-2 text-right text-gray-500">≤ 75</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+            <td class="py-2 px-2 font-medium">Ca (mEq/L)</td>
+            <td class="py-2 px-2 text-right font-bold">${Ca_mEq.toFixed(2)}</td>
+            <td class="py-2 px-2 text-right text-gray-500">≤ 15</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+            <td class="py-2 px-2 font-medium">P (mEq/L)</td>
+            <td class="py-2 px-2 text-right font-bold">${P_mEq.toFixed(2)}</td>
+            <td class="py-2 px-2 text-right text-gray-500">≤ 30</td>
+        </tr>
+        <tr class="bg-gray-50">
+            <td class="py-2 px-2 font-bold text-purple-800">Ca + P (mEq/L)</td>
+            <td class="py-2 px-2 text-right font-bold ${Sum_mEq > 45 ? 'text-red-600' : 'text-green-700'}">${Sum_mEq.toFixed(2)}</td>
+            <td class="py-2 px-2 text-right font-bold">≤ 45</td>
+        </tr>
     `;
-}
-
-function prepareAndPrint() {
-    // ดึงข้อมูลคนไข้มาใส่ใน Header สำหรับพิมพ์
-    document.getElementById('print_hn').innerText = document.getElementById('hn').value || '-';
-    document.getElementById('print_name').innerText = document.getElementById('patientName').value || '-';
-    document.getElementById('print_ward').innerText = document.getElementById('wardInput').value || '-';
-    document.getElementById('print_date').innerText = document.getElementById('orderDate').value || '-';
-    window.print();
 }
 
 function openModal() {
     document.getElementById('compatibilityModal').classList.remove('hidden');
     calculateAndFillData();
-    setupCanvas();
+    if (typeof setupCanvas === "function") setupCanvas();
+}
+
+function printA4() {
+    // 1. ดึงข้อมูลและแปลงวันที่เป็นไทย
+    const rawDate = document.getElementById('orderDate').value;
+    const thaiDate = formatThaiDate(rawDate);
+    
+    // ใส่ค่าลงใน Header สำหรับพิมพ์
+    const pName = document.getElementById('p_name') || document.getElementById('print_name');
+    const pHn = document.getElementById('p_hn') || document.getElementById('print_hn');
+    const pWard = document.getElementById('p_ward') || document.getElementById('print_ward');
+    const pDate = document.getElementById('p_date') || document.getElementById('print_date');
+
+    if(pName) pName.innerText = document.getElementById('patientName').value || '-';
+    if(pHn) pHn.innerText = document.getElementById('hn').value || '-';
+    if(pWard) pWard.innerText = document.getElementById('wardInput').value || '-';
+    if(pDate) pDate.innerText = thaiDate;
+
+    // 2. สั่งพิมพ์
+    window.print();
 }
 </script>
 
@@ -2059,17 +2175,17 @@ function openModal() {
   <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl relative">
     <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-3xl font-bold no-print">×</button>
     
-    <div id="printPatientHeader" class="hidden border-b-2 border-gray-800 pb-4 mb-4">
-        <h1 class="text-2xl font-bold text-center mb-4">TPN Compatibility Report</h1>
-        <div class="grid grid-cols-2 gap-y-2 text-sm">
-            <div><b>ชื่อ-นามสกุล:</b> <span id="print_name"></span></div>
-            <div><b>HN:</b> <span id="print_hn"></span></div>
-            <div><b>Ward:</b> <span id="print_ward"></span></div>
-            <div><b>วันที่สั่ง:</b> <span id="print_date"></span></div>
+    <div id="printHeader" class="hidden print:block border-b-2 border-gray-800 pb-4 mb-6">
+        <h1 class="text-2xl font-bold text-center mb-4">รายงานตรวจสอบการตกตะกอน TPN</h1>
+        <div class="grid grid-cols-2 gap-4 text-lg">
+            <div><b>ชื่อ-นามสกุล:</b> <span id="p_name"></span></div>
+            <div><b>HN:</b> <span id="p_hn"></span></div>
+            <div><b>Ward:</b> <span id="p_ward"></span></div>
+            <div><b>วันที่สั่ง:</b> <span id="p_date"></span></div>
         </div>
     </div>
 
-    <h2 class="text-xl font-bold mb-4 text-blue-900">ตรวจสอบการตกตะกอน (Compatibility Check)</h2>
+    <h2 class="text-xl font-bold mb-4 text-blue-900 no-print">ตรวจสอบการตกตะกอน (Compatibility Check)</h2>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -2077,17 +2193,16 @@ function openModal() {
         <table class="w-full text-sm">
           <tbody id="modalTableBody" class="divide-y divide-gray-200"></tbody>
         </table>
-        <div id="caPStatusAlert"></div>
+        <div id="caPStatusAlert" class="mt-4"></div>
       </div>
       <div class="relative">
-        <canvas id="graphCanvas" class="w-full border-2 border-gray-300 rounded-lg cursor-crosshair"></canvas>
-        <p class="text-[10px] text-gray-500 mt-2 italic no-print">* คลิกเพื่อวางจุดบนกราฟ</p>
+        <canvas id="graphCanvas" class="w-full border-2 border-gray-300 rounded-lg"></canvas>
       </div>
     </div>
 
     <div class="flex gap-2 justify-end mt-6 no-print">
       <button onclick="clearCanvas()" class="px-4 py-2 bg-gray-200 rounded-lg">ล้างจุด</button>
-      <button onclick="prepareAndPrint()" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow-lg hover:bg-red-700">พิมพ์ผลการตรวจสอบ (A4)</button>
+      <button onclick="printA4()" class="px-6 py-2 bg-red-600 text-white rounded-lg shadow-lg font-bold">พิมพ์ผล (A4)</button>
     </div>
   </div>
 </div>
