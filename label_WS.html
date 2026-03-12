@@ -3,73 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TPN Label & Worksheet System | Full Version 2026</title>
+  <title>TPN Label & Worksheet System | SRT Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
-    /* Global Style */
+    /* พื้นฐานเพื่อให้แก้ไขได้ง่ายเหมือนของเดิม */
     * { font-family: 'Sarabun', sans-serif; color: #000; line-height: 1.1; }
-    
+    [contenteditable="true"]:hover { background: #fff9c4; outline: 1px dashed #000; cursor: text; }
+    [contenteditable="true"]:focus { background: #fffde7; outline: 2px solid #2563eb; }
+
     /* UI Layout */
-    .card-active { border-color: #2563eb !important; background-color: #eff6ff !important; transform: scale(1.02); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+    .card-active { border-color: #2563eb !important; background-color: #eff6ff !important; transform: scale(1.02); }
     
-    /* Print Setup */
     @media print {
       .no-print { display: none !important; }
       body { background: #fff; margin: 0; padding: 0; }
       .print-area:not(.active) { display: none !important; }
       .sticker { box-shadow: none !important; border: 1px solid #000 !important; margin: 0 auto !important; page-break-after: avoid; page-break-inside: avoid; display: block !important; }
-      
-      #pn-area .sticker-pn { zoom: 0.92; margin: 0 auto !important; }
-      #fat-area .sticker-small, #bag-area .sticker-small { margin-top: 2mm !important; }
+      #pn-area .sticker-pn { zoom: 0.92; }
       #ws-area .sheet { width: 14.85cm; height: 21cm; border: 1.5px solid #000 !important; margin: 0 !important; }
     }
 
-    /* Sticker Components */
-    .sticker-pn { width: 8.5cm; height: 12.9cm; padding: 1.45cm 0.4cm 0.4cm 0.4cm; background: white; position: relative; border: 1px solid #000; margin: 10px auto; display: flex; flex-direction: column; }
-    .sticker-small { width: 3.5in; height: 2.48in; padding: 1.3cm 0.25in 0.1in 0.25in; background: white; position: relative; border: 1px solid #000; margin: 10px auto; }
-    
-    /* Worksheet Components */
+    .sticker-pn { width: 8.5cm; height: 12.9cm; padding: 1.45cm 0.4cm 0.4cm 0.4cm; background: white; border: 1px solid #000; margin: 10px auto; display: flex; flex-direction: column; }
+    .sticker-small { width: 3.5in; height: 2.48in; padding: 1.3cm 0.25in 0.1in 0.25in; background: white; border: 1px solid #000; margin: 10px auto; }
     .sheet { width: 14.85cm; height: 21cm; padding: 0.5cm 0.7cm 0.3cm 0.7cm; margin: 10px auto; background: white; border: 1.5px solid #000; display: flex; flex-direction: column; justify-content: flex-end; }
-    
-    /* Tables Style */
     .pn-table, .ws-table { width: 100%; font-size: 11.5px; border-collapse: collapse; border: 1.5px solid #000; }
-    .pn-table td, .pn-table th, .ws-table td, .ws-table th { border: 1px solid #000; padding: 3px 5px; vertical-align: middle; }
-    .pn-table th, .ws-table th { background: #f2f2f2; font-weight: 800; }
+    .pn-table td, .pn-table th, .ws-table td, .ws-table th { border: 1px solid #000; padding: 3px 5px; }
     .fat-table-bold { width: 100%; border-collapse: collapse; border: 2px solid #000; font-size: 14px; }
     .fat-table-bold td { border: 2px solid #000; padding: 5px; font-weight: 800; }
-
-    [contenteditable="true"]:hover { background: #fff9c4; outline: 1px dashed #ccc; }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20">
 
-  <div class="max-w-5xl mx-auto py-8 px-4 no-print text-center">
+  <div class="max-w-5xl mx-auto py-6 px-4 no-print text-center">
     <div class="mb-6">
-      <h1 class="text-3xl font-black text-slate-800 italic">TPN PRINTING HUB</h1>
-      <p class="text-slate-500 mt-2">HN: <span id="display-hn" class="font-bold text-slate-800">-</span> | <span id="display-name" class="font-bold text-slate-800">-</span></p>
+      <h1 class="text-2xl font-black text-slate-800 italic">TPN PRINTING CONTROL</h1>
+      <p class="text-slate-500">ข้อมูลผู้ป่วย: <span id="display-info" class="font-bold text-blue-600">กำลังโหลด...</span></p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div id="card-pn" onclick="selectSection('pn')" class="bg-white p-5 rounded-3xl border-4 border-slate-100 cursor-pointer transition-all hover:border-blue-400 group">
-        <h3 class="font-black text-lg text-blue-600 group-hover:scale-110 transition-transform">PN LABEL</h3>
-        <select id="pnCount" onchange="renderAll()" class="mt-3 p-1 border rounded w-full"><option value="1">1 ขวด</option><option value="2">2 ขวด</option></select>
+      <div id="card-pn" onclick="selectSection('pn')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-blue-400">
+        <h3 class="font-black text-blue-600">PN LABEL</h3>
+        <select id="pnCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full"><option value="1">1 ขวด</option><option value="2">2 ขวด</option></select>
       </div>
-      <div id="card-fat" onclick="selectSection('fat')" class="bg-white p-5 rounded-3xl border-4 border-slate-100 cursor-pointer transition-all hover:border-amber-400 group">
-        <h3 class="font-black text-lg text-amber-600 group-hover:scale-110 transition-transform">FAT LABEL</h3>
-        <select id="fatCount" onchange="renderAll()" class="mt-3 p-1 border rounded w-full"><option value="1">1 อัน</option><option value="2">2 อัน</option></select>
+      <div id="card-fat" onclick="selectSection('fat')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-amber-400">
+        <h3 class="font-black text-amber-600">FAT LABEL</h3>
+        <select id="fatCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full"><option value="1">1 อัน</option><option value="2">2 อัน</option></select>
       </div>
-      <div id="card-bag" onclick="selectSection('bag')" class="bg-white p-5 rounded-3xl border-4 border-slate-100 cursor-pointer transition-all hover:border-emerald-400 group">
-        <h3 class="font-black text-lg text-emerald-600 group-hover:scale-110 transition-transform">ฉลากหน้าถุง</h3>
+      <div id="card-bag" onclick="selectSection('bag')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-emerald-400">
+        <h3 class="font-black text-emerald-600">ฉลากหน้าถุง</h3>
       </div>
-      <div id="card-ws" onclick="selectSection('ws')" class="bg-white p-5 rounded-3xl border-4 border-slate-100 cursor-pointer transition-all hover:border-rose-400 group">
-        <h3 class="font-black text-lg text-rose-600 group-hover:scale-110 transition-transform">WORKSHEET</h3>
-        <select id="wsBagCount" onchange="renderAll()" class="mt-3 p-1 border rounded w-full"><option value="1">1 ถุงปกติ</option><option value="2">2 ถุง (x2)</option></select>
+      <div id="card-ws" onclick="selectSection('ws')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-rose-400">
+        <h3 class="font-black text-rose-600">WORKSHEET</h3>
+        <select id="wsBagCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full"><option value="1">1 ถุง</option><option value="2">2 ถุง</option></select>
       </div>
     </div>
 
-    <div id="action-btns" class="hidden flex justify-center sticky top-4 z-50">
-      <button onclick="window.print()" class="bg-slate-900 text-white py-5 px-16 rounded-3xl font-black text-2xl shadow-xl hover:bg-black transition-all transform hover:scale-105 active:scale-95">🖨️ สั่งพิมพ์ส่วนที่เลือก</button>
+    <div id="action-btns" class="hidden">
+      <button onclick="window.print()" class="bg-black text-white py-4 px-12 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-all">🖨️ พิมพ์ที่เลือก (แก้ไขข้อความในฉลากได้)</button>
     </div>
   </div>
 
@@ -84,24 +75,30 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const row = urlParams.get('row'); // รับค่า HN/Row
-      if (row) {
+      // *** จุดสำคัญ: เราจะรับทั้ง row หรือ hn ก็ได้เพื่อความชัวร์ ***
+      const hnValue = urlParams.get('row') || urlParams.get('hn'); 
+      
+      if (hnValue) {
         try {
-          const res = await fetch(`${API_URL}?action=getLastOrder&hn=${row}`);
+          // ดึงข้อมูลล่าสุดจาก Script
+          const res = await fetch(`${API_URL}?action=getLastOrder&hn=${encodeURIComponent(hnValue)}`);
           rawData = await res.json();
           if(rawData) {
-            document.getElementById('display-hn').innerText = rawData.hn;
-            document.getElementById('display-name').innerText = rawData.patient_name;
+            document.getElementById('display-info').innerText = `${rawData.hn} - ${rawData.patient_name}`;
             renderAll();
+          } else {
+            document.getElementById('display-info').innerText = "ไม่พบข้อมูล กรุณาลองบันทึกจากหน้าหลักอีกครั้ง";
           }
-        } catch (e) { alert("เกิดข้อผิดพลาดในการโหลดข้อมูล"); }
+        } catch (e) { 
+          document.getElementById('display-info').innerText = "เชื่อมต่อฐานข้อมูลไม่ได้";
+        }
       }
     });
 
     function selectSection(type) {
       document.querySelectorAll('.print-area').forEach(el => el.classList.remove('active'));
       document.getElementById(`${type}-area`).classList.add('active');
-      document.querySelectorAll('.bg-white').forEach(el => el.classList.remove('card-active'));
+      document.querySelectorAll('.rounded-2xl').forEach(el => el.classList.remove('card-active'));
       document.getElementById(`card-${type}`).classList.add('card-active');
       document.getElementById('action-btns').classList.remove('hidden');
     }
@@ -117,166 +114,113 @@
 
     function renderAll() {
       if (!rawData) return;
+      const o = rawData;
       
+      // Render PN
       const pnDiv = parseInt(document.getElementById('pnCount').value);
-      const fatDiv = parseInt(document.getElementById('fatCount').value);
-      const wsDiv = parseInt(document.getElementById('wsBagCount').value);
-
       const pnArea = document.getElementById('pn-area'); pnArea.innerHTML = '';
-      for (let i = 1; i <= pnDiv; i++) { pnArea.innerHTML += createPN(rawData, i, pnDiv); }
+      for (let i = 1; i <= pnDiv; i++) { pnArea.innerHTML += createPN(o, i, pnDiv); }
 
+      // Render Fat
+      const fatDiv = parseInt(document.getElementById('fatCount').value);
       const fatArea = document.getElementById('fat-area'); fatArea.innerHTML = '';
-      for (let j = 1; j <= fatDiv; j++) { fatArea.innerHTML += createFat(rawData, j, fatDiv); }
+      for (let j = 1; j <= fatDiv; j++) { fatArea.innerHTML += createFat(o, j, fatDiv); }
 
-      document.getElementById('bag-area').innerHTML = createBag(rawData);
-      document.getElementById('ws-area').innerHTML = createWS(rawData, wsDiv);
+      // Render Bag & WS
+      document.getElementById('bag-area').innerHTML = createBag(o);
+      document.getElementById('ws-area').innerHTML = createWS(o, parseInt(document.getElementById('wsBagCount').value));
     }
-
-    // --- Core Templates ---
 
     function createPN(o, bNum, div) {
       const exp = new Date(); exp.setDate(exp.getDate() + 1);
-      const flushValue = 30 / div;
-      
       return `<div class="sticker sticker-pn" contenteditable="true">
-        <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-[13px]">
-          <span>HN: ${o.hn} - ${o.patient_name}</span><span>ขวด: ${bNum}/${div}</span>
-        </div>
-        <div class="flex justify-between font-bold border-b border-black mb-2 text-[13px]">
-          <span>Ward: ${o.ward}</span><span>Route: ${o.route === 'central' ? 'C-line' : 'P-line'}</span>
-        </div>
+        <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-sm"><span>HN: ${o.hn} - ${o.patient_name}</span><span>${bNum}/${div}</span></div>
+        <div class="flex justify-between font-bold border-b border-black mb-2 text-xs"><span>Ward: ${o.ward}</span><span>Route: ${o.route}</span></div>
         <table class="pn-table">
-          <thead><tr><th style="width: 75%;">รายการ</th><th style="width: 25%;">ml</th></tr></thead>
           <tbody>
-            <tr><td>1. Sterile Water</td><td class="text-right">${smartFix(o.pn_volume_net, div)}</td></tr>
-            <tr><td>2. 50% D-W</td><td class="text-right">${smartFix(o.dex_50_vol, div)}</td></tr>
-            <tr><td>3. ${o.protein_product || 'Amino Acid'}</td><td class="text-right">${smartFix(o.protein_vol, div)}</td></tr>
-            <tr><td>4. ${o.phos_source || 'Phosphate'}</td><td class="text-right">${smartFix(o.phos_vol, div)}</td></tr>
-            <tr><td>5. ${o.na_source || 'Sodium'}</td><td class="text-right">${smartFix(o.na_vol, div)}</td></tr>
-            <tr><td>6. ${o.k_source || 'Potassium'}</td><td class="text-right">${smartFix(o.k_vol, div)}</td></tr>
-            <tr><td>7. 50% MgSO4 (Mg)</td><td class="text-right">${smartFix(o.mg_vol, div)}</td></tr>
-            <tr><td>8. 10% Ca Gluconate</td><td class="text-right">${smartFix(o.ca_vol, div)}</td></tr>
-            <tr><td>9. ${o.trace_choice || 'Trace Elements'}</td><td class="text-right">${smartFix(o.trace_vol, div)}</td></tr>
-            <tr><td>10. Zinc sulfate</td><td class="text-right">${smartFix(o.zinc_vol, div)}</td></tr>
-            <tr><td>11. ${o.vit_choice || 'Vitamins'}</td><td class="text-right">${smartFix(o.vit_vol, div)}</td></tr>
-            <tr><td>12. ${o.add_name || 'อื่นๆ'}</td><td class="text-right">${smartFix(o.add_vol, div)}</td></tr>
-            <tr><td>13. Heparin (1u/ml)</td><td class="text-right">${smartFix(o.heparin_vol, div)}</td></tr>
-            <tr class="bg-gray-100 font-bold"><td colspan="2" class="text-right">Total + ไล่สาย ${flushValue}ml: ${smartFix(o.pn_prep_vol, div)} ml</td></tr>
+            <tr><td>Sterile Water</td><td class="text-right">${smartFix(o.pn_volume_net, div)}</td></tr>
+            <tr><td>50% D-W</td><td class="text-right">${smartFix(o.dex_50_vol, div)}</td></tr>
+            <tr><td>${o.protein_product}</td><td class="text-right">${smartFix(o.protein_vol, div)}</td></tr>
+            <tr><td>${o.phos_source}</td><td class="text-right">${smartFix(o.phos_vol, div)}</td></tr>
+            <tr><td>${o.na_source}</td><td class="text-right">${smartFix(o.na_vol, div)}</td></tr>
+            <tr><td>${o.k_source}</td><td class="text-right">${smartFix(o.k_vol, div)}</td></tr>
+            <tr><td>50% MgSO4 (Mg)</td><td class="text-right">${smartFix(o.mg_vol, div)}</td></tr>
+            <tr><td>10% Ca Gluconate</td><td class="text-right">${smartFix(o.ca_vol, div)}</td></tr>
+            <tr><td>${o.trace_choice}</td><td class="text-right">${smartFix(o.trace_vol, div)}</td></tr>
+            <tr><td>Zinc sulfate</td><td class="text-right">${smartFix(o.zinc_vol, div)}</td></tr>
+            <tr><td>${o.vit_choice}</td><td class="text-right">${smartFix(o.vit_vol, div)}</td></tr>
+            <tr><td>${o.add_name || '-'}</td><td class="text-right">${smartFix(o.add_vol, div)}</td></tr>
+            <tr><td>Heparin (1u/ml)</td><td class="text-right">${smartFix(o.heparin_vol, div)}</td></tr>
+            <tr class="font-bold bg-gray-50"><td>Total PN Vol:</td><td class="text-right">${smartFix(o.pn_prep_vol, div)} ml</td></tr>
           </tbody>
         </table>
         <div class="flex justify-between items-end mt-2 pt-2 border-t-2 border-black">
-          <div class="text-[10px]">
-            Total Cal: ${smartFix(o.total_calories)} kcal/d<br>
-            %Glucose: ${o.dex_percent}% | GIR: ${o.gir_result || '-'}<br>
-            Osmol: ${o.final_osmolarity} mOsmol/L
-          </div>
+          <div class="text-[9px]">GIR: ${o.gir_result || '-'} | Osmol: ${o.final_osmolarity}</div>
           <div class="text-right">
-            <div class="border-2 border-black px-2 py-1 font-black text-sm">Rate: ${o.rate_pn} ml/hr</div>
-            <div class="text-[10px] mt-1">Exp: ${formatThaiDate(exp)} 18.00 น.</div>
+            <div class="border-2 border-black px-2 font-black text-sm">Rate: ${o.rate_pn} ml/hr</div>
+            <div class="text-[9px]">Exp: ${formatThaiDate(exp)} 18.00น.</div>
           </div>
         </div>
       </div>`;
     }
 
     function createFat(o, fNum, div) {
-      const exp = new Date(); exp.setDate(exp.getDate() + 1);
-      const vLipid = smartFix(o.fat_vol, div);
-      const vFlush = smartFix(o.fat_flush_vol, div);
-      const vVit = smartFix(o.vitalipid_vol, div);
-
       return `<div class="sticker sticker-small" contenteditable="true">
-        <div class="font-bold text-sm">HN: ${o.hn} - ${o.patient_name}</div>
-        <div class="flex justify-between text-[18px] font-black border-b-2 border-black">
-          <span>Ward: ${o.ward}</span><span>${fNum}/${div}</span>
-        </div>
+        <div class="font-bold text-xs">${o.hn} - ${o.patient_name}</div>
+        <div class="flex justify-between text-lg font-black border-b-2 border-black"><span>Ward: ${o.ward}</span><span>${fNum}/${div}</span></div>
         <table class="fat-table-bold mt-1">
-          <tr><td>${o.fat_product} + Flush ${vFlush}ml</td><td class="text-right">${smartFix(vLipid + vFlush)}</td></tr>
-          <tr><td>${o.vitalipid_type || 'Vitalipid'}</td><td class="text-right">${vVit}</td></tr>
-          <tr class="bg-gray-100"><td>Total Volume</td><td class="text-right text-lg">${smartFix(o.total_fat_prep, div)}</td></tr>
+          <tr><td>${o.fat_product} + Flush</td><td class="text-right">${smartFix(parseFloat(o.fat_vol)+parseFloat(o.fat_flush_vol), div)}</td></tr>
+          <tr><td>${o.vitalipid_type}</td><td class="text-right">${smartFix(o.vitalipid_vol, div)}</td></tr>
+          <tr class="bg-gray-100"><td>Total Volume</td><td class="text-right">${smartFix(o.total_fat_prep, div)}</td></tr>
         </table>
-        <div class="flex justify-between mt-1 items-end">
-          <div class="font-black">Rate: <span class="text-lg">${o.fat_drip_rate}</span> ml/hr</div>
-          <div class="text-[10px] text-right font-bold">Exp: ${formatThaiDate(exp)}<br>18.00 น.</div>
-        </div>
+        <div class="font-bold text-sm">Rate: ${o.fat_drip_rate} ml/hr</div>
       </div>`;
     }
 
     function createBag(o) {
       return `<div class="sticker sticker-small flex flex-col items-center justify-center text-center" contenteditable="true">
-          <div class="text-[50px] font-black leading-none">${o.ward}</div>
-          <div class="border-y-4 border-black w-full py-2 my-2 italic">
-            <span class="text-[24px] font-black">${o.patient_name}</span>
-          </div>
-          <div class="text-[18px] font-bold">HN: ${o.hn}</div>
-          <div class="text-[15px] font-bold">วันที่: ${formatThaiDate(o.order_date)}</div>
-          <div class="text-[14px] font-black mt-1 text-red-600">(เก็บในตู้เย็น 2-8° C)</div>
-        </div>`;
+        <div class="text-5xl font-black">${o.ward}</div>
+        <div class="border-y-4 border-black w-full my-2 text-xl font-black">${o.patient_name}</div>
+        <div class="font-bold">HN: ${o.hn} | วันที่: ${formatThaiDate(o.order_date)}</div>
+      </div>`;
     }
 
     function createWS(o, div) {
-      let currentSum = 0;
-      const v = (val) => smartFix(val, div);
-      
+      let cur = 0;
       const items = [
-        { n: "Sterile Water", vol: o.prep_water_vol, show: true },
-        { n: "50% D-W", vol: o.prep_dex_vol, show: true },
-        { n: o.protein_product || "Amino Acid", vol: o.protein_vol, show: true },
-        { n: o.phos_source || "Phosphate", vol: o.phos_vol, show: false },
-        { n: o.na_source || "Sodium Source", vol: o.na_vol, show: true },
-        { n: o.k_source || "Potassium Source", vol: o.k_vol, show: false },
-        { n: "50% MgSO4 (Mg)", vol: o.mg_vol, show: false },
-        { n: o.trace_choice || "Trace Elements", vol: o.trace_vol, show: false },
-        { n: "10% Ca Gluconate", vol: o.ca_vol, show: false },
-        { n: "Zinc Sulfate", vol: o.zinc_vol, show: false },
-        { n: o.vit_choice || "Vitamins", vol: o.vit_vol, show: false },
-        { n: o.add_name || "Additive อื่นๆ", vol: o.add_vol, show: false },
-        { n: "Heparin (1u/ml)", vol: o.heparin_vol, show: false }
+        { n: "Sterile Water", v: o.prep_water_vol, s: true },
+        { n: "50% D-W", v: o.prep_dex_vol, s: true },
+        { n: o.protein_product, v: o.protein_vol, s: true },
+        { n: o.phos_source, v: o.phos_vol, s: false },
+        { n: o.na_source, v: o.na_vol, s: true },
+        { n: o.k_source, v: o.k_vol, s: false },
+        { n: "50% MgSO4", v: o.mg_vol, s: false },
+        { n: o.trace_choice, v: o.trace_vol, s: false },
+        { n: "10% Ca Glu", v: o.ca_vol, s: false },
+        { n: "Zinc Sulfate", v: o.zinc_vol, s: false },
+        { n: o.vit_choice, v: o.vit_vol, s: false },
+        { n: o.add_name || "อื่นๆ", v: o.add_vol, s: false },
+        { n: "Heparin", v: o.heparin_vol, s: false }
       ];
 
-      let rowsHtml = items.map((item, i) => {
-        const vol = parseFloat(item.vol) || 0;
-        if(item.show) currentSum += (vol/div);
-        else if(i > 4) currentSum += (vol/div);
-        
-        return `<tr class="${i > 4 ? 'bg-gray-50' : ''}">
-          <td class="text-center font-bold">${i+1}</td>
-          <td class="text-[18px] font-bold">${item.n}</td>
-          <td class="text-center text-2xl font-black">${v(item.vol)}</td>
-          <td class="text-right text-2xl font-black bg-gray-100">${item.show ? smartFix(currentSum) : ''}</td>
-        </tr>`;
+      let rows = items.map((it, i) => {
+        const val = parseFloat(it.v) || 0;
+        if(it.s || i > 4) cur += (val/div);
+        return `<tr><td class="text-center">${i+1}</td><td>${it.n}</td><td class="text-center font-bold">${smartFix(it.v, div)}</td><td class="text-right font-black">${it.s ? smartFix(cur) : ''}</td></tr>`;
       }).join('');
 
-      return `
-        <div class="sheet" contenteditable="true">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <div class="border-4 border-black px-3 py-1 inline-block font-black text-xl mb-2">PREP x ${div} BAGS</div>
-              <h1 class="text-2xl font-black italic underline">TPN WORKSHEET</h1>
-              <p class="text-2xl font-black">${o.patient_name}</p>
-              <p class="font-bold text-lg">HN: ${o.hn} | BW: ${o.bw} kg | Date: ${formatThaiDate(o.order_date)}</p>
-            </div>
-            <div class="text-right">
-              <p class="text-xs font-bold">WARD</p>
-              <p class="text-7xl font-black leading-none">${o.ward}</p>
-            </div>
-          </div>
-          <table class="ws-table">
-            <thead>
-              <tr><th width="50">#</th><th>รายการสารอาหาร</th><th width="120">Prep (ml)</th><th width="120">ถุงรวม (ml)</th></tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-              <tr class="bg-gray-800 text-white">
-                <td colspan="2" class="text-right text-xl font-bold italic">Total PN + Flush:</td>
-                <td colspan="2" class="text-center text-4xl font-black">${v(o.pn_prep_vol)}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="flex justify-between mt-8 px-10 pb-4">
-            <div class="text-center"><div class="w-40 border-b-2 border-black mb-1"></div><p class="font-bold text-sm">คนเตรียม (Prepared by)</p></div>
-            <div class="text-center"><div class="w-40 border-b-2 border-black mb-1"></div><p class="font-bold text-sm">คนตรวจ (Checked by)</p></div>
-          </div>
-        </div>`;
+      return `<div class="sheet" contenteditable="true">
+        <div class="flex justify-between mb-2">
+          <h1 class="text-2xl font-black italic">TPN WORKSHEET (x${div})</h1>
+          <div class="text-6xl font-black">${o.ward}</div>
+        </div>
+        <p class="text-xl font-bold">${o.patient_name} (HN: ${o.hn})</p>
+        <table class="ws-table mt-2">
+          <thead><tr class="bg-gray-100"><th>#</th><th>รายการ</th><th>Prep</th><th>สะสม</th></tr></thead>
+          <tbody>${rows}</tbody>
+          <tr class="bg-gray-200 font-black text-2xl"><td colspan="2" class="text-right">Total:</td><td colspan="2" class="text-center">${smartFix(o.pn_prep_vol, div)} ml</td></tr>
+        </table>
+      </div>`;
     }
   </script>
 </body>
