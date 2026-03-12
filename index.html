@@ -1312,7 +1312,7 @@ async function fetchPatientAndHistory() {
             mode: 'no-cors',
             body: JSON.stringify(formData)
         });
-        window.location.href = "label_WS.html";
+        window.location.href = "label_WS.html?row=" + encodeURIComponent(document.getElementById('hn').value);
     } catch (error) {
         alert('บันทึกผิดพลาด: ' + error.message);
     } finally {
