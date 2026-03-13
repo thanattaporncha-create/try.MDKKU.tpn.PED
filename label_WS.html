@@ -24,11 +24,12 @@
       }
     }
 
-    /* 📌 เลื่อนลงมา 3.5 mm โดยการปรับ padding-top เป็น 1.45cm */
+    /* PN Label: ย่นระยะ Padding ด้านบน (เหลือ 1.0cm) และล่าง เพื่อให้ข้อมูลขยับขึ้น */
     .sticker-pn { 
       width: 8.5cm; 
-      min-height: 12.8cm; 
-      padding: 1.45cm 0.4cm 0.3cm 0.4cm; 
+      min-height: 12.6cm; 
+      max-height: 12.8cm;
+      padding: 1.0cm 0.4cm 0.2cm 0.4cm; 
       background: white; 
       border: 1.5px solid #000; 
       margin: 10px auto; 
@@ -36,16 +37,19 @@
       flex-direction: column; 
     }
 
+    /* PN Table: Font 13.5px อ่านชัด และลด Padding ของแถวเล็กน้อย */
     .pn-table { width: 100%; font-size: 13.5px; border-collapse: collapse; border: 1.5px solid #000; }
-    .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.5px 5px; } 
+    .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.2px 5px; } 
     
-    /* Fat & Bag Label: ขนาดดั้งเดิมเป๊ะๆ */
+    /* Fat & Bag Label: ขนาด Original (ห้ามแก้) */
     .sticker-small { width: 3.5in; height: 2.48in; padding: 1.3cm 0.25in 0.1in 0.25in; background: white; border: 1px solid #000; margin: 10px auto; }
     .fat-table-bold { width: 100%; border-collapse: collapse; border: 2px solid #000; font-size: 14px; }
     .fat-table-bold td { border: 2px solid #000; padding: 5px; font-weight: 800; }
     
-    /* Worksheet Size */
+    /* Worksheet: Original Size */
     .sheet { width: 14.85cm; height: 21cm; padding: 0.5cm 0.7cm 0.3cm 0.7cm; margin: 10px auto; background: white; border: 1.5px solid #000; display: flex; flex-direction: column; }
+    .ws-table { width: 100%; font-size: 11.5px; border-collapse: collapse; border: 1.5px solid #000; }
+    .ws-table td, .ws-table th { border: 1px solid #000; padding: 3px 5px; }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20">
@@ -83,7 +87,7 @@
   <div id="ws-area" class="print-area"></div>
 
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbx4w9wF--TwiBVVLiAVXYbHZPeEw_iHasaHSMdgVMhdW4E2dsw3vvXJ09zjUdGXnrdj6w/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyDz-uLWDg-YvD0eoKOnt79bJ2fQL-GmlRCNm6Bbne4RDpnzUjy9iuUabyI4wTQ46r4QQ/exec';
     let rawData = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -111,7 +115,8 @@
 
     const smartFix = (v, div = 1) => {
       let val = (parseFloat(v) || 0) / div;
-      return val === 0 ? "-" : Number(val.toFixed(2));
+      if (val === 0) return "-";
+      return Number(val.toFixed(2));
     };
 
     function formatThaiDate(dateStr) {
@@ -137,31 +142,32 @@
     function createPN(o, bNum, div) {
       const expDate = new Date(); expDate.setDate(expDate.getDate() + 1);
       
-      const routeDisplay = o.route === 'central' ? 'C-line' : 'P-line';
+      const routeDisplay = o.route === 'central' ? 'C-line' : (o.route === 'peripheral' ? 'P-line' : o.route);
       const proteinDisplay = o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : (o.protein_product === 'amiparen' ? '10% Amiparen' : '15% Aminoplasmal');
+      const phosDisplay = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
+      const naDisplay = o.na_source === 'NaCl' ? '3% NaCl (Na)' : (o.na_source === 'NaAcetate' ? 'Na Acetate (Na)' : o.na_source);
+      const kDisplay = o.k_source === 'KCl' ? '15% KCl (K)' : (o.k_source === 'KAcetate' ? 'K Acetate (K)' : o.k_source);
+      
       const traceDisplay = o.trace_choice === 'Addamel' ? 'Addamel-N' : 'Peditrace';
       const vitDisplay = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
-      const phosDisplay = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
-      const naDisplay = o.na_source === 'NaCl' ? '3% NaCl (Na)' : 'Na Acetate (Na)';
-      const kDisplay = o.k_source === 'KCl' ? '15% KCl (K)' : 'K Acetate (K)';
 
-      // 📌 ดึงค่า Sterile Water จาก Google Sheet ตรงๆ
+      // ดึงค่า Sterile Water จากฐานข้อมูลโดยตรง (o.water_vol) เพื่อความแม่นยำ
       const waterVal = o.water_vol !== undefined ? o.water_vol : 0;
 
       const pnCalDaily = (parseFloat(o.total_calories)||0) - ((parseFloat(o.fat_vol)||0) * 2);
       const girResult = ((parseFloat(o.dex_percent)||0) * (parseFloat(o.rate_pn)||0)) / ((parseFloat(o.bw)||1) * 6);
 
       return `<div class="sticker sticker-pn" contenteditable="true">
-        <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-[13px]">
+        <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-[13.5px]">
           <span>HN: ${o.hn} - ${o.patient_name}</span>
           <span>ขวด: ${bNum}/${div}</span>
         </div>
-        <div class="flex justify-between font-bold border-b border-black mb-1 text-[12px]">
+        <div class="flex justify-between font-bold border-b border-black mb-1 text-[12.5px]">
           <span>Ward: ${o.ward}</span>
           <span>Route: ${routeDisplay}</span>
         </div>
         <table class="pn-table">
-          <thead><tr class="bg-gray-100"><th class="w-8"></th><th>รายการ</th><th>ปริมาตร (ml)</th></tr></thead>
+          <thead><tr class="bg-gray-50"><th class="w-8"></th><th class="text-center">รายการ</th><th class="text-center">ปริมาตร (ml)</th></tr></thead>
           <tbody>
             <tr><td class="text-center">1</td><td>Sterile Water</td><td class="text-right font-bold">${smartFix(waterVal, div)}</td></tr>
             <tr><td class="text-center">2</td><td>50% D-W</td><td class="text-right font-bold">${smartFix(o.dex_50_vol, div)}</td></tr>
@@ -177,21 +183,21 @@
             <tr><td class="text-center">12</td><td>${o.add_name || 'อื่นๆ'}</td><td class="text-right font-bold">${smartFix(o.add_vol, div)}</td></tr>
             <tr><td class="text-center">13</td><td>Heparin (1u/ml)</td><td class="text-right font-bold">${smartFix(o.heparin_vol, div)}</td></tr>
             <tr class="font-bold border-t-2 border-black bg-gray-50 text-[14px]">
-              <td colspan="2" class="text-right text-xs uppercase tracking-tighter">Total PN vol:</td>
+              <td colspan="2" class="text-right">Total PN vol:</td>
               <td class="text-right underline">${smartFix(o.pn_volume_net, div)} ml</td>
             </tr>
             <tr class="font-bold bg-gray-50 text-[14px]">
-              <td colspan="2" class="text-right text-[11px]">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)}ml:</td>
+              <td colspan="2" class="text-right text-xs">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)}ml:</td>
               <td class="text-right underline">${smartFix(o.pn_prep_vol, div)} ml</td>
             </tr>
           </tbody>
         </table>
         
-        <div class="flex justify-between items-end mt-auto pt-1 border-t-2 border-black">
+        <div class="flex justify-between items-end mt-1 pt-1 border-t-2 border-black">
           <div class="text-[10px] leading-tight font-bold">
             <p>Total cal (รวม fat): ${parseFloat(o.total_calories).toFixed(1)} kcal/d</p>
             <p>PN cal: ${pnCalDaily.toFixed(1)} kcal/d</p>
-            <p>% Glucose: ${o.dex_percent}% &nbsp; GIR: ${girResult.toFixed(2)}</p>
+            <p>% Glu: ${o.dex_percent}% &nbsp; GIR: ${girResult.toFixed(2)}</p>
             <p>Osmol: ${o.final_osmolarity} mOsmol/L</p>
           </div>
           <div class="text-right flex flex-col items-center">
@@ -229,17 +235,22 @@
     function createWS(o, div) {
       let cur = 0;
       const proteinDisplay = o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : (o.protein_product === 'amiparen' ? '10% Amiparen' : '15% Aminoplasmal');
+      const phosDisplay = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
+      const naDisplay = o.na_source === 'NaCl' ? '3% NaCl (Na)' : (o.na_source === 'NaAcetate' ? 'Na Acetate (Na)' : 'Na Acetate (Na)');
+      const kDisplay = o.k_source === 'KCl' ? '15% KCl (K)' : (o.k_source === 'KAcetate' ? 'K Acetate (K)' : 'K Acetate (K)');
       const traceDisplay = o.trace_choice === 'Addamel' ? 'Addamel-N' : 'Peditrace';
       const vitDisplay = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
+
+      // ดึงค่า Sterile Water จากฐานข้อมูลโดยตรงสำหรับ Worksheet เช่นกัน
       const waterVal = o.water_vol !== undefined ? o.water_vol : 0;
 
       const items = [
         { n: "Sterile Water", v: waterVal, s: true },
         { n: "50% D-W", v: o.prep_dex_vol, s: true },
         { n: proteinDisplay, v: o.protein_vol, s: true },
-        { n: o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)', v: o.phos_vol, s: false },
-        { n: o.na_source === 'NaCl' ? '3% NaCl (Na)' : 'Na Acetate (Na)', v: o.na_vol, s: true },
-        { n: o.k_source === 'KCl' ? '15% KCl (K)' : 'K Acetate (K)', v: o.k_vol, s: false },
+        { n: phosDisplay, v: o.phos_vol, s: false },
+        { n: naDisplay, v: o.na_vol, s: true },
+        { n: kDisplay, v: o.k_vol, s: false },
         { n: "50% MgSO4 (Mg)", v: o.mg_vol, s: false },
         { n: traceDisplay, v: o.trace_vol, s: false },
         { n: "10% Ca Gluconate", v: o.ca_vol, s: false },
