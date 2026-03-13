@@ -14,45 +14,21 @@
       .no-print { display: none !important; }
       body { background: #fff; margin: 0; padding: 0; }
       .print-area:not(.active) { display: none !important; }
-      .sticker {
-        box-shadow: none !important;
-        border: none !important;
-        margin: 0 auto !important;
-        page-break-after: avoid;
-        page-break-inside: avoid;
-        display: flex !important;
-      }
+      .sticker { box-shadow: none !important; border: none !important; margin: 0 auto !important; display: flex !important; }
       .sticker-pn { border: 1.5px solid #000 !important; }
       .sheet { box-shadow: none !important; border: 1.5px solid #000 !important; margin: 0 !important; }
     }
 
     /* ── PN Label ── */
-    .sticker-pn {
-      width: 8.5cm; min-height: 12.8cm;
-      padding: 1.45cm 0.4cm 0.3cm 0.4cm;
-      background: white; border: 1.5px solid #000;
-      margin: 10px auto; display: flex; flex-direction: column;
-    }
+    .sticker-pn { width: 8.5cm; min-height: 12.8cm; padding: 1.45cm 0.4cm 0.3cm 0.4cm; background: white; border: 1.5px solid #000; margin: 10px auto; display: flex; flex-direction: column; }
     .pn-table { width: 100%; font-size: 13.5px; border-collapse: collapse; border: 1.5px solid #000; }
     .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.5px 5px; }
 
-    /* ── Fat & Bag Label (ไม่มีกรอบ) ── */
-    .sticker-small {
-      width: 3.5in; height: 2.48in;
-      padding: 0.1in 0.25in 0.1in 0.25in;
-      background: white; border: none;
-      margin: 10px auto; box-sizing: border-box; position: relative;
-    }
+    /* ── Fat & Bag Label ── */
+    .sticker-small { width: 3.5in; height: 2.48in; padding: 0.1in 0.25in 0.1in 0.25in; background: white; border: none; margin: 10px auto; box-sizing: border-box; position: relative; }
 
     /* ── Worksheet ── */
-    .sheet {
-      width: 14.85cm; height: 21cm;
-      padding: 0.5cm 0.7cm 0.3cm 0.7cm;
-      margin: 10px auto; background: white;
-      border: 1.5px solid #000; position: relative;
-      display: flex; flex-direction: column;
-      justify-content: flex-end;
-    }
+    .sheet { width: 14.85cm; height: 21cm; padding: 0.5cm 0.7cm 0.3cm 0.7cm; margin: 10px auto; background: white; border: 1.5px solid #000; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
     .sheet table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: fixed; }
     .sheet th, .sheet td { border: 1.5px solid #000; padding: 5px 10px; vertical-align: middle; }
     .sheet th { font-weight: 800; font-size: 16px; background: #fff; }
@@ -63,14 +39,14 @@
     .bag-badge { border: 2.5px solid #000; padding: 2px 10px; font-size: 16px; font-weight: 900; display: inline-block; margin-bottom: 4px; }
     .footer-sign { height: 3.0cm; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 1cm 0.5cm 1cm; }
 
-    /* ── เฉดสีใหม่สำหรับ Worksheet (ชัดเจน/High Contrast) ── */
-    .c-amiparen     { color: #059669 !important; } /* เขียวเข้ม */
-    .c-aminoplasmal { color: #0284c7 !important; } /* ฟ้าเข้ม */
-    .c-glycophos    { color: #7e22ce !important; } /* ม่วงเข้ม */
-    .c-peditrace    { color: #ea580c !important; } /* ส้มเข้ม */
-    .c-cernevit     { color: #15803d !important; } /* เขียวป่า */
-    .c-bcomplex     { color: #db2777 !important; } /* ชมพู Shocking Pink */
-    .bg-yellow-highlight { background-color: #ffffca !important; } /* ถมเหลืองอ่อน */
+    /* ── สีรายการ Worksheet ( High Contrast ) ── */
+    .c-amiparen     { color: #008000 !important; } /* เขียว */
+    .c-aminoplasmal { color: #0077cc !important; } /* ฟ้าเข้ม */
+    .c-glycophos    { color: #8a2be2 !important; } /* ม่วง */
+    .c-peditrace    { color: #ff8c00 !important; } /* ส้ม */
+    .c-cernevit     { color: #228b22 !important; } /* เขียวป่า */
+    .c-bcomplex     { color: #ff1493 !important; } /* ชมพู Shocking Pink */
+    .bg-yellow-highlight { background-color: #ffff80 !important; } /* เหลืองชัดเจนขึ้น */
     .c-black        { color: #000000 !important; }
   </style>
 </head>
@@ -129,9 +105,7 @@
           document.getElementById('display-info').innerText = `${rawData.hn} - ${rawData.patient_name}`;
           renderAll();
         }
-      } catch (e) {
-        document.getElementById('display-info').innerText = "เชื่อมต่อไม่ได้";
-      }
+      } catch (e) { document.getElementById('display-info').innerText = "เชื่อมต่อไม่ได้"; }
     }
   });
 
@@ -145,10 +119,8 @@
 
   const smartFix = (v, div = 1) => {
     const val = (parseFloat(v) || 0) / div;
-    if (val === 0) return "-";
-    return Number(val.toFixed(2));
+    return val === 0 ? "-" : Number(val.toFixed(2));
   };
-
   const getNum = (v, div = 1) => (parseFloat(v) || 0) / div;
   const wsShow = (n) => (n === 0 ? "-" : Number(n.toFixed(2)).toString());
 
@@ -226,99 +198,34 @@
     const vVitTotal   = parseFloat(o.vitalipid_vol)  || 0;
     const vFluTotal   = parseFloat(o.fat_flush_vol)  || 0;
     const vSmofTotal  = totalNetFat - vVitTotal - vFluTotal;
-
     let vSmof, vVit, vFlu, vTotalSyr;
-    // Logic แบ่งถุงกรณี Fat > 250 ml
     if (div === 2 && totalNetFat > 250) {
-      if (fNum === 1) { 
-        vSmof = vSmofTotal - 250; vVit = vVitTotal; vFlu = vFluTotal; 
-        vTotalSyr = vSmof + vVit + vFlu; 
-      } else { 
-        vSmof = 250; vVit = 0; vFlu = 0; 
-        vTotalSyr = 250; 
-      }
-    } else {
-      vSmof = vSmofTotal / div; vVit = vVitTotal / div; 
-      vFlu  = vFluTotal  / div; vTotalSyr = totalNetFat / div;
-    }
-
-    const getFatName = (n) => {
-      const name = (n || "").toString().toLowerCase();
-      if (name === 'smof') return '20% SMOF lipid';
-      if (name === 'intralipid') return '20% Intralipid';
-      return n || 'Fat Emulsion';
-    };
-    
-    const vitDisplay = (o.vitalipid_type || "").toString().toLowerCase().includes('infant') 
-                       ? '✿ Vitalipid N-Infant ✿' 
-                       : 'Vitalipid N-Adult';
-    
-    const fixN = (v) => { 
-      const n = parseFloat(v) || 0; 
-      return n === 0 ? 0 : Number(n.toFixed(2)); 
-    };
-
-    return `
-    <div class="sticker-small" contenteditable="true">
+      if (fNum === 1) { vSmof = vSmofTotal - 250; vVit = vVitTotal; vFlu = vFluTotal; vTotalSyr = vSmof + vVit + vFlu; }
+      else { vSmof = 250; vVit = 0; vFlu = 0; vTotalSyr = 250; }
+    } else { vSmof = vSmofTotal / div; vVit = vVitTotal / div; vFlu = vFluTotal / div; vTotalSyr = totalNetFat / div; }
+    const getFatName = (n) => { const name = (n || "").toString().toLowerCase(); if (name === 'smof') return '20% SMOF lipid'; if (name === 'intralipid') return '20% Intralipid'; return n || 'Fat Emulsion'; };
+    const vitDisplay = (o.vitalipid_type || "").toString().toLowerCase().includes('infant') ? '✿ Vitalipid N-Infant ✿' : 'Vitalipid N-Adult';
+    const fixN = (v) => { const n = parseFloat(v) || 0; return n === 0 ? 0 : Number(n.toFixed(2)); };
+    return `<div class="sticker-small" contenteditable="true">
       <div style="margin-top: 8mm;">
-        <div style="font-size:13.5px; font-weight:800; margin-bottom:1px;">
-          HN: ${o.hn} – ${o.patient_name}
-        </div>
-
-        <div style="display:table; width:100%; margin-bottom:2px;">
-          <div style="display:table-cell; font-size:18px; font-weight:900;">Ward: ${o.ward}</div>
-          <div style="display:table-cell; font-size:18px; font-weight:900; text-align:right;">${fNum}/${div}</div>
-        </div>
-
-        <div style="border-bottom:3px solid #000; margin-bottom:4px;"></div>
-
-        <table style="width:100%; border-collapse:collapse; border:2.5px solid #000; font-size:14.5px; table-layout:fixed; margin-bottom:4px;">
-          <colgroup>
-            <col style="width:72%;">
-            <col style="width:28%;">
-          </colgroup>
+        <div style="font-size:13.5px; font-weight:800; mb-1;">HN: ${o.hn} – ${o.patient_name}</div>
+        <div style="display:table; width:100%; mb-2;"><div style="display:table-cell; font-size:18px; font-weight:900;">Ward: ${o.ward}</div><div style="display:table-cell; font-size:18px; font-weight:900; text-align:right;">${fNum}/${div}</div></div>
+        <div style="border-bottom:3px solid #000; mb-4;"></div>
+        <table style="width:100%; border-collapse:collapse; border:2.5px solid #000; font-size:14.5px; table-layout:fixed; mb-4;">
+          <colgroup><col style="width:72%;"><col style="width:28%;"></colgroup>
           <tbody>
-            <tr>
-              <td style="border:2px solid #000; padding:4px 6px; font-weight:800; line-height:1.2;">
-                ${getFatName(o.fat_product)} ${fixN(vSmof)} ml<br>
-                + ไล่สาย ${fixN(vFlu)} ml
-              </td>
-              <td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right; vertical-align:middle;">
-                ${fixN(vSmof + vFlu)}
-              </td>
-            </tr>
-            <tr>
-              <td style="border:2px solid #000; padding:4px 6px; font-weight:800; vertical-align:middle;">
-                ${vVit > 0 ? vitDisplay : '-'}
-              </td>
-              <td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right; vertical-align:middle;">
-                ${vVit > 0 ? fixN(vVit) : '-'}
-              </td>
-            </tr>
-            <tr style="background:#f2f2f2;">
-              <td style="border:2px solid #000; padding:4px 6px; font-weight:800; font-size:16px;">
-                Total volume
-              </td>
-              <td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:22px; text-align:right;">
-                ${fixN(vTotalSyr)}
-              </td>
-            </tr>
+            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800; line-height:1.2;">${getFatName(o.fat_product)} ${fixN(vSmof)} ml<br>+ ไล่สาย ${fixN(vFlu)} ml</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${fixN(vSmof + vFlu)}</td></tr>
+            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vVit > 0 ? vitDisplay : '-'}</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${vVit > 0 ? fixN(vVit) : '-'}</td></tr>
+            <tr style="background:#f2f2f2;"><td style="border:2px solid #000; padding:4px 6px; font-weight:800; font-size:16px;">Total volume</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:22px; text-align:right;">${fixN(vTotalSyr)}</td></tr>
           </tbody>
         </table>
-
-        <div style="display:table; width:100%; margin-top:2px;">
-          <div style="display:table-cell; text-align:left; vertical-align:top;">
-            <div style="font-size:15px; font-weight:900;">Rate: ${o.fat_drip_rate} ml/hr</div>
-            <div style="font-size:11px; font-weight:700;">เตรียม: ${formatThaiDate(o.order_date)}</div>
-          </div>
-          <div style="display:table-cell; text-align:right; vertical-align:top;">
-            <div style="font-size:12px; font-weight:900;">หมดอายุ: ${formatThaiDate(exp)}</div>
-            <div style="font-size:12px; font-weight:900;">เวลา 18.00 น.</div>
-          </div>
+        <div style="display:table; width:100%; mt-2;">
+          <div style="display:table-cell; text-align:left;"><div style="font-size:15px; font-weight:900;">Rate: ${o.fat_drip_rate} ml/hr</div><div style="font-size:11px; font-weight:700;">เตรียม: ${formatThaiDate(o.order_date)}</div></div>
+          <div style="display:table-cell; text-align:right;"><div style="font-size:12px; font-weight:900;">หมดอายุ: ${formatThaiDate(exp)}</div><div style="font-size:12px; font-weight:900;">เวลา 18.00 น.</div></div>
         </div>
-      </div>
-    </div>`;
+      </div></div>`;
   }
+
   function createBag(o) {
     return `<div class="sticker sticker-small" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;" contenteditable="true">
       <div style="font-size:47px;font-weight:900;line-height:1;">${o.ward}</div>
@@ -336,10 +243,9 @@
     const vitName = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
     const otherName = o.add_name || 'Additive อื่นๆ';
 
-    // Logic การเลือกสี
+    // Logic การเลือกสีแบบสมบูรณ์
     const getRowStyle = (name, prodKey, type) => {
-      let cls = "c-black";
-      let bg = "";
+      let cls = "c-black"; let bg = "";
       if (prodKey === 'amiparen') cls = "c-amiparen";
       else if (prodKey === 'aminoplasmal' || name.includes('MAL')) cls = "c-aminoplasmal";
       else if (name.includes('Glycophos')) cls = "c-glycophos";
@@ -347,12 +253,8 @@
       else if (name.includes('Cernevit')) cls = "c-cernevit";
       else if (name.toLowerCase().includes('b complx')) cls = "c-bcomplex";
       
-      // ถมสีเหลือง
-      if (name.includes('Soluvit') || type === 'heparin') {
-        bg = "bg-yellow-highlight";
-        cls = "c-black"; 
-      }
-      return `${cls} ${bg}`;
+      if (name.includes('Soluvit') || type === 'heparin') { bg = "bg-yellow-highlight"; cls = "c-black"; }
+      return { cls, bg };
     };
 
     const vW = getNum(o.water_vol, div); const vD = getNum(o.dex_50_vol, div);
@@ -369,17 +271,18 @@
     add(vK); add(vMg); add(vTr); add(vCa); add(vZn); add(vVit); add(vOth); add(vHep);
 
     const row = (num, name, prodKey, type, val, cumVal = '') => {
-      const styleCls = getRowStyle(name, prodKey, type);
-      return `<tr class="${num >= 6 && !styleCls.includes('bg-yellow') ? 'row-gray' : ''} ${styleCls}">
-        <td class="text-center font-bold">${num}</td>
-        <td class="item-name">${name}</td>
-        <td class="val-prep text-${num < 6 ? 'left' : 'right'}">${wsShow(val)}</td>
-        <td class="val-cumul">${cumVal}</td>
+      const style = getRowStyle(name, prodKey, type);
+      const isGray = (num >= 6 && !style.bg.includes('yellow'));
+      return `<tr class="${isGray ? 'row-gray' : ''} ${style.bg}">
+        <td class="text-center font-bold ${style.cls}">${num}</td>
+        <td class="item-name ${style.cls}">${name}</td>
+        <td class="val-prep text-${num < 6 ? 'left' : 'right'} ${style.cls}">${wsShow(val)}</td>
+        <td class="val-cumul ${style.cls}">${cumVal}</td>
       </tr>`;
     };
 
     return `<div class="sheet" contenteditable="true">
-      <div class="flex justify-between items-start mb-1" style="margin-top:auto;">
+      <div class="flex justify-between items-start mb-1" style="mt:auto;">
         <div class="flex-1">${div === 2 ? '<div class="bag-badge">PREP x 2 BAGS</div>' : ''}<h1 class="text-xl font-black italic">TPN WORKSHEET</h1><p class="text-[22px] font-black">${o.patient_name}</p><p class="text-sm font-bold">HN: ${o.hn} | BW: ${o.bw} kg | ${formatThaiDate(o.order_date)}</p></div>
         <div class="text-right"><p class="text-[9px] font-bold">WARD</p><p class="text-6xl font-black leading-none">${o.ward || '-'}</p></div>
       </div>
