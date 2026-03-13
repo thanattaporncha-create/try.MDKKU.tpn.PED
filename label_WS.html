@@ -22,7 +22,7 @@
     /* ── PN Label ── */
     .sticker-pn { width: 8.5cm; min-height: 12.8cm; padding: 1.45cm 0.4cm 0.3cm 0.4cm; background: white; border: 1.5px solid #000; margin: 10px auto; display: flex; flex-direction: column; }
     .pn-table { width: 100%; font-size: 13.5px; border-collapse: collapse; border: 1.5px solid #000; }
-    .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.5px 5px; }
+    .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.5px 5px; background: white !important; }
 
     /* ── Fat & Bag Label ── */
     .sticker-small { width: 3.5in; height: 2.48in; padding: 0.1in 0.25in 0.1in 0.25in; background: white; border: none; margin: 10px auto; box-sizing: border-box; position: relative; }
@@ -159,7 +159,7 @@
       <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-[13.5px]"><span>HN: ${o.hn} - ${o.patient_name}</span><span>ขวด: ${bNum}/${div}</span></div>
       <div class="flex justify-between font-bold border-b border-black mb-1 text-[12.5px]"><span>Ward: ${o.ward}</span><span>Route: ${routeDisplay}</span></div>
       <table class="pn-table">
-        <thead><tr class="bg-gray-100"><th class="w-8"></th><th class="text-center">รายการ</th><th class="text-center">ปริมาตร (ml)</th></tr></thead>
+        <thead><tr style="background: white !important;"><th class="w-8"></th><th class="text-center">รายการ</th><th class="text-center">ปริมาตร (ml)</th></tr></thead>
         <tbody>
           <tr><td class="text-center">1</td><td>Sterile Water</td><td class="text-right font-bold">${smartFix(o.water_vol, div)}</td></tr>
           <tr><td class="text-center">2</td><td>50% D-W</td><td class="text-right font-bold">${smartFix(o.dex_50_vol, div)}</td></tr>
@@ -174,8 +174,8 @@
           <tr><td class="text-center">11</td><td>${vitDisplay}</td><td class="text-right font-bold">${smartFix(o.vit_vol, div)}</td></tr>
           <tr><td class="text-center">12</td><td>${o.add_name || 'อื่นๆ'}</td><td class="text-right font-bold">${smartFix(o.add_vol, div)}</td></tr>
           <tr><td class="text-center">13</td><td>Heparin (1u/ml)</td><td class="text-right font-bold">${smartFix(o.heparin_vol, div)}</td></tr>
-          <tr class="font-bold border-t-2 border-black bg-gray-50 text-[14px]"><td colspan="2" class="text-right">Total PN vol:</td><td class="text-right">${smartFix(o.pn_volume_net, div)} ml</td></tr>
-          <tr class="font-bold bg-gray-50 text-[14px]"><td colspan="2" class="text-right text-xs">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)} ml:</td><td class="text-right">${smartFix(o.pn_prep_vol, div)} ml</td></tr>
+          <tr class="font-bold border-t-2 border-black" style="background: white !important;"><td colspan="2" class="text-right">Total PN vol:</td><td class="text-right">${smartFix(o.pn_volume_net, div)} ml</td></tr>
+          <tr class="font-bold" style="background: white !important;"><td colspan="2" class="text-right text-xs">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)} ml:</td><td class="text-right">${smartFix(o.pn_prep_vol, div)} ml</td></tr>
         </tbody>
       </table>
       <div class="flex justify-between items-end mt-0.5 pt-1 border-t-2 border-black">
@@ -204,19 +204,20 @@
       else { vSmof = 250; vVit = 0; vFlu = 0; vTotalSyr = 250; }
     } else { vSmof = vSmofTotal / div; vVit = vVitTotal / div; vFlu = vFluTotal / div; vTotalSyr = totalNetFat / div; }
     const getFatName = (n) => { const name = (n || "").toString().toLowerCase(); if (name === 'smof') return '20% SMOF lipid'; if (name === 'intralipid') return '20% Intralipid'; return n || 'Fat Emulsion'; };
-    const vitDisplay = (o.vitalipid_type || "").toString().toLowerCase().includes('infant') ? '✿ Vitalipid N-Infant ✿' : 'Vitalipid N-Adult';
     const fixN = (v) => { const n = parseFloat(v) || 0; return n === 0 ? 0 : Number(n.toFixed(2)); };
+    
+    // margin-top: 12mm (ขยับลงเพิ่มอีก 2mm ตามคำขอ)
     return `<div class="sticker-small" contenteditable="true">
-      <div style="margin-top: 8mm;">
+      <div style="margin-top: 12mm;">
         <div style="font-size:13.5px; font-weight:800; mb-1;">HN: ${o.hn} – ${o.patient_name}</div>
         <div style="display:table; width:100%; mb-2;"><div style="display:table-cell; font-size:18px; font-weight:900;">Ward: ${o.ward}</div><div style="display:table-cell; font-size:18px; font-weight:900; text-align:right;">${fNum}/${div}</div></div>
         <div style="border-bottom:3px solid #000; mb-4;"></div>
-        <table style="width:100%; border-collapse:collapse; border:2.5px solid #000; font-size:14.5px; table-layout:fixed; mb-4;">
+        <table style="width:100%; border-collapse:collapse; border:2.5px solid #000; font-size:14.5px; table-layout:fixed; mb-4; background: white;">
           <colgroup><col style="width:72%;"><col style="width:28%;"></colgroup>
           <tbody>
             <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800; line-height:1.2;">${getFatName(o.fat_product)} ${fixN(vSmof)} ml<br>+ ไล่สาย ${fixN(vFlu)} ml</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${fixN(vSmof + vFlu)}</td></tr>
-            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vVit > 0 ? vitDisplay : '-'}</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${vVit > 0 ? fixN(vVit) : '-'}</td></tr>
-            <tr style="background:#f2f2f2;"><td style="border:2px solid #000; padding:4px 6px; font-weight:800; font-size:16px;">Total volume</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:22px; text-align:right;">${fixN(vTotalSyr)}</td></tr>
+            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vVit > 0 ? (o.vitalipid_type.includes('infant') ? '✿ Vitalipid N-Infant ✿' : 'Vitalipid N-Adult') : '-'}</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${vVit > 0 ? fixN(vVit) : '-'}</td></tr>
+            <tr style="background: white !important;"><td style="border:2px solid #000; padding:4px 6px; font-weight:800; font-size:16px;">Total volume</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:22px; text-align:right;">${fixN(vTotalSyr)}</td></tr>
           </tbody>
         </table>
         <div style="display:table; width:100%; mt-2;">
@@ -227,11 +228,11 @@
   }
 
   function createBag(o) {
-    // เลื่อนทั้งหมดลง 3.5mm และเอา background ออก
+    // margin-top: 6.5mm (ขยับลงเพิ่มอีก 3mm จากเดิม 3.5mm)
     return `<div class="sticker sticker-small" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;" contenteditable="true">
-      <div style="margin-top: 3.5mm;">
+      <div style="margin-top: 6.5mm;">
         <div style="font-size:47px;font-weight:900;line-height:1;">${o.ward}</div>
-        <div style="border-top:3.5px solid #000;border-bottom:3.5px solid #000;width:100%;padding:6px 0;margin:6px 0;">
+        <div style="border-top:3.5px solid #000;border-bottom:3.5px solid #000;width:100%;padding:6px 0;margin:6px 0; background: white !important;">
           <span style="font-size:22.5px;font-weight:900;display:block;">${o.patient_name}</span>
         </div>
         <div style="font-size:19px;font-weight:800;margin-bottom:4px;">HN: ${o.hn}</div>
