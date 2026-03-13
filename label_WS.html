@@ -315,7 +315,7 @@ function createFat(o, fNum, div) {
       border: none;
       margin: 10px auto;
       box-sizing: border-box;
-      padding: 0.3cm 0.25in 0.1in 0.25in;
+      padding: 8mm 0.25in 0.1in 0.25in;
       display: block;
       overflow: hidden;
       position: relative;
@@ -327,11 +327,7 @@ function createFat(o, fNum, div) {
       </div>
 
       <!-- แถว 2: Ward + ลำดับ -->
-      <div style="
-        display: table; 
-        width: 100%; 
-        margin-bottom: 2px;
-      ">
+      <div style="display:table; width:100%; margin-bottom:2px;">
         <div style="display:table-cell; font-size:18px; font-weight:900;">
           Ward: ${o.ward}
         </div>
@@ -341,106 +337,77 @@ function createFat(o, fNum, div) {
       </div>
 
       <!-- เส้นคั่น -->
-      <div style="border-bottom: 2.5px solid #000; margin-bottom: 4px;"></div>
+      <div style="border-bottom:2.5px solid #000; margin-bottom:4px;"></div>
 
       <!-- ตารางยา -->
       <table style="
-        width: 100%; 
-        border-collapse: collapse; 
-        border: 2px solid #000;
-        font-size: 13.5px;
-        table-layout: fixed;
-        margin-bottom: 4px;
+        width:100%; 
+        border-collapse:collapse; 
+        border:2px solid #000;
+        font-size:13.5px;
+        table-layout:fixed;
+        margin-bottom:4px;
       ">
         <colgroup>
-          <col style="width: 78%;">
-          <col style="width: 22%;">
+          <col style="width:78%;">
+          <col style="width:22%;">
         </colgroup>
         <tbody>
-          <!-- Lipid row -->
           <tr>
-            <td style="
-              border: 2px solid #000; 
-              padding: 3px 6px;
-              font-weight: 800; 
-              line-height: 1.25;
-            ">
+            <td style="border:2px solid #000; padding:3px 6px; font-weight:800; line-height:1.25;">
               ${getFatName(o.fat_product)}&nbsp;<strong>${fixN(vSmof)} ml</strong>
+
               + ไล่สาย <strong>${fixN(vFlu)} ml</strong>
             </td>
-            <td style="
-              border: 2px solid #000; 
-              padding: 3px 6px;
-              font-weight: 900; 
-              font-size: 16px;
-              text-align: right; 
-              vertical-align: middle;
-            ">
+            <td style="border:2px solid #000; padding:3px 6px; font-weight:900; font-size:16px; text-align:right; vertical-align:middle;">
               ${fixN(vSmof + vFlu)}
             </td>
           </tr>
-
-          <!-- Vitalipid row -->
           <tr>
-            <td style="
-              border: 2px solid #000; 
-              padding: 3px 6px;
-              font-weight: 800;
-            ">
+            <td style="border:2px solid #000; padding:3px 6px; font-weight:800;">
               ${vVit > 0 ? vitDisplay : '-'}
             </td>
-            <td style="
-              border: 2px solid #000; 
-              padding: 3px 6px;
-              font-weight: 900;
-              text-align: right;
-            ">
+            <td style="border:2px solid #000; padding:3px 6px; font-weight:900; text-align:right;">
               ${fixN(vVit)}
             </td>
           </tr>
-
-          <!-- Total row -->
           <tr style="background:#f2f2f2;">
-            <td style="
-              border: 2px solid #000; 
-              padding: 3px 6px;
-              font-weight: 800;
-            ">
+            <td style="border:2px solid #000; padding:3px 6px; font-weight:800;">
               Total volume
             </td>
-            <td style="
-              border: 2px solid #000; 
-              padding: 3px 6px;
-              font-weight: 900;
-              font-size: 18px;
-              text-align: right;
-            ">
+            <td style="border:2px solid #000; padding:3px 6px; font-weight:900; font-size:18px; text-align:right;">
               ${fixN(vTotalSyr)}
             </td>
           </tr>
         </tbody>
       </table>
 
-      <!-- แถวล่าง: Rate (ซ้าย) + หมดอายุ (ขวา) -->
+      <!-- แถวล่าง: 2 คอลัมน์ -->
       <div style="display:table; width:100%;">
-        <div style="display:table-cell; vertical-align:top;">
-          <span style="font-size:11px; font-weight:800;">Rate: </span>
-          <span style="font-size:13.5px; font-weight:900;">${o.fat_drip_rate} ml/hr</span>
-          <span style="font-size:10px; font-weight:700;">
-            เตรียม: ${formatThaiDate(o.order_date)}
-          </span>
-        </div>
-        <div style="display:table-cell; vertical-align:top; text-align:right;">
-          <span style="font-size:11.5px; font-weight:900; line-height:1.3;">
-            หมดอายุ: ${formatThaiDate(exp)}เวลา 18.00 น.
-          </span>
-        </div>
-      </div>
 
+        <!-- ซ้าย: Rate และ เตรียม -->
+        <div style="display:table-cell; vertical-align:top; text-align:left;">
+          <div style="font-size:13.5px; font-weight:900;">
+            Rate: ${o.fat_drip_rate} ml/hr
+          </div>
+          <div style="font-size:10.5px; font-weight:700;">
+            เตรียม: ${formatThaiDate(o.order_date)}
+          </div>
+        </div>
+
+        <!-- ขวา: หมดอายุ และ เวลา -->
+        <div style="display:table-cell; vertical-align:top; text-align:right;">
+          <div style="font-size:11.5px; font-weight:900;">
+            หมดอายุ: ${formatThaiDate(exp)}
+          </div>
+          <div style="font-size:11.5px; font-weight:900;">
+            เวลา 18.00 น.
+          </div>
+        </div>
+
+      </div>
     </div>`;
   }
-
-
   /* ══════════════════════════════════════
      3. หน้าถุง
   ══════════════════════════════════════ */
