@@ -34,12 +34,11 @@
     .sheet th { font-weight: 800; font-size: 16px; background: #fff; }
     .item-name { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
     .val-prep { font-weight: 800; font-size: 24px; }
-    .val-cumul { font-weight: 900; font-size: 24px; text-align: right; background: #fcfcfc; }
-    .row-gray { background-color: #f2f2f2 !important; }
+    .val-cumul { font-weight: 900; font-size: 24px; text-align: right; background: white !important; } /* เอาพื้นหลัง fcfcfc ออก */
     .bag-badge { border: 2.5px solid #000; padding: 2px 10px; font-size: 16px; font-weight: 900; display: inline-block; margin-bottom: 4px; }
     .footer-sign { height: 3.0cm; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 1cm 0.5cm 1cm; }
 
-    /* ── Worksheet Colors (High Contrast) ── */
+    /* ── Worksheet Colors ── */
     .c-amiparen     { color: #008000 !important; } 
     .c-aminoplasmal { color: #0077cc !important; } 
     .c-glycophos    { color: #8a2be2 !important; } 
@@ -58,31 +57,12 @@
       <p class="text-slate-500">HN: <span id="display-info" class="font-bold text-blue-600">กำลังโหลด...</span></p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div id="card-pn" onclick="selectSection('pn')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-blue-400">
-        <h3 class="font-black text-blue-600">1. PN LABEL</h3>
-        <select id="pnCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full">
-          <option value="1">1 ขวด</option><option value="2">2 ขวด</option>
-        </select>
-      </div>
-      <div id="card-fat" onclick="selectSection('fat')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-amber-400">
-        <h3 class="font-black text-amber-600">2. FAT LABEL</h3>
-        <select id="fatCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full">
-          <option value="1">1 อัน</option><option value="2">2 อัน</option>
-        </select>
-      </div>
-      <div id="card-bag" onclick="selectSection('bag')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-emerald-400">
-        <h3 class="font-black text-emerald-600">3. ฉลากหน้าถุง</h3>
-      </div>
-      <div id="card-ws" onclick="selectSection('ws')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-rose-400">
-        <h3 class="font-black text-rose-600">4. WORKSHEET</h3>
-        <select id="wsBagCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full">
-          <option value="1">1 ถุง</option><option value="2">2 ถุง</option>
-        </select>
-      </div>
+      <div id="card-pn" onclick="selectSection('pn')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-blue-400"><h3 class="font-black text-blue-600">1. PN LABEL</h3><select id="pnCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full"><option value="1">1 ขวด</option><option value="2">2 ขวด</option></select></div>
+      <div id="card-fat" onclick="selectSection('fat')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-amber-400"><h3 class="font-black text-amber-600">2. FAT LABEL</h3><select id="fatCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full"><option value="1">1 อัน</option><option value="2">2 อัน</option></select></div>
+      <div id="card-bag" onclick="selectSection('bag')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-emerald-400"><h3 class="font-black text-emerald-600">3. ฉลากหน้าถุง</h3></div>
+      <div id="card-ws" onclick="selectSection('ws')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-rose-400"><h3 class="font-black text-rose-600">4. WORKSHEET</h3><select id="wsBagCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full"><option value="1">1 ถุง</option><option value="2">2 ถุง</option></select></div>
     </div>
-    <div id="action-btns" class="hidden">
-      <button onclick="window.print()" class="bg-black text-white py-4 px-12 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-all">🖨️ พิมพ์ที่เลือก</button>
-    </div>
+    <div id="action-btns" class="hidden"><button onclick="window.print()" class="bg-black text-white py-4 px-12 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-all">🖨️ พิมพ์ที่เลือก</button></div>
   </div>
 
   <div id="pn-area"  class="print-area"></div>
@@ -205,8 +185,6 @@
     } else { vSmof = vSmofTotal / div; vVit = vVitTotal / div; vFlu = vFluTotal / div; vTotalSyr = totalNetFat / div; }
     const getFatName = (n) => { const name = (n || "").toString().toLowerCase(); if (name === 'smof') return '20% SMOF lipid'; if (name === 'intralipid') return '20% Intralipid'; return n || 'Fat Emulsion'; };
     const fixN = (v) => { const n = parseFloat(v) || 0; return n === 0 ? 0 : Number(n.toFixed(2)); };
-    
-    // margin-top: 12mm (ขยับลงเพิ่มอีก 2mm ตามคำขอ)
     return `<div class="sticker-small" contenteditable="true">
       <div style="margin-top: 12mm;">
         <div style="font-size:13.5px; font-weight:800; mb-1;">HN: ${o.hn} – ${o.patient_name}</div>
@@ -215,7 +193,7 @@
         <table style="width:100%; border-collapse:collapse; border:2.5px solid #000; font-size:14.5px; table-layout:fixed; mb-4; background: white;">
           <colgroup><col style="width:72%;"><col style="width:28%;"></colgroup>
           <tbody>
-            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800; line-height:1.2;">${getFatName(o.fat_product)} ${fixN(vSmof)} ml<br>+ ไล่สาย ${fixN(vFlu)} ml</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${fixN(vSmof + vFlu)}</td></tr>
+            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800; line-height:1.2;">${getFatName(o.fat_product)} ${fixN(vSmof)} ml<br>+ ไล่สาย ${fixN(vFlu)} ml</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right; vertical-align:middle;">${fixN(vSmof + vFlu)}</td></tr>
             <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vVit > 0 ? (o.vitalipid_type.includes('infant') ? '✿ Vitalipid N-Infant ✿' : 'Vitalipid N-Adult') : '-'}</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${vVit > 0 ? fixN(vVit) : '-'}</td></tr>
             <tr style="background: white !important;"><td style="border:2px solid #000; padding:4px 6px; font-weight:800; font-size:16px;">Total volume</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:22px; text-align:right;">${fixN(vTotalSyr)}</td></tr>
           </tbody>
@@ -228,7 +206,6 @@
   }
 
   function createBag(o) {
-    // margin-top: 6.5mm (ขยับลงเพิ่มอีก 3mm จากเดิม 3.5mm)
     return `<div class="sticker sticker-small" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;" contenteditable="true">
       <div style="margin-top: 6.5mm;">
         <div style="font-size:47px;font-weight:900;line-height:1;">${o.ward}</div>
@@ -276,8 +253,8 @@
 
     const row = (num, name, prodKey, type, val, cumVal = '') => {
       const style = getRowStyle(name, prodKey, type);
-      const isGray = (num >= 6 && !style.bg.includes('yellow'));
-      return `<tr class="${isGray ? 'row-gray' : ''} ${style.bg}">
+      // เอาเงื่อนไข isGray ออกเพื่อให้ทุกแถวเป็นสีขาว ยกเว้นที่มีไฮไลท์เหลือง
+      return `<tr class="${style.bg}">
         <td class="text-center font-bold ${style.cls}">${num}</td>
         <td class="item-name ${style.cls}">${name}</td>
         <td class="val-prep text-${num < 6 ? 'left' : 'right'} ${style.cls}">${wsShow(val)}</td>
