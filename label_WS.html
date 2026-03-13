@@ -7,14 +7,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
-    * { font-family: 'Sarabun', sans-serif; color: #000; line-height: 1.1; }
+    * { font-family: 'Sarabun', sans-serif; color: #000; line-height: 1.05; }
     [contenteditable="true"]:hover { background: #fff9c4; outline: 1px dashed #000; cursor: text; }
     
     @media print {
       .no-print { display: none !important; }
       body { background: #fff; margin: 0; padding: 0; }
       .print-area:not(.active) { display: none !important; }
-      /* ล็อคขนาดให้ไม่ตกขอบ */
       .sticker { 
         box-shadow: none !important; 
         border: 1.5px solid #000 !important; 
@@ -25,12 +24,11 @@
       }
     }
 
-    /* ปรับความสูง sticker ให้พอดี A6 และลดช่องว่างด้านบน */
+    /* PN Label: ปรับระยะ Padding ด้านบนออกเพื่อให้ตารางขยับขึ้นไปอีกนิด */
     .sticker-pn { 
       width: 8.5cm; 
-      min-height: 12.7cm; 
-      max-height: 12.9cm;
-      padding: 1.2cm 0.35cm 0.3cm 0.35cm; 
+      min-height: 12.8cm; 
+      padding: 1.1cm 0.4cm 0.3cm 0.4cm; 
       background: white; 
       border: 1.5px solid #000; 
       margin: 10px auto; 
@@ -38,12 +36,19 @@
       flex-direction: column; 
     }
 
-    /* ปรับตารางให้ Row เตี้ยลง แต่ Font ยังใหญ่เหมือนเดิม */
+    /* PN Table: Font 13.5px อ่านชัดเหมือนเดิม */
     .pn-table { width: 100%; font-size: 13.5px; border-collapse: collapse; border: 1.5px solid #000; }
-    .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.5px 5px; } /* ลด padding จาก 2 เป็น 1.5 */
+    .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.5px 5px; } 
     
+    /* Fat Table: คืนค่า Original (ห้ามแก้) */
+    .sticker-small { width: 3.5in; height: 2.48in; padding: 1.3cm 0.25in 0.1in 0.25in; background: white; border: 1px solid #000; margin: 10px auto; }
     .fat-table-bold { width: 100%; border-collapse: collapse; border: 2px solid #000; font-size: 14px; }
-    .fat-table-bold td { border: 2px solid #000; padding: 4px; font-weight: 800; }
+    .fat-table-bold td { border: 2px solid #000; padding: 5px; font-weight: 800; }
+    
+    /* Worksheet: Original Size */
+    .sheet { width: 14.85cm; height: 21cm; padding: 0.5cm 0.7cm 0.3cm 0.7cm; margin: 10px auto; background: white; border: 1.5px solid #000; display: flex; flex-direction: column; }
+    .ws-table { width: 100%; font-size: 11.5px; border-collapse: collapse; border: 1.5px solid #000; }
+    .ws-table td, .ws-table th { border: 1px solid #000; padding: 3px 5px; }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20">
@@ -71,7 +76,7 @@
       </div>
     </div>
     <div id="action-btns" class="hidden">
-      <button onclick="window.print()" class="bg-black text-white py-4 px-12 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-all">🖨️ พิมพ์ที่เลือก (แก้ไขในฉลากได้)</button>
+      <button onclick="window.print()" class="bg-black text-white py-4 px-12 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-all">🖨️ พิมพ์ที่เลือก</button>
     </div>
   </div>
 
@@ -107,7 +112,6 @@
       document.getElementById('action-btns').classList.remove('hidden');
     }
 
-    // ฟังก์ชันพิเศษ: ถ้าเป็น 0 ให้ส่งค่า "-"
     const smartFix = (v, div = 1) => {
       let val = (parseFloat(v) || 0) / div;
       if (val === 0) return "-";
@@ -142,27 +146,27 @@
       const phosDisplay = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
       const naDisplay = o.na_source === 'NaCl' ? '3% NaCl (Na)' : (o.na_source === 'NaAcetate' ? 'Na Acetate (Na)' : o.na_source);
       const kDisplay = o.k_source === 'KCl' ? '15% KCl (K)' : (o.k_source === 'KAcetate' ? 'K Acetate (K)' : o.k_source);
-      const vitDisplay = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : o.vit_choice;
+      
+      const traceDisplay = o.trace_choice === 'Addamel' ? 'Addamel-N' : 'Peditrace';
+      const vitDisplay = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
 
-      // สูตรคำนวณ Sterile Water (หักลบรายการ 2-12)
       const sumOthers = (parseFloat(o.dex_50_vol)||0) + (parseFloat(o.protein_vol)||0) + (parseFloat(o.phos_vol)||0) + (parseFloat(o.na_vol)||0) + (parseFloat(o.k_vol)||0) + (parseFloat(o.mg_vol)||0) + (parseFloat(o.ca_vol)||0) + (parseFloat(o.trace_vol)||0) + (parseFloat(o.zinc_vol)||0) + (parseFloat(o.vit_vol)||0) + (parseFloat(o.add_vol)||0);
       const waterCalculated = Math.max(0, (parseFloat(o.pn_volume_net)||0) - sumOthers);
 
-      // คำนวณ Stats
       const pnCalDaily = (parseFloat(o.total_calories)||0) - ((parseFloat(o.fat_vol)||0) * 2);
       const girResult = ((parseFloat(o.dex_percent)||0) * (parseFloat(o.rate_pn)||0)) / ((parseFloat(o.bw)||1) * 6);
 
       return `<div class="sticker sticker-pn" contenteditable="true">
-        <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-[13px]">
+        <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-[13.5px]">
           <span>HN: ${o.hn} - ${o.patient_name}</span>
           <span>ขวด: ${bNum}/${div}</span>
         </div>
-        <div class="flex justify-between font-bold border-b border-black mb-1.5 text-[12px]">
+        <div class="flex justify-between font-bold border-b border-black mb-1.5 text-[12.5px]">
           <span>Ward: ${o.ward}</span>
           <span>Route: ${routeDisplay}</span>
         </div>
         <table class="pn-table">
-          <thead><tr class="bg-gray-50"><th class="w-8"></th><th>รายการ</th><th>ปริมาตร (ml)</th></tr></thead>
+          <thead><tr class="bg-gray-50"><th class="w-8"></th><th class="text-center">รายการ</th><th class="text-center">ปริมาตร (ml)</th></tr></thead>
           <tbody>
             <tr><td class="text-center">1</td><td>Sterile Water</td><td class="text-right font-bold">${smartFix(waterCalculated, div)}</td></tr>
             <tr><td class="text-center">2</td><td>50% D-W</td><td class="text-right font-bold">${smartFix(o.dex_50_vol, div)}</td></tr>
@@ -172,23 +176,23 @@
             <tr><td class="text-center">6</td><td>${kDisplay}</td><td class="text-right font-bold">${smartFix(o.k_vol, div)}</td></tr>
             <tr><td class="text-center">7</td><td>50% MgSO4 (Mg)</td><td class="text-right font-bold">${smartFix(o.mg_vol, div)}</td></tr>
             <tr><td class="text-center">8</td><td>10% Ca Gluconate</td><td class="text-right font-bold">${smartFix(o.ca_vol, div)}</td></tr>
-            <tr><td class="text-center">9</td><td>Peditrace</td><td class="text-right font-bold">${smartFix(o.trace_vol, div)}</td></tr>
+            <tr><td class="text-center">9</td><td>${traceDisplay}</td><td class="text-right font-bold">${smartFix(o.trace_vol, div)}</td></tr>
             <tr><td class="text-center">10</td><td>Zinc sulfate</td><td class="text-right font-bold">${smartFix(o.zinc_vol, div)}</td></tr>
             <tr><td class="text-center">11</td><td>${vitDisplay}</td><td class="text-right font-bold">${smartFix(o.vit_vol, div)}</td></tr>
             <tr><td class="text-center">12</td><td>${o.add_name || 'อื่นๆ'}</td><td class="text-right font-bold">${smartFix(o.add_vol, div)}</td></tr>
             <tr><td class="text-center">13</td><td>Heparin (1u/ml)</td><td class="text-right font-bold">${smartFix(o.heparin_vol, div)}</td></tr>
-            <tr class="font-bold border-t-2 border-black bg-gray-50">
+            <tr class="font-bold border-t-2 border-black bg-gray-50 text-[14px]">
               <td colspan="2" class="text-right">Total PN vol:</td>
               <td class="text-right underline">${smartFix(o.pn_volume_net, div)} ml</td>
             </tr>
-            <tr class="font-bold bg-gray-50">
-              <td colspan="2" class="text-right">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)}ml:</td>
+            <tr class="font-bold bg-gray-50 text-[14px]">
+              <td colspan="2" class="text-right text-xs">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)}ml:</td>
               <td class="text-right underline">${smartFix(o.pn_prep_vol, div)} ml</td>
             </tr>
           </tbody>
         </table>
         
-        <div class="flex justify-between items-end mt-auto pt-1.5 border-t-2 border-black">
+        <div class="flex justify-between items-end mt-auto pt-1 border-t-2 border-black">
           <div class="text-[10.5px] leading-tight font-bold">
             <p>Total cal (รวม fat): ${parseFloat(o.total_calories).toFixed(1)} kcal/day</p>
             <p>PN cal: ${pnCalDaily.toFixed(1)} kcal/day</p>
@@ -196,7 +200,7 @@
             <p>Osmolarity: ${o.final_osmolarity} mOsmol/L</p>
           </div>
           <div class="text-right flex flex-col items-center">
-            <div class="border-2 border-black px-2 py-0.5 font-black text-base whitespace-nowrap">Rate: ${o.rate_pn} ml/hr</div>
+            <div class="border-2 border-black px-1.5 py-0.5 font-black text-sm whitespace-nowrap">Rate: ${o.rate_pn} ml/hr</div>
             <div class="text-[9.5px] mt-0.5 font-bold leading-tight text-center">
               หมดอายุ: ${formatThaiDate(expDate)}<br>เวลา 18.00 น.
             </div>
@@ -206,12 +210,14 @@
     }
 
     function createFat(o, fNum, div) {
+      const productLabel = o.fat_product === 'smof' ? '20% SMOF Lipid' : '20% Intralipid';
+      const vitLabel = o.vitalipid_type === 'Adult' ? 'Vitalipid-N Adult' : 'Vitalipid-N Infant';
       return `<div class="sticker sticker-small" contenteditable="true">
         <div class="font-bold text-xs">${o.hn} - ${o.patient_name}</div>
         <div class="flex justify-between text-lg font-black border-b-2 border-black"><span>Ward: ${o.ward}</span><span>${fNum}/${div}</span></div>
         <table class="fat-table-bold mt-1">
-          <tr><td>${o.fat_product === 'smof' ? '20% SMOF Lipid' : '20% Intralipid'} + Flush</td><td class="text-right">${smartFix(parseFloat(o.fat_vol)+parseFloat(o.fat_flush_vol), div)}</td></tr>
-          <tr><td>Vitalipid-N ${o.vitalipid_type || 'Infant'}</td><td class="text-right">${smartFix(o.vitalipid_vol, div)}</td></tr>
+          <tr><td>${productLabel} + Flush</td><td class="text-right">${smartFix(parseFloat(o.fat_vol)+parseFloat(o.fat_flush_vol), div)}</td></tr>
+          <tr><td>${vitLabel}</td><td class="text-right">${smartFix(o.vitalipid_vol, div)}</td></tr>
           <tr class="bg-gray-100"><td>Total Volume</td><td class="text-right">${smartFix(o.total_fat_prep, div)}</td></tr>
         </table>
         <div class="font-bold text-sm">Rate: ${o.fat_drip_rate} ml/hr</div>
@@ -221,7 +227,7 @@
     function createBag(o) {
       return `<div class="sticker sticker-small flex flex-col items-center justify-center text-center" contenteditable="true">
         <div class="text-5xl font-black">${o.ward}</div>
-        <div class="border-y-4 border-black w-full my-4 text-2xl font-black">${o.patient_name}</div>
+        <div class="border-y-4 border-black w-full my-4 text-2xl font-black uppercase tracking-tight">${o.patient_name}</div>
         <div class="font-bold text-lg">HN: ${o.hn}</div>
         <div class="font-bold">วันที่: ${formatThaiDate(o.order_date)}</div>
       </div>`;
@@ -230,7 +236,12 @@
     function createWS(o, div) {
       let cur = 0;
       const proteinDisplay = o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : (o.protein_product === 'amiparen' ? '10% Amiparen' : '15% Aminoplasmal');
-      
+      const phosDisplay = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
+      const naDisplay = o.na_source === 'NaCl' ? '3% NaCl (Na)' : (o.na_source === 'NaAcetate' ? 'Na Acetate (Na)' : 'Na Acetate (Na)');
+      const kDisplay = o.k_source === 'KCl' ? '15% KCl (K)' : (o.k_source === 'KAcetate' ? 'K Acetate (K)' : 'K Acetate (K)');
+      const traceDisplay = o.trace_choice === 'Addamel' ? 'Addamel-N' : 'Peditrace';
+      const vitDisplay = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
+
       const sumOthers = (parseFloat(o.dex_50_vol)||0) + (parseFloat(o.protein_vol)||0) + (parseFloat(o.phos_vol)||0) + (parseFloat(o.na_vol)||0) + (parseFloat(o.k_vol)||0) + (parseFloat(o.mg_vol)||0) + (parseFloat(o.ca_vol)||0) + (parseFloat(o.trace_vol)||0) + (parseFloat(o.zinc_vol)||0) + (parseFloat(o.vit_vol)||0) + (parseFloat(o.add_vol)||0);
       const waterCalculated = Math.max(0, (parseFloat(o.pn_volume_net)||0) - sumOthers);
 
@@ -238,14 +249,14 @@
         { n: "Sterile Water", v: waterCalculated, s: true },
         { n: "50% D-W", v: o.prep_dex_vol, s: true },
         { n: proteinDisplay, v: o.protein_vol, s: true },
-        { n: o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)', v: o.phos_vol, s: false },
-        { n: o.na_source === 'NaCl' ? '3% NaCl (Na)' : 'Na Acetate (Na)', v: o.na_vol, s: true },
-        { n: o.k_source === 'KCl' ? '15% KCl (K)' : 'K Acetate (K)', v: o.k_vol, s: false },
+        { n: phosDisplay, v: o.phos_vol, s: false },
+        { n: naDisplay, v: o.na_vol, s: true },
+        { n: kDisplay, v: o.k_vol, s: false },
         { n: "50% MgSO4 (Mg)", v: o.mg_vol, s: false },
-        { n: o.trace_choice === 'Peditrace' ? 'Peditrace' : 'Addamel-N', v: o.trace_vol, s: false },
+        { n: traceDisplay, v: o.trace_vol, s: false },
         { n: "10% Ca Gluconate", v: o.ca_vol, s: false },
         { n: "Zinc Sulfate", v: o.zinc_vol, s: false },
-        { n: o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit', v: o.vit_vol, s: false },
+        { n: vitDisplay, v: o.vit_vol, s: false },
         { n: o.add_name || "อื่นๆ", v: o.add_vol, s: false },
         { n: "Heparin", v: o.heparin_vol, s: false }
       ];
@@ -262,8 +273,8 @@
           <div class="text-7xl font-black">${o.ward}</div>
         </div>
         <p class="text-2xl font-bold mb-4">${o.patient_name} (HN: ${o.hn})</p>
-        <table class="ws-table pn-table text-[15px]">
-          <thead><tr class="bg-gray-100"><th class="w-10"></th><th>รายการสารอาหาร</th><th class="w-24">Prep (ml)</th><th class="w-24 text-red-600">สะสม (ml)</th></tr></thead>
+        <table class="ws-table text-[15px]">
+          <thead><tr class="bg-gray-100"><th class="w-10"></th><th class="text-center">รายการสารอาหาร</th><th class="w-24">Prep (ml)</th><th class="w-24 text-red-600">สะสม (ml)</th></tr></thead>
           <tbody>${rows}</tbody>
           <tr class="bg-gray-200 font-black text-3xl"><td colspan="2" class="text-right">Total Prep:</td><td colspan="2" class="text-center underline">${smartFix(o.pn_prep_vol, div)} ml</td></tr>
         </table>
