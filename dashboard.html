@@ -5,28 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TPN Dashboard | โรงพยาบาลศรีนครินทร์</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Sarabun', 'Inter', sans-serif; }
-    body { background-color: #f8fafc; }
+    body { background-color: #f1f5f9; } /* ปรับพื้นหลังให้เข้มขึ้นนิดนึงเพื่อให้ Card สีขาวลอยเด่น */
     .gradient-header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
     .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     
-    .card-order {
-      @apply bg-white border-2 border-gray-100 rounded-[2rem] p-5 shadow-sm transition-all duration-300 flex flex-col gap-4;
+    /* บังคับตัวหนังสือใน Label ค้นหาให้ดำและใหญ่ขึ้น */
+    .filter-label {
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      color: #000000 !important;
+      margin-bottom: 8px !important;
+      display: block;
     }
-    .card-order:hover {
-      @apply border-blue-400 shadow-md transform -translate-y-1;
-    }
-    
-    .btn-action { 
-      @apply flex-1 py-2.5 rounded-2xl text-[11px] font-bold transition-all flex items-center justify-center gap-2 border-2 border-gray-50 bg-gray-50 text-gray-700; 
-    }
-    .btn-detail:hover { @apply border-blue-200 bg-blue-50 text-blue-700; }
-    .btn-label:hover { @apply border-amber-200 bg-amber-50 text-amber-700; }
-    .btn-ws:hover { @apply border-green-200 bg-green-50 text-green-700; }
-    .btn-off:hover { @apply border-red-200 bg-red-50 text-red-700; }
 
     #wardFilterDropdown::-webkit-scrollbar { width: 6px; }
     #wardFilterDropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -55,31 +49,31 @@
 
   <main class="max-w-7xl mx-auto p-4 md:p-8">
     
-    <div class="bg-white rounded-[2.5rem] shadow-sm p-8 mb-8 border border-gray-100">
+    <div class="bg-white rounded-[2.5rem] shadow-sm p-8 mb-8 border border-gray-200">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
         <div class="flex flex-col">
-          <label class="text-[11px] font-bold text-gray-400 mb-2 ml-1 uppercase">🗓️ วันที่สั่ง Order</label>
-          <input type="date" id="filterDate" class="px-5 py-3 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-bold transition-all" onchange="renderCards()">
+          <label class="filter-label">🗓️ วันที่สั่ง Order</label>
+          <input type="date" id="filterDate" class="px-5 py-3 rounded-2xl border-2 border-gray-200 bg-white focus:border-blue-500 outline-none text-base font-bold transition-all text-black" onchange="renderCards()">
         </div>
         <div class="flex flex-col relative">
-          <label class="text-[11px] font-bold text-gray-400 mb-2 ml-1 uppercase">🏥 หอผู้ป่วย (Ward)</label>
-          <input type="text" id="filterWardInput" placeholder="ค้นหา Ward..." class="px-5 py-3 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-bold transition-all" onfocus="showWardDropdown()" oninput="filterWardOptions()" autocomplete="off">
+          <label class="filter-label">🏥 หอผู้ป่วย (Ward)</label>
+          <input type="text" id="filterWardInput" placeholder="ค้นหา Ward..." class="px-5 py-3 rounded-2xl border-2 border-gray-200 bg-white focus:border-blue-500 outline-none text-base font-bold transition-all text-black" onfocus="showWardDropdown()" oninput="filterWardOptions()" autocomplete="off">
           <input type="hidden" id="filterWardValue">
-          <div id="wardFilterDropdown" class="hidden absolute left-0 right-0 top-[105%] z-[100] bg-white border border-gray-100 rounded-3xl shadow-2xl max-h-64 overflow-y-auto p-2">
+          <div id="wardFilterDropdown" class="hidden absolute left-0 right-0 top-[105%] z-[100] bg-white border border-gray-200 rounded-3xl shadow-2xl max-h-64 overflow-y-auto p-2">
             <div id="wardFilterOptions"></div>
           </div>
         </div>
         <div class="flex flex-col">
-          <label class="text-[11px] font-bold text-gray-400 mb-2 ml-1 uppercase">🔍 ค้นหา HN / ชื่อ</label>
-          <input type="text" id="filterSearch" placeholder="ระบุ HN หรือชื่อคนไข้..." class="px-5 py-3 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-bold transition-all" oninput="renderCards()">
+          <label class="filter-label">🔍 ค้นหา HN / ชื่อ</label>
+          <input type="text" id="filterSearch" placeholder="ระบุ HN หรือชื่อคนไข้..." class="px-5 py-3 rounded-2xl border-2 border-gray-200 bg-white focus:border-blue-500 outline-none text-base font-bold transition-all text-black" oninput="renderCards()">
         </div>
         <div class="flex items-center gap-3">
-          <button onclick="clearAllFilters()" class="px-5 py-3 bg-white text-gray-500 rounded-2xl font-bold text-sm border-2 border-gray-50 hover:bg-gray-100 transition-all">ล้าง</button>
+          <button onclick="clearAllFilters()" class="px-5 py-3 bg-white text-gray-700 rounded-2xl font-bold text-sm border-2 border-gray-200 hover:bg-gray-100 transition-all">ล้าง</button>
           <button onclick="fetchOrders()" class="flex-1 px-5 py-3 bg-gray-900 text-white rounded-2xl font-bold text-sm shadow-lg hover:bg-black transition-all flex items-center justify-center gap-2">
             <span>🔄</span> รีเฟรช
           </button>
-          <div class="bg-blue-50 px-4 py-2 rounded-2xl border border-blue-100">
-              <span id="caseCount" class="text-2xl font-black text-blue-600">0</span>
+          <div class="bg-blue-50 px-4 py-2 rounded-2xl border border-blue-200">
+              <span id="caseCount" class="text-2xl font-black text-blue-700">0</span>
           </div>
         </div>
       </div>
@@ -88,7 +82,7 @@
     <div id="cardContainer" class="grid grid-cols-1 gap-4 animate-fade-in pb-20">
         <div class="text-center py-20">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
-            <p class="mt-4 text-gray-500 font-bold">กำลังโหลดรายการ TPN...</p>
+            <p class="mt-4 text-black font-bold text-lg">กำลังโหลดรายการ TPN...</p>
         </div>
     </div>
   </main>
@@ -98,7 +92,6 @@
     let allOrders = [];
 
     document.addEventListener('DOMContentLoaded', () => {
-        // ตั้งค่าวันที่เริ่มต้นเป็นวันนี้
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('filterDate').value = today;
         fetchOrders();
@@ -117,7 +110,6 @@
       }
     }
 
-    // Ward Dropdown Logic
     function showWardDropdown() {
       const dropdown = document.getElementById('wardFilterDropdown');
       dropdown.classList.remove('hidden');
@@ -131,8 +123,8 @@
     }
     function renderWardFilterOptions(list) {
       const container = document.getElementById('wardFilterOptions');
-      container.innerHTML = `<div onclick="selectWardFilter('')" class="px-5 py-3 hover:bg-blue-50 cursor-pointer text-blue-600 text-sm font-bold rounded-xl mb-1 italic">แสดงทั้งหมด</div>` + 
-        list.map(w => `<div onclick="selectWardFilter('${w}')" class="px-5 py-3 hover:bg-gray-50 cursor-pointer text-gray-700 text-sm font-bold rounded-xl mb-1">${w}</div>`).join('');
+      container.innerHTML = `<div onclick="selectWardFilter('')" class="px-5 py-3 hover:bg-blue-50 cursor-pointer text-blue-800 text-base font-bold rounded-xl mb-1 italic">แสดงทั้งหมด</div>` + 
+        list.map(w => `<div onclick="selectWardFilter('${w}')" class="px-5 py-3 hover:bg-gray-50 cursor-pointer text-black text-base font-bold rounded-xl mb-1">${w}</div>`).join('');
     }
     function selectWardFilter(val) {
       document.getElementById('filterWardInput').value = val || "";
@@ -148,7 +140,7 @@
         renderCards(); 
     }
 
-  function renderCards() {
+    function renderCards() {
       const container = document.getElementById('cardContainer');
       const countEl = document.getElementById('caseCount');
       const fDate = document.getElementById('filterDate').value;
@@ -167,64 +159,62 @@
             (o.hn && o.hn.toString().toLowerCase().includes(fSearch)) || 
             (o.patient_name && o.patient_name.toLowerCase().includes(fSearch))
         ) : true;
-
         return matchDate && matchWard && matchSearch;
       });
 
       countEl.textContent = filtered.length;
       if (filtered.length === 0) { 
-          container.innerHTML = `<div class="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
+          container.innerHTML = `<div class="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-gray-200">
             <span class="text-4xl block mb-4">🏜️</span>
-            <p class="text-gray-400 font-bold italic">ไม่พบรายการ TPN ที่ค้นหา</p>
+            <p class="text-black font-bold text-xl italic">ไม่พบรายการ TPN ที่ค้นหา</p>
           </div>`; 
           return; 
       }
 
-      // --- ส่วนที่ปรับปรุงดีไซน์ใหม่ ---
       container.innerHTML = [...filtered].reverse().map(order => {
         const isCentral = order.route?.toLowerCase().includes('central');
         return `
-        <div class="bg-white rounded-[2rem] border-2 border-gray-100 p-6 mb-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 animate-fade-in group">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="bg-white rounded-[2.5rem] border border-gray-200 p-8 mb-5 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in group">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             
-            <div class="flex items-center gap-6 flex-1">
-              <div class="w-2 h-16 rounded-full ${isCentral ? 'bg-rose-500' : 'bg-emerald-500'}"></div>
+            <div class="flex items-center gap-8 flex-1">
+              <div class="w-2.5 h-20 rounded-full ${isCentral ? 'bg-rose-600' : 'bg-emerald-600'}"></div>
               
               <div>
-                <div class="flex items-center gap-3 mb-1">
-                  <span class="text-3xl font-black text-slate-800">${order.ward || '-'}</span>
-                  <span class="px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border ${isCentral ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}">
+                <div class="flex items-center gap-4 mb-2">
+                  <span class="text-4xl font-black text-black">${order.ward || '-'}</span>
+                  <span class="px-4 py-1 rounded-xl text-xs font-black uppercase tracking-widest border ${isCentral ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
                     ${order.route || 'N/A'}
                   </span>
                 </div>
-                <h3 class="text-xl font-bold text-slate-700">${order.patient_name || 'ไม่ระบุชื่อคนไข้'}</h3>
-                <div class="flex gap-3 mt-1">
-                  <span class="text-xs font-bold text-slate-400">HN: ${order.hn || '-'}</span>
-                  <span class="text-xs font-bold text-blue-400">BW: ${order.bw || '0'} kg</span>
+                <h3 class="text-2xl font-extrabold text-black mb-2">${order.patient_name || 'ไม่ระบุชื่อคนไข้'}</h3>
+                <div class="flex gap-5">
+                  <span class="text-base font-bold text-black bg-gray-100 px-3 py-1 rounded-lg">HN: ${order.hn || '-'}</span>
+                  <span class="text-base font-black text-blue-900 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">BW: ${order.bw || '0'} kg</span>
                 </div>
               </div>
             </div>
 
-            <div class="flex gap-3">
-              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3 text-center min-w-[90px]">
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mb-1">PN Vol (ml)</p>
-                <p class="text-xl font-black text-slate-800">${order.pn_volume_net || '0'}</p>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-gray-50 border border-gray-200 rounded-3xl p-4 text-center min-w-[110px]">
+                <p class="text-[11px] font-black text-black uppercase mb-1">PN Vol (ml)</p>
+                <p class="text-2xl font-black text-black">${order.pn_volume_net || '0'}</p>
               </div>
-              <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3 text-center min-w-[90px]">
-                <p class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter mb-1">Calories</p>
-                <p class="text-xl font-black text-blue-600">${order.total_calories || '0'}</p>
+              <div class="bg-blue-50 border border-blue-200 rounded-3xl p-4 text-center min-w-[110px]">
+                <p class="text-[11px] font-black text-blue-900 uppercase mb-1">Calories</p>
+                <p class="text-2xl font-black text-blue-700">${order.total_calories || '0'}</p>
               </div>
-              <div class="bg-purple-50 border border-purple-100 rounded-2xl p-3 text-center min-w-[90px]">
-                <p class="text-[9px] font-bold text-purple-400 uppercase tracking-tighter mb-1">mOsm/L</p>
-                <p class="text-xl font-black text-purple-600">${order.final_osmolarity || '0'}</p>
+              <div class="bg-purple-50 border border-purple-200 rounded-3xl p-4 text-center min-w-[110px]">
+                <p class="text-[11px] font-black text-purple-900 uppercase mb-1">mOsm/L</p>
+                <p class="text-2xl font-black text-purple-700">${order.final_osmolarity || '0'}</p>
               </div>
             </div>
 
-            <div class="flex md:flex-col gap-2">
-              <button onclick="window.open('label_WS.html?row=${order.hn}', '_blank')" class="px-6 py-2 bg-slate-800 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2">
+            <div class="flex lg:flex-col gap-3">
+              <button onclick="window.open('label_WS.html?row=${order.hn}', '_blank')" class="px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-2xl text-sm font-bold shadow-md flex items-center justify-center gap-2">
                 📝 ฉลาก / Worksheet
               </button>
-              <button onclick="deleteOrder('${order.hn}')" class="px-6 py-2 bg-white hover:bg-rose-50 text-rose-500 border border-rose-100 rounded-xl text-xs font-bold transition-all">
+              <button onclick="deleteOrder('${order.hn}')" class="px-8 py-3 bg-white hover:bg-rose-50 text-rose-600 border-2 border-rose-100 rounded-2xl text-sm font-bold transition-all">
                 🗑️ OFF TPN
               </button>
             </div>
@@ -233,40 +223,36 @@
         </div>`;
       }).join('');
     }
-  async function deleteOrder(hn) {
-  if (!confirm(`⚠️ ยืนยันการสั่ง OFF TPN สำหรับ HN: ${hn} ?`)) return;
-  
-  const btn = event.currentTarget;
-  const originalText = btn.innerHTML;
-  btn.innerHTML = "⏳ กำลังลบ...";
-  btn.disabled = true;
 
-  try {
-    // ใช้ URLSearchParams แทนการส่ง JSON ตรงๆ
-    const params = new URLSearchParams();
-    params.append('action', 'deleteRow');
-    params.append('hn', hn);
+    async function deleteOrder(hn) {
+      if (!confirm(`⚠️ ยืนยันการสั่ง OFF TPN สำหรับ HN: ${hn} ?`)) return;
+      const btn = event.currentTarget;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = "⏳ กำลังลบ...";
+      btn.disabled = true;
 
-    await fetch(API_URL, { 
-        method: 'POST', 
-        mode: 'no-cors', // สำคัญมากสำหรับการลบผ่าน Web App
-        body: params 
-    });
-    
-    // หน่วงเวลา 1 วินาทีเพื่อให้ Google Sheets ลบเสร็จก่อนดึงข้อมูลใหม่
-    setTimeout(() => {
-      alert("✅ Off TPN เรียบร้อยแล้ว");
-      fetchOrders(); 
-    }, 1000);
+      try {
+        const params = new URLSearchParams();
+        params.append('action', 'deleteRow');
+        params.append('hn', hn);
 
-  } catch (e) { 
-      alert("❌ เกิดข้อผิดพลาด ไม่สามารถลบได้"); 
-      btn.innerHTML = originalText;
-      btn.disabled = false;
-  }
-}
+        await fetch(API_URL, { 
+            method: 'POST', 
+            mode: 'no-cors',
+            body: params 
+        });
+        
+        setTimeout(() => {
+          alert("✅ Off TPN เรียบร้อยแล้ว");
+          fetchOrders(); 
+        }, 1000);
+      } catch (e) { 
+          alert("❌ เกิดข้อผิดพลาด"); 
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+      }
+    }
 
-    // ปิด Dropdown เมื่อคลิกที่อื่น
     document.addEventListener('click', (e) => {
         if (!document.getElementById('filterWardInput').parentElement.contains(e.target)) {
             document.getElementById('wardFilterDropdown').classList.add('hidden');
