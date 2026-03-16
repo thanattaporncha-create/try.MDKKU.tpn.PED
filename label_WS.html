@@ -38,19 +38,16 @@
     .bag-badge { border: 2.5px solid #000; padding: 2px 10px; font-size: 16px; font-weight: 900; display: inline-block; margin-bottom: 4px; }
     .footer-sign { height: 3.0cm; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 1cm 0.5cm 1cm; }
 
-    /* ── Worksheet Colors ( High Contrast ) ── */
-    .c-amiparen     { color: #008000 !important; } 
+    /* ── Worksheet Colors ── */
+    .c-amiparen      { color: #008000 !important; } 
     .c-aminoplasmal { color: #0077cc !important; } 
     .c-peditrace    { color: #ff8c00 !important; } 
     .c-cernevit     { color: #228b22 !important; } 
     .c-bcomplex     { color: #ff1493 !important; } 
     .bg-yellow-highlight { background-color: #ffff80 !important; } 
-    
-    /* สีถมใหม่ตามคำขอ */
-    .bg-pink-highlight   { background-color: #ffb6c1 !important; } /* ชมพูอ่อน (LightPink) */
-    .bg-purple-highlight { background-color: #e6e6fa !important; } /* ม่วงอ่อน (Lavender) */
-    
-    .c-black        { color: #000000 !important; }
+    .bg-pink-highlight   { background-color: #ffb6c1 !important; } 
+    .bg-purple-highlight { background-color: #e6e6fa !important; } 
+    .c-black         { color: #000000 !important; }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-20">
@@ -187,10 +184,13 @@
       if (fNum === 1) { vSmof = vSmofTotal - 250; vVit = vVitTotal; vFlu = vFluTotal; vTotalSyr = vSmof + vVit + vFlu; }
       else { vSmof = 250; vVit = 0; vFlu = 0; vTotalSyr = 250; }
     } else { vSmof = vSmofTotal / div; vVit = vVitTotal / div; vFlu = vFluTotal / div; vTotalSyr = totalNetFat / div; }
-    const getFatName = (n) => { const name = (n || "").toString().toLowerCase(); if (name === 'smof') return '20% SMOF lipid'; if (name === 'intralipid') return '20% Intralipid'; return n || 'Fat Emulsion'; };
-    const fixN = (v) => { const n = parseFloat(v) || 0; return n === 0 ? 0 : Number(n.toFixed(2)); };
     
-    // margin-top: 12mm (ขยับลงเพิ่มอีก 2mm ตามคำขอ)
+    const getFatName = (n) => { const name = (n || "").toString().toLowerCase(); if (name === 'smof') return '20% SMOF lipid'; if (name === 'intralipid') return '20% Intralipid'; return n || 'Fat Emulsion'; };
+    const fixN = (v) => { const n = parseFloat(v) || 0; return n === 0 ? "-" : Number(n.toFixed(2)); };
+    
+    // แสดงผลบรรทัด Vitalipid ให้ถูกต้อง
+    const vitNameDisplay = vVit > 0 ? (o.vitalipid_type.toLowerCase().includes('infant') ? '✿ Vitalipid N-Infant ✿ (ml)' : 'Vitalipid N-Adult (ml)') : 'Vitalipid (ml)';
+    
     return `<div class="sticker-small" contenteditable="true">
       <div style="margin-top: 12mm;">
         <div style="font-size:13.5px; font-weight:800; mb-1;">HN: ${o.hn} – ${o.patient_name}</div>
@@ -200,7 +200,7 @@
           <colgroup><col style="width:72%;"><col style="width:28%;"></colgroup>
           <tbody>
             <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800; line-height:1.2;">${getFatName(o.fat_product)} ${fixN(vSmof)} ml<br>+ ไล่สาย ${fixN(vFlu)} ml</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${fixN(vSmof + vFlu)}</td></tr>
-            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vVit > 0 ? (o.vitalipid_type.toLowerCase().includes('infant') ? '✿ Vitalipid N-Infant ✿ (ml)' : 'Vitalipid N-Adult (ml)') : '-'}</td></tr>
+            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vitNameDisplay}</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${vVit > 0 ? fixN(vVit) : '-'}</td></tr>
             <tr style="background: white !important;"><td style="border:2px solid #000; padding:4px 6px; font-weight:800; font-size:16px;">Total volume (ml)</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:22px; text-align:right;">${fixN(vTotalSyr)}</td></tr>
           </tbody>
         </table>
@@ -225,10 +225,7 @@
     </div>`;
   }
 
-// --- ค้นหาฟังก์ชัน createWS ในโค้ดเดิมแล้ววางทับด้วยส่วนนี้ค่ะ ---
-
- function createWS(o, div) {
-    // --- ส่วนที่เพิ่มกลับมาเพื่อให้โค้ดทำงานได้ ---
+  function createWS(o, div) {
     const getRowStyle = (name, prodKey, type) => {
       let cls = "c-black"; let bg = "";
       if (prodKey === 'amiparen') cls = "c-amiparen";
@@ -241,7 +238,6 @@
       else if (type === 'heparin') { bg = "bg-pink-highlight"; cls = "c-black"; }
       return { cls, bg };
     };
-    // ------------------------------------------
 
     const proteinName = o.protein_product === 'amiparen' ? '10% Ami-pa-REN' : (o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : '15% AminoPlas-MAL');
     const phosName = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
@@ -249,7 +245,7 @@
     const vitName = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
     const otherName = o.add_name || 'Additive อื่นๆ';
 
-    // ดึงค่าปริมาตร Net (จริง) และ Prep (เตรียม)
+    // ปริมาตร Net (จริง) และ Prep (เตรียม)
     const vW_net  = getNum(o.water_vol, div);
     const vW_prep = getNum(o.prep_water_vol, div);
     const vD_net  = getNum(o.dex_50_vol, div);
@@ -263,8 +259,6 @@
     const vHep = getNum(o.heparin_vol, div);
 
     let cum = 0; const add = (n) => { cum += n; return Number(cum.toFixed(2)); };
-    
-    // คำนวณถุงรวมสะสม (Cumulative) โดยใช้ค่า Prep เป็นหลักเพื่อให้ยอดสุดท้ายเป๊ะ
     const cumAfter2 = wsShow(add(vW_prep + vD_prep)); 
     const cumAfter3 = wsShow(add(vProt));
     add(vPhos); const cumAfter5 = wsShow(add(vNa));
