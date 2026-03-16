@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TPN Dashboard | โรงพยาบาลศรีนครินทร์</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Sarabun', 'Inter', sans-serif; }
+    body { background-color: #f8fafc; }
+    .gradient-header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .card-order {
+      @apply bg-white border-2 border-gray-100 rounded-[2rem] p-5 shadow-sm transition-all duration-300 flex flex-col gap-4;
+    }
+    .card-order:hover {
+      @apply border-blue-400 shadow-md transform -translate-y-1;
+    }
+    
+    .btn-action { 
+      @apply flex-1 py-2.5 rounded-2xl text-[11px] font-bold transition-all flex items-center justify-center gap-2 border-2 border-gray-50 bg-gray-50 text-gray-700; 
+    }
+    .btn-detail:hover { @apply border-blue-200 bg-blue-50 text-blue-700; }
+    .btn-label:hover { @apply border-amber-200 bg-amber-50 text-amber-700; }
+    .btn-ws:hover { @apply border-green-200 bg-green-50 text-green-700; }
+    .btn-off:hover { @apply border-red-200 bg-red-50 text-red-700; }
+
+    #wardFilterDropdown::-webkit-scrollbar { width: 6px; }
+    #wardFilterDropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
+</head>
+<body class="min-h-full">
+
+  <header class="gradient-header text-white py-4 px-6 sticky top-0 z-50 shadow-xl">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+            <span class="text-xl">📊</span>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight uppercase">TPN Order Dashboard</h1>
+          <p class="text-blue-100 text-[10px] font-medium uppercase tracking-widest">Srinagarind Hospital | Pediatric Unit</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+          <a href="index.html" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl transition-all text-sm font-bold shadow-lg flex items-center gap-2">
+            <span>+</span> สั่ง TPN ใหม่
+          </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-4 md:p-8">
+    
+    <div class="bg-white rounded-[2.5rem] shadow-sm p-8 mb-8 border border-gray-100">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        <div class="flex flex-col">
+          <label class="text-[11px] font-bold text-gray-400 mb-2 ml-1 uppercase">🗓️ วันที่สั่ง Order</label>
+          <input type="date" id="filterDate" class="px-5 py-3 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-bold transition-all" onchange="renderCards()">
+        </div>
+        <div class="flex flex-col relative">
+          <label class="text-[11px] font-bold text-gray-400 mb-2 ml-1 uppercase">🏥 หอผู้ป่วย (Ward)</label>
+          <input type="text" id="filterWardInput" placeholder="ค้นหา Ward..." class="px-5 py-3 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-bold transition-all" onfocus="showWardDropdown()" oninput="filterWardOptions()" autocomplete="off">
+          <input type="hidden" id="filterWardValue">
+          <div id="wardFilterDropdown" class="hidden absolute left-0 right-0 top-[105%] z-[100] bg-white border border-gray-100 rounded-3xl shadow-2xl max-h-64 overflow-y-auto p-2">
+            <div id="wardFilterOptions"></div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <label class="text-[11px] font-bold text-gray-400 mb-2 ml-1 uppercase">🔍 ค้นหา HN / ชื่อ</label>
+          <input type="text" id="filterSearch" placeholder="ระบุ HN หรือชื่อคนไข้..." class="px-5 py-3 rounded-2xl border-2 border-gray-50 bg-gray-50 focus:bg-white focus:border-blue-500 outline-none text-sm font-bold transition-all" oninput="renderCards()">
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="clearAllFilters()" class="px-5 py-3 bg-white text-gray-500 rounded-2xl font-bold text-sm border-2 border-gray-50 hover:bg-gray-100 transition-all">ล้าง</button>
+          <button onclick="fetchOrders()" class="flex-1 px-5 py-3 bg-gray-900 text-white rounded-2xl font-bold text-sm shadow-lg hover:bg-black transition-all flex items-center justify-center gap-2">
+            <span>🔄</span> รีเฟรช
+          </button>
+          <div class="bg-blue-50 px-4 py-2 rounded-2xl border border-blue-100">
+              <span id="caseCount" class="text-2xl font-black text-blue-600">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cardContainer" class="grid grid-cols-1 gap-4 animate-fade-in pb-20">
+        <div class="text-center py-20">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
+            <p class="mt-4 text-gray-500 font-bold">กำลังโหลดรายการ TPN...</p>
+        </div>
+    </div>
+  </main>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyDz-uLWDg-YvD0eoKOnt79bJ2fQL-GmlRCNm6Bbne4RDpnzUjy9iuUabyI4wTQ46r4QQ/exec';
+    let allOrders = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // ตั้งค่าวันที่เริ่มต้นเป็นวันนี้
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('filterDate').value = today;
+        fetchOrders();
+    });
+
+    async function fetchOrders() {
+      const container = document.getElementById('cardContainer');
+      try {
+        const response = await fetch(`${API_URL}?action=getData&ts=${new Date().getTime()}`);
+        allOrders = await response.json();
+        renderCards();
+      } catch (e) { 
+          container.innerHTML = `<div class="text-center py-20 bg-red-50 rounded-[3rem] border-2 border-dashed border-red-200">
+            <p class="text-red-600 font-bold">❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่อีกครั้ง</p>
+          </div>`; 
+      }
+    }
+
+    // Ward Dropdown Logic
+    function showWardDropdown() {
+      const dropdown = document.getElementById('wardFilterDropdown');
+      dropdown.classList.remove('hidden');
+      const wards = [...new Set(allOrders.map(o => o.ward).filter(w => w))].sort();
+      renderWardFilterOptions(wards);
+    }
+    function filterWardOptions() {
+      const searchTerm = document.getElementById('filterWardInput').value.toLowerCase();
+      const wards = [...new Set(allOrders.map(o => o.ward).filter(w => w))].sort();
+      renderWardFilterOptions(wards.filter(w => w.toLowerCase().includes(searchTerm)));
+    }
+    function renderWardFilterOptions(list) {
+      const container = document.getElementById('wardFilterOptions');
+      container.innerHTML = `<div onclick="selectWardFilter('')" class="px-5 py-3 hover:bg-blue-50 cursor-pointer text-blue-600 text-sm font-bold rounded-xl mb-1 italic">แสดงทั้งหมด</div>` + 
+        list.map(w => `<div onclick="selectWardFilter('${w}')" class="px-5 py-3 hover:bg-gray-50 cursor-pointer text-gray-700 text-sm font-bold rounded-xl mb-1">${w}</div>`).join('');
+    }
+    function selectWardFilter(val) {
+      document.getElementById('filterWardInput').value = val || "";
+      document.getElementById('filterWardValue').value = val;
+      document.getElementById('wardFilterDropdown').classList.add('hidden');
+      renderCards();
+    }
+    function clearAllFilters() { 
+        document.getElementById('filterDate').value = ""; 
+        document.getElementById('filterWardInput').value = ""; 
+        document.getElementById('filterWardValue').value = ""; 
+        document.getElementById('filterSearch').value = ""; 
+        renderCards(); 
+    }
+
+    function renderCards() {
+      const container = document.getElementById('cardContainer');
+      const countEl = document.getElementById('caseCount');
+      const fDate = document.getElementById('filterDate').value;
+      const fWard = document.getElementById('filterWardValue').value;
+      const fSearch = document.getElementById('filterSearch').value.toLowerCase();
+
+      const filtered = allOrders.filter(o => {
+        let matchDate = true;
+        if (fDate && o.order_date) {
+          const d = new Date(o.order_date);
+          const formattedO = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          matchDate = (formattedO === fDate);
+        }
+        const matchWard = fWard ? o.ward === fWard : true;
+        const matchSearch = fSearch ? (
+            (o.hn && o.hn.toString().toLowerCase().includes(fSearch)) || 
+            (o.patient_name && o.patient_name.toLowerCase().includes(fSearch))
+        ) : true;
+
+        return matchDate && matchWard && matchSearch;
+      });
+
+      countEl.textContent = filtered.length;
+      if (filtered.length === 0) { 
+          container.innerHTML = `<div class="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
+            <span class="text-4xl block mb-4">🏜️</span>
+            <p class="text-gray-400 font-bold italic">ไม่พบรายการ TPN ที่ค้นหา</p>
+          </div>`; 
+          return; 
+      }
+
+      // แสดงรายการโดยเอาอันใหม่ขึ้นก่อน (Reverse)
+      container.innerHTML = [...filtered].reverse().map(order => {
+        const isCentral = order.route?.toLowerCase().includes('central');
+        return `
+        <div class="card-order animate-fade-in">
+          <div class="flex flex-wrap items-center gap-6">
+            <div class="flex flex-col items-center justify-center min-w-[90px] py-2 border-r-2 border-gray-50 pr-6">
+              <span class="text-3xl font-black text-gray-800">${order.ward || '-'}</span>
+              <span class="${isCentral ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'} text-[10px] px-3 py-1 rounded-lg font-black mt-2 uppercase tracking-widest border ${isCentral ? 'border-rose-200' : 'border-emerald-200'}">
+                ${order.route || 'N/A'}
+              </span>
+            </div>
+
+            <div class="flex-1 min-w-[200px]">
+              <h3 class="font-bold text-xl text-gray-900 mb-1">${order.patient_name || 'ไม่ระบุชื่อคนไข้'}</h3>
+              <div class="flex items-center gap-3 text-sm">
+                  <span class="bg-gray-100 text-gray-600 px-3 py-0.5 rounded-full font-bold">HN: ${order.hn || '-'}</span>
+                  <span class="bg-blue-50 text-blue-600 px-3 py-0.5 rounded-full font-bold">BW: ${order.bw || '0'} kg</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 min-w-[300px]">
+              <div class="text-center p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                <span class="text-[9px] text-gray-400 block font-bold uppercase mb-1">PN Vol</span>
+                <span class="text-lg font-black text-gray-800">${order.pn_volume_net || '0'}</span>
+              </div>
+              <div class="text-center p-3 bg-blue-50/50 rounded-2xl border border-blue-100">
+                <span class="text-[9px] text-blue-400 block font-bold uppercase mb-1">Calories</span>
+                <span class="text-lg font-black text-blue-700">${order.total_calories || '0'}</span>
+              </div>
+              <div class="text-center p-3 bg-purple-50/50 rounded-2xl border border-purple-100">
+                <span class="text-[9px] text-purple-400 block font-bold uppercase mb-1">mOsm/L</span>
+                <span class="text-lg font-black text-purple-700">${order.final_osmolarity || '0'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3 pt-4 border-t border-gray-50">
+            <button onclick="window.open('label_WS.html?row=${order.hn}', '_blank')" class="btn-action btn-ws">
+              <span>📝</span> Worksheet / Label
+            </button>
+            <button onclick="deleteOrder('${order.hn}')" class="btn-action btn-off">
+              <span>🗑️</span> OFF TPN
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    async function deleteOrder(hn) {
+      if (!confirm(`⚠️ ยืนยันการสั่ง OFF TPN สำหรับ HN: ${hn} ?\n(ข้อมูลจะถูกลบออกจากรายการวันนี้)`)) return;
+      
+      // แสดง loading เล็กน้อย
+      const btn = event.currentTarget;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = "⏳ กำลังลบ...";
+      btn.disabled = true;
+
+      try {
+        await fetch(API_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({ action: 'deleteRow', hn: hn }) 
+        });
+        alert("✅ Off TPN เรียบร้อยแล้ว");
+        fetchOrders(); 
+      } catch (e) { 
+          alert("❌ เกิดข้อผิดพลาด ไม่สามารถลบได้"); 
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+      }
+    }
+
+    // ปิด Dropdown เมื่อคลิกที่อื่น
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('filterWardInput').parentElement.contains(e.target)) {
+            document.getElementById('wardFilterDropdown').classList.add('hidden');
+        }
+    });
+  </script>
+</body>
+</html>
