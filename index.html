@@ -1629,40 +1629,48 @@ async function fetchPatientAndHistory() {
    
 
     // ========== calculateFatAdmin ==========
-    function calculateFatAdmin() {
+  // ========== ฟังก์ชันคำนวณวิธีการให้ Fat (ฉบับแก้ไขเงื่อนไขตาม Ward ใหม่) ==========
+function calculateFatAdmin() {
     const fatVolume = parseFloat(document.getElementById('fatVolume').value) || 0;
     const vitalipidVolume = parseFloat(document.getElementById('vitalipid').value) || 0;
     const currentWard = document.getElementById('ward').value;
-    const sumFatVit = fatVolume + vitalipidVolume;
+    const sumFatVit = fatVolume + vitalipidVolume; // ตัวเลขที่ใช้เช็คเงื่อนไข
 
     const flushRadioCustom = document.querySelector('input[name="flush"][value="custom"]');
     const flushRadioNone = document.querySelector('input[name="flush"][value="none"]');
     const flushInput = document.getElementById('flushVolume');
 
-    // ถ้าไม่ได้เลือกเอง (isFlushManual = false) ให้ใช้ค่าตาม Ward
+    // ถ้าไม่ได้เลือกเอง (isFlushManual = false) ให้ใช้ค่าอัตโนมัติตามตรรกะใหม่
     if (!isFlushManual) {
+        // กลุ่ม 1: NICU และ 2ค (ไม่ไล่สาย)
         if (["NICU", "2ค"].includes(currentWard)) {
             flushRadioNone.checked = true;
             flushInput.value = "";
             flushInput.classList.remove('bg-amber-50', 'border-amber-300', 'bg-blue-50', 'border-blue-400');
-        } else if (["2ง", "3ง", "IMC2ง"].includes(currentWard)) {
+        } 
+        // กลุ่ม 2: 2ง, 3ง และ IMC2ง (เกณฑ์ 49 ml)
+        else if (["2ง", "3ง", "IMC2ง"].includes(currentWard)) {
             flushRadioCustom.checked = true;
-            flushInput.value = (sumFatVit <= 39) ? 6 : 30;
+            // แก้ไข: ถ้า sum <= 49 ให้ 6 ml, ถ้า > 49 ให้ 30 ml
+            flushInput.value = (sumFatVit <= 49) ? 6 : 30;
             flushInput.classList.remove('bg-blue-50', 'border-blue-400');
             flushInput.classList.add('bg-amber-50', 'border-amber-300');
-        } else if (["PICU", "PICU ศสก."].includes(currentWard)) {
+        } 
+        // กลุ่ม 3: PICU, PICU ศสก. และ CVT-ICU (เกณฑ์ 52 ml)
+        else if (["PICU", "PICU ศสก.", "CVT-ICU"].includes(currentWard)) {
             flushRadioCustom.checked = true;
-            flushInput.value = (sumFatVit <= 55) ? 3 : 15;
+            // แก้ไข: ถ้า sum <= 52 ให้ 3 ml, ถ้า > 52 ให้ 15 ml
+            flushInput.value = (sumFatVit <= 52) ? 3 : 15;
             flushInput.classList.remove('bg-blue-50', 'border-blue-400');
             flushInput.classList.add('bg-amber-50', 'border-amber-300');
         }
     } else {
-        // ถ้าผู้ใช้เลือกเองแล้ว (isFlushManual = true)
-        // ให้เปลี่ยนสี input ให้รู้ว่าอยู่ในโหมด Manual
+        // โหมด Manual: เปลี่ยนสีให้รู้ว่าแก้เอง
         flushInput.classList.remove('bg-amber-50', 'border-amber-300');
         flushInput.classList.add('bg-blue-50', 'border-blue-400');
     }
 
+    // --- ส่วนการคำนวณสรุปด้านล่าง (เหมือนเดิม) ---
     const flushOption = document.querySelector('input[name="flush"]:checked').value;
     const flushVolume = (flushOption === 'custom' && flushInput.value !== "") ? (parseFloat(flushInput.value) || 0) : 0;
     const prepSplit = document.querySelector('input[name="prepSplit"]:checked').value;
@@ -1692,8 +1700,8 @@ async function fetchPatientAndHistory() {
             <span class="text-2xl font-black text-blue-800 underline ml-1">${roundToPlace(grandTotalFatVit, 1)}</span> 
             <span class="text-blue-800 font-bold ml-1">ml</span>
         </p>
-        <p>• <strong>Calories from fat:</strong> <span class="text-amber-700 font-bold">${roundToPlace(fatCalories, 1)}</span> kcal</p>
     `;
+    
     if (prepSplit === 'split') {
         prepText += `<p>• <strong>แบ่งเตรียม:</strong> <span class="text-blue-700 font-bold">${roundToPlace(grandTotalFatVit / 2, 1)} ml × 2 syringe/ขวด</span></p>`;
     } else {
