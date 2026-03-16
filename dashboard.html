@@ -148,7 +148,7 @@
         renderCards(); 
     }
 
-    function renderCards() {
+  function renderCards() {
       const container = document.getElementById('cardContainer');
       const countEl = document.getElementById('caseCount');
       const fDate = document.getElementById('filterDate').value;
@@ -180,55 +180,59 @@
           return; 
       }
 
-      // แสดงรายการโดยเอาอันใหม่ขึ้นก่อน (Reverse)
+      // --- ส่วนที่ปรับปรุงดีไซน์ใหม่ ---
       container.innerHTML = [...filtered].reverse().map(order => {
         const isCentral = order.route?.toLowerCase().includes('central');
         return `
-        <div class="card-order animate-fade-in">
-          <div class="flex flex-wrap items-center gap-6">
-            <div class="flex flex-col items-center justify-center min-w-[90px] py-2 border-r-2 border-gray-50 pr-6">
-              <span class="text-3xl font-black text-gray-800">${order.ward || '-'}</span>
-              <span class="${isCentral ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'} text-[10px] px-3 py-1 rounded-lg font-black mt-2 uppercase tracking-widest border ${isCentral ? 'border-rose-200' : 'border-emerald-200'}">
-                ${order.route || 'N/A'}
-              </span>
-            </div>
-
-            <div class="flex-1 min-w-[200px]">
-              <h3 class="font-bold text-xl text-gray-900 mb-1">${order.patient_name || 'ไม่ระบุชื่อคนไข้'}</h3>
-              <div class="flex items-center gap-3 text-sm">
-                  <span class="bg-gray-100 text-gray-600 px-3 py-0.5 rounded-full font-bold">HN: ${order.hn || '-'}</span>
-                  <span class="bg-blue-50 text-blue-600 px-3 py-0.5 rounded-full font-bold">BW: ${order.bw || '0'} kg</span>
+        <div class="bg-white rounded-[2rem] border-2 border-gray-100 p-6 mb-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 animate-fade-in group">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            
+            <div class="flex items-center gap-6 flex-1">
+              <div class="w-2 h-16 rounded-full ${isCentral ? 'bg-rose-500' : 'bg-emerald-500'}"></div>
+              
+              <div>
+                <div class="flex items-center gap-3 mb-1">
+                  <span class="text-3xl font-black text-slate-800">${order.ward || '-'}</span>
+                  <span class="px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border ${isCentral ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}">
+                    ${order.route || 'N/A'}
+                  </span>
+                </div>
+                <h3 class="text-xl font-bold text-slate-700">${order.patient_name || 'ไม่ระบุชื่อคนไข้'}</h3>
+                <div class="flex gap-3 mt-1">
+                  <span class="text-xs font-bold text-slate-400">HN: ${order.hn || '-'}</span>
+                  <span class="text-xs font-bold text-blue-400">BW: ${order.bw || '0'} kg</span>
+                </div>
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 min-w-[300px]">
-              <div class="text-center p-3 bg-gray-50 rounded-2xl border border-gray-100">
-                <span class="text-[9px] text-gray-400 block font-bold uppercase mb-1">PN Vol</span>
-                <span class="text-lg font-black text-gray-800">${order.pn_volume_net || '0'}</span>
+            <div class="flex gap-3">
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3 text-center min-w-[90px]">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mb-1">PN Vol (ml)</p>
+                <p class="text-xl font-black text-slate-800">${order.pn_volume_net || '0'}</p>
               </div>
-              <div class="text-center p-3 bg-blue-50/50 rounded-2xl border border-blue-100">
-                <span class="text-[9px] text-blue-400 block font-bold uppercase mb-1">Calories</span>
-                <span class="text-lg font-black text-blue-700">${order.total_calories || '0'}</span>
+              <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3 text-center min-w-[90px]">
+                <p class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter mb-1">Calories</p>
+                <p class="text-xl font-black text-blue-600">${order.total_calories || '0'}</p>
               </div>
-              <div class="text-center p-3 bg-purple-50/50 rounded-2xl border border-purple-100">
-                <span class="text-[9px] text-purple-400 block font-bold uppercase mb-1">mOsm/L</span>
-                <span class="text-lg font-black text-purple-700">${order.final_osmolarity || '0'}</span>
+              <div class="bg-purple-50 border border-purple-100 rounded-2xl p-3 text-center min-w-[90px]">
+                <p class="text-[9px] font-bold text-purple-400 uppercase tracking-tighter mb-1">mOsm/L</p>
+                <p class="text-xl font-black text-purple-600">${order.final_osmolarity || '0'}</p>
               </div>
             </div>
-          </div>
 
-          <div class="flex gap-3 pt-4 border-t border-gray-50">
-            <button onclick="window.open('label_WS.html?row=${order.hn}', '_blank')" class="btn-action btn-ws">
-              <span>📝</span> Worksheet / Label
-            </button>
-            <button onclick="deleteOrder('${order.hn}')" class="btn-action btn-off">
-              <span>🗑️</span> OFF TPN
-            </button>
+            <div class="flex md:flex-col gap-2">
+              <button onclick="window.open('label_WS.html?row=${order.hn}', '_blank')" class="px-6 py-2 bg-slate-800 hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2">
+                📝 ฉลาก / Worksheet
+              </button>
+              <button onclick="deleteOrder('${order.hn}')" class="px-6 py-2 bg-white hover:bg-rose-50 text-rose-500 border border-rose-100 rounded-xl text-xs font-bold transition-all">
+                🗑️ OFF TPN
+              </button>
+            </div>
+
           </div>
         </div>`;
       }).join('');
     }
-
   async function deleteOrder(hn) {
   if (!confirm(`⚠️ ยืนยันการสั่ง OFF TPN สำหรับ HN: ${hn} ?`)) return;
   
