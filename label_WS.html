@@ -228,6 +228,21 @@
 // --- ค้นหาฟังก์ชัน createWS ในโค้ดเดิมแล้ววางทับด้วยส่วนนี้ค่ะ ---
 
  function createWS(o, div) {
+    // --- ส่วนที่เพิ่มกลับมาเพื่อให้โค้ดทำงานได้ ---
+    const getRowStyle = (name, prodKey, type) => {
+      let cls = "c-black"; let bg = "";
+      if (prodKey === 'amiparen') cls = "c-amiparen";
+      else if (prodKey === 'aminoplasmal' || name.includes('MAL')) cls = "c-aminoplasmal";
+      else if (name.includes('Glycophos')) bg = "bg-purple-highlight"; 
+      else if (name.includes('Peditrace')) cls = "c-peditrace";
+      else if (name.includes('Cernevit')) cls = "c-cernevit";
+      else if (name.toLowerCase().includes('b complx')) cls = "c-bcomplex";
+      if (name.includes('Soluvit')) { bg = "bg-yellow-highlight"; cls = "c-black"; }
+      else if (type === 'heparin') { bg = "bg-pink-highlight"; cls = "c-black"; }
+      return { cls, bg };
+    };
+    // ------------------------------------------
+
     const proteinName = o.protein_product === 'amiparen' ? '10% Ami-pa-REN' : (o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : '15% AminoPlas-MAL');
     const phosName = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
     const traceName = o.trace_choice === 'Peditrace' ? 'Peditrace' : 'Addamel-N';
