@@ -1535,8 +1535,8 @@ async function fetchPatientAndHistory() {
         document.getElementById('row-other-name').textContent = otherNameInput ? "- " + otherNameInput : "- Other Additive";
 
         // 12. Update Table Volumes
-        document.getElementById('proteinVol').textContent = roundToPlace(proteinVolume, 1);
-        document.getElementById('dextroseVol').textContent = roundToPlace(dextroseVolume, 1);
+        document.getElementById('proteinVol').textContent = roundToPlace(proteinVolume, 2);
+        document.getElementById('dextroseVol').textContent = roundToPlace(dextroseVolume, 2);
         document.getElementById('row-phos-vol').textContent = phosVolume;
         document.getElementById('row-na-vol').textContent = naVolume;
         document.getElementById('row-k-vol').textContent = kVolume;
@@ -1549,8 +1549,8 @@ async function fetchPatientAndHistory() {
         document.getElementById('row-other-vol').textContent = otherVol;
 
         // 13. Prep Column
-        const prepDextroseVol = roundToPlace((dextrosePercent * pnPrepVol * 2) / 100, 1);
-        document.getElementById('prep-proteinVol').textContent = roundToPlace(proteinVolume, 1);
+        const prepDextroseVol = roundToPlace((dextrosePercent * pnPrepVol * 2) / 100, 2);
+        document.getElementById('prep-proteinVol').textContent = roundToPlace(proteinVolume, 2);
         document.getElementById('prep-dextroseVol').textContent = prepDextroseVol;
         document.getElementById('prep-phos-vol').textContent = phosVolume;
         document.getElementById('prep-na-vol').textContent = naVolume;
