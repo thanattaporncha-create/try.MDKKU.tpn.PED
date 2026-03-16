@@ -200,7 +200,7 @@
           <colgroup><col style="width:72%;"><col style="width:28%;"></colgroup>
           <tbody>
             <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800; line-height:1.2;">${getFatName(o.fat_product)} ${fixN(vSmof)} ml<br>+ ไล่สาย ${fixN(vFlu)} ml</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${fixN(vSmof + vFlu)}</td></tr>
-            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vVit > 0 ? (o.vitalipid_type.includes('infant') ? '✿ Vitalipid N-Infant ✿ (ml)' : 'Vitalipid N-Adult (ml)') : '-'}</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:18px; text-align:right;">${vVit > 0 ? fixN(vVit) : '-'}</td></tr>
+            <tr><td style="border:2px solid #000; padding:4px 6px; font-weight:800;">${vVit > 0 ? (o.vitalipid_type.toLowerCase().includes('infant') ? '✿ Vitalipid N-Infant ✿ (ml)' : 'Vitalipid N-Adult (ml)') : '-'}</td></tr>
             <tr style="background: white !important;"><td style="border:2px solid #000; padding:4px 6px; font-weight:800; font-size:16px;">Total volume (ml)</td><td style="border:2px solid #000; padding:4px 6px; font-weight:900; font-size:22px; text-align:right;">${fixN(vTotalSyr)}</td></tr>
           </tbody>
         </table>
