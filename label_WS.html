@@ -225,6 +225,8 @@
     </div>`;
   }
 
+// --- ค้นหาฟังก์ชัน createWS ในโค้ดเดิมแล้ววางทับด้วยส่วนนี้ค่ะ ---
+
   function createWS(o, div) {
     const proteinName = o.protein_product === 'amiparen' ? '10% Ami-pa-REN' : (o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : '15% AminoPlas-MAL');
     const phosName = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
@@ -232,32 +234,23 @@
     const vitName = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
     const otherName = o.add_name || 'Additive อื่นๆ';
 
-    // Logic การเลือกสีปรับปรุงใหม่
     const getRowStyle = (name, prodKey, type) => {
       let cls = "c-black"; let bg = "";
-      
-      // Amiparen -> เขียวป่า
       if (prodKey === 'amiparen') cls = "c-amiparen";
-      // Aminoplasmal -> ฟ้าเข้ม
       else if (prodKey === 'aminoplasmal' || name.includes('MAL')) cls = "c-aminoplasmal";
-      // Glycophos -> ถมม่วงอ่อน
       else if (name.includes('Glycophos')) bg = "bg-purple-highlight"; 
-      // Peditrace -> ส้มเข้ม
       else if (name.includes('Peditrace')) cls = "c-peditrace";
-      // Cernevit -> เขียวป่า
       else if (name.includes('Cernevit')) cls = "c-cernevit";
-      // B Complex -> ชมพู
       else if (name.toLowerCase().includes('b complx')) cls = "c-bcomplex";
-      
-      // Soluvit -> ถมเหลือง
       if (name.includes('Soluvit')) { bg = "bg-yellow-highlight"; cls = "c-black"; }
-      // Heparin -> ถมชมพูอ่อน
       else if (type === 'heparin') { bg = "bg-pink-highlight"; cls = "c-black"; }
-      
       return { cls, bg };
     };
 
-    const vW = getNum(o.water_vol, div); const vD = getNum(o.dex_50_vol, div);
+    // แก้ไขจุดนี้: ดึงค่า Prep แทนค่า Net
+    const vW = getNum(o.prep_water_vol, div); 
+    const vD = getNum(o.prep_dex_vol, div);
+    
     const vProt = getNum(o.protein_vol, div); const vPhos = getNum(o.phos_vol, div);
     const vNa = getNum(o.na_vol, div); const vK = getNum(o.k_vol, div);
     const vMg = getNum(o.mg_vol, div); const vTr = getNum(o.trace_vol, div);
@@ -266,7 +259,10 @@
     const vHep = getNum(o.heparin_vol, div);
 
     let cum = 0; const add = (n) => { cum += n; return Number(cum.toFixed(2)); };
-    const cumAfter2 = wsShow(add(vW + vD)); const cumAfter3 = wsShow(add(vProt));
+    
+    // คำนวณถุงรวมใหม่โดยใช้ค่า Prep
+    const cumAfter2 = wsShow(add(vW + vD)); 
+    const cumAfter3 = wsShow(add(vProt));
     add(vPhos); const cumAfter5 = wsShow(add(vNa));
     add(vK); add(vMg); add(vTr); add(vCa); add(vZn); add(vVit); add(vOth); add(vHep);
 
