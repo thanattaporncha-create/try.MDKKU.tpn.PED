@@ -227,29 +227,18 @@
 
 // --- ค้นหาฟังก์ชัน createWS ในโค้ดเดิมแล้ววางทับด้วยส่วนนี้ค่ะ ---
 
-  function createWS(o, div) {
+ function createWS(o, div) {
     const proteinName = o.protein_product === 'amiparen' ? '10% Ami-pa-REN' : (o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : '15% AminoPlas-MAL');
     const phosName = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
     const traceName = o.trace_choice === 'Peditrace' ? 'Peditrace' : 'Addamel-N';
     const vitName = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
     const otherName = o.add_name || 'Additive อื่นๆ';
 
-    const getRowStyle = (name, prodKey, type) => {
-      let cls = "c-black"; let bg = "";
-      if (prodKey === 'amiparen') cls = "c-amiparen";
-      else if (prodKey === 'aminoplasmal' || name.includes('MAL')) cls = "c-aminoplasmal";
-      else if (name.includes('Glycophos')) bg = "bg-purple-highlight"; 
-      else if (name.includes('Peditrace')) cls = "c-peditrace";
-      else if (name.includes('Cernevit')) cls = "c-cernevit";
-      else if (name.toLowerCase().includes('b complx')) cls = "c-bcomplex";
-      if (name.includes('Soluvit')) { bg = "bg-yellow-highlight"; cls = "c-black"; }
-      else if (type === 'heparin') { bg = "bg-pink-highlight"; cls = "c-black"; }
-      return { cls, bg };
-    };
-
-    // แก้ไขจุดนี้: ดึงค่า Prep แทนค่า Net
-    const vW = getNum(o.prep_water_vol, div); 
-    const vD = getNum(o.prep_dex_vol, div);
+    // ดึงค่าปริมาตร Net (จริง) และ Prep (เตรียม)
+    const vW_net  = getNum(o.water_vol, div);
+    const vW_prep = getNum(o.prep_water_vol, div);
+    const vD_net  = getNum(o.dex_50_vol, div);
+    const vD_prep = getNum(o.prep_dex_vol, div);
     
     const vProt = getNum(o.protein_vol, div); const vPhos = getNum(o.phos_vol, div);
     const vNa = getNum(o.na_vol, div); const vK = getNum(o.k_vol, div);
@@ -260,8 +249,8 @@
 
     let cum = 0; const add = (n) => { cum += n; return Number(cum.toFixed(2)); };
     
-    // คำนวณถุงรวมใหม่โดยใช้ค่า Prep
-    const cumAfter2 = wsShow(add(vW + vD)); 
+    // คำนวณถุงรวมสะสม (Cumulative) โดยใช้ค่า Prep เป็นหลักเพื่อให้ยอดสุดท้ายเป๊ะ
+    const cumAfter2 = wsShow(add(vW_prep + vD_prep)); 
     const cumAfter3 = wsShow(add(vProt));
     add(vPhos); const cumAfter5 = wsShow(add(vNa));
     add(vK); add(vMg); add(vTr); add(vCa); add(vZn); add(vVit); add(vOth); add(vHep);
@@ -284,8 +273,8 @@
       <table>
         <thead><tr><th style="width:45px;">#</th><th>รายการสารอาหาร</th><th style="width:110px;">Prep (ml)</th><th style="width:115px;">ถุงรวม (ml)</th></tr></thead>
         <tbody>
-          ${row(1, 'Sterile Water', '', '', vW)}
-          ${row(2, '50% D-W', '', '', vD, cumAfter2)}
+          ${row(1, `Sterile Water <span class="text-[14px] font-normal">(${wsShow(vW_net)} ml)</span>`, '', '', vW_prep)}
+          ${row(2, `50% D-W <span class="text-[14px] font-normal">(${wsShow(vD_net)} ml)</span>`, '', '', vD_prep, cumAfter2)}
           ${row(3, proteinName, o.protein_product, '', vProt, cumAfter3)}
           ${row(4, phosName, '', '', vPhos)}
           ${row(5, (o.na_source === 'NaCl' ? '3% NaCl (Na)' : 'Na Acetate (Na)'), '', '', vNa, cumAfter5)}
