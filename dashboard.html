@@ -8,20 +8,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Sarabun', 'Inter', sans-serif; }
-    body { background-color: #f1f5f9; } /* ปรับพื้นหลังให้เข้มขึ้นนิดนึงเพื่อให้ Card สีขาวลอยเด่น */
+    body { background-color: #f1f5f9; }
     .gradient-header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
     .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    
-    /* บังคับตัวหนังสือใน Label ค้นหาให้ดำและใหญ่ขึ้น */
-    .filter-label {
-      font-size: 14px !important;
-      font-weight: 800 !important;
-      color: #000000 !important;
-      margin-bottom: 8px !important;
-      display: block;
-    }
-
+    .filter-label { font-size: 14px !important; font-weight: 800 !important; color: #000000 !important; margin-bottom: 8px !important; display: block; }
     #wardFilterDropdown::-webkit-scrollbar { width: 6px; }
     #wardFilterDropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
   </style>
@@ -48,7 +39,6 @@
   </header>
 
   <main class="max-w-7xl mx-auto p-4 md:p-8">
-    
     <div class="bg-white rounded-[2.5rem] shadow-sm p-8 mb-8 border border-gray-200">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
         <div class="flex flex-col">
@@ -173,14 +163,15 @@
 
       container.innerHTML = [...filtered].reverse().map(order => {
         const isCentral = order.route?.toLowerCase().includes('central');
+        
+        // --- ส่วนที่แก้: คำนวณวันที่สำหรับส่งไปหน้าพิมพ์ ---
         const orderDateStr = order.order_date ? new Date(order.order_date).toISOString().split('T')[0] : '';
+        
         return `
         <div class="bg-white rounded-[2.5rem] border border-gray-200 p-8 mb-5 shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in group">
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            
             <div class="flex items-center gap-8 flex-1">
               <div class="w-2.5 h-20 rounded-full ${isCentral ? 'bg-rose-600' : 'bg-emerald-600'}"></div>
-              
               <div>
                 <div class="flex items-center gap-4 mb-2">
                   <span class="text-4xl font-black text-black">${order.ward || '-'}</span>
@@ -212,16 +203,13 @@
             </div>
 
             <div class="flex lg:flex-col gap-3">
-            // ดึงวันที่จากข้อมูล order มาทำ format ให้ส่งผ่าน URL ได้ง่าย
-// แก้ไขในส่วน return ของ map ฟังก์ชัน ตรงปุ่มกด:
-<button onclick="window.open('label_WS.html?hn=${order.hn}&date=${orderDateStr}', '_blank')" class="px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-2xl text-sm font-bold shadow-md flex items-center justify-center gap-2">
-  📝 ฉลาก / Worksheet
-</button>
+              <button onclick="window.open('label_WS.html?hn=${order.hn}&date=${orderDateStr}', '_blank')" class="px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-2xl text-sm font-bold shadow-md flex items-center justify-center gap-2">
+                📝 ฉลาก / Worksheet
+              </button>
               <button onclick="deleteOrder('${order.hn}')" class="px-8 py-3 bg-white hover:bg-rose-50 text-rose-600 border-2 border-rose-100 rounded-2xl text-sm font-bold transition-all">
                 🗑️ OFF TPN
               </button>
             </div>
-
           </div>
         </div>`;
       }).join('');
@@ -238,22 +226,9 @@
         const params = new URLSearchParams();
         params.append('action', 'deleteRow');
         params.append('hn', hn);
-
-        await fetch(API_URL, { 
-            method: 'POST', 
-            mode: 'no-cors',
-            body: params 
-        });
-        
-        setTimeout(() => {
-          alert("✅ Off TPN เรียบร้อยแล้ว");
-          fetchOrders(); 
-        }, 1000);
-      } catch (e) { 
-          alert("❌ เกิดข้อผิดพลาด"); 
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-      }
+        await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: params });
+        setTimeout(() => { alert("✅ Off TPN เรียบร้อยแล้ว"); fetchOrders(); }, 1000);
+      } catch (e) { alert("❌ เกิดข้อผิดพลาด"); btn.innerHTML = originalText; btn.disabled = false; }
     }
 
     document.addEventListener('click', (e) => {
