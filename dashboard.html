@@ -211,9 +211,13 @@
             </div>
 
             <div class="flex lg:flex-col gap-3">
-              <button onclick="window.open('label_WS.html?row=${order.hn}', '_blank')" class="px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-2xl text-sm font-bold shadow-md flex items-center justify-center gap-2">
-                📝 ฉลาก / Worksheet
-              </button>
+            // ดึงวันที่จากข้อมูล order มาทำ format ให้ส่งผ่าน URL ได้ง่าย
+const orderDateStr = order.order_date ? new Date(order.order_date).toISOString().split('T')[0] : '';
+
+// แก้ไขในส่วน return ของ map ฟังก์ชัน ตรงปุ่มกด:
+<button onclick="window.open('label_WS.html?hn=${order.hn}&date=${orderDateStr}', '_blank')" class="px-8 py-3 bg-slate-900 hover:bg-black text-white rounded-2xl text-sm font-bold shadow-md flex items-center justify-center gap-2">
+  📝 ฉลาก / Worksheet
+</button>
               <button onclick="deleteOrder('${order.hn}')" class="px-8 py-3 bg-white hover:bg-rose-50 text-rose-600 border-2 border-rose-100 rounded-2xl text-sm font-bold transition-all">
                 🗑️ OFF TPN
               </button>
