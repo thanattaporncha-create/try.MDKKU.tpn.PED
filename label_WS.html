@@ -11,27 +11,25 @@
     [contenteditable="true"]:hover { background: #fff9c4; outline: 1px dashed #000; cursor: text; }
 
   @media print {
-        .no-print { display: none !important; }
-        @page {
-            size: auto;
-            margin: 0mm; /* เอา Margin ของ Browser ออกให้หมด */
-        }
-        body { 
-            background: #fff; 
-            margin: 0 !important; 
-            padding: 0 !important; 
-        }
-        .print-area:not(.active) { display: none !important; }
-        
-        /* บังคับให้แต่ละป้าย (Sticker) หรือแผ่น Worksheet ขึ้นหน้าใหม่เสมอ ไม่ให้ตกแผ่น */
-        .sticker, .sheet { 
-            box-shadow: none !important; 
-            border: none !important; 
-            margin: 0 !important; 
-            page-break-after: always; 
-        }
-    }
+      .no-print { display: none !important; }
+      @page { size: auto; margin: 0mm; }
+      body { background: #fff; margin: 0 !important; padding: 0 !important; }
+      .print-area:not(.active) { display: none !important; }
+      
+      .sticker, .sheet { 
+        box-shadow: none !important; 
+        border: none !important; /* เอาขอบกระดาษออก */
+        margin: 0 !important; 
+        page-break-after: always; 
+      }
 
+      /* ✅ เพิ่มส่วนนี้: บังคับให้เส้นตาราง PN และ Worksheet แสดงผลตอนพิมพ์ */
+      .pn-table, .pn-table td, .pn-table th,
+      .sheet table, .sheet td, .sheet th {
+        border: 1px solid #000 !important;
+        -webkit-print-color-adjust: exact; /* ช่วยให้สีพื้นหลังตารางติดไปด้วย */
+      }
+    }
   /* ── PN Label ── */
     .sticker-pn { 
         width: 8.5cm; 
