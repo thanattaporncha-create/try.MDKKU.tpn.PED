@@ -278,7 +278,7 @@
     </div>`;
   }
 
-  function createWS(o, div) {
+function createWS(o, div) {
     const getRowStyle = (name, prodKey, type) => {
       let cls = "c-black"; let bg = "";
       if (prodKey === 'amiparen') cls = "c-amiparen";
@@ -291,23 +291,40 @@
       else if (type === 'heparin') { bg = "bg-pink-highlight"; cls = "c-black"; }
       return { cls, bg };
     };
+
     const proteinName = o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : (o.protein_product === 'amiparen' ? '10% Ami-pa-REN' : '15% AminoPlas-MAL');
     const phosName = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
     const traceName = o.trace_choice === 'Peditrace' ? 'Peditrace' : 'Addamel-N';
     const vitName = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
     const otherName = o.add_name || 'Additive อื่นๆ';
-    const vW_net = getNum(o.water_vol, div); const vW_prep = getNum(o.prep_water_vol, div);
-    const vD_net = getNum(o.dex_50_vol, div); const vD_prep = getNum(o.prep_dex_vol, div);
+
+    // แก้ไข Logic ตรงนี้: ถ้า pn_flush_vol เป็น 0 หรือไม่มีการไล่สาย ให้ Prep = Net เสมอ
+    const vW_net  = getNum(o.water_vol, div);
+    const vW_prep = (parseFloat(o.pn_flush_vol) > 0) ? getNum(o.prep_water_vol, div) : vW_net;
+    
+    const vD_net  = getNum(o.dex_50_vol, div);
+    const vD_prep = (parseFloat(o.pn_flush_vol) > 0) ? getNum(o.prep_dex_vol, div) : vD_net;
+    
     const vProt = getNum(o.protein_vol, div); const vPhos = getNum(o.phos_vol, div);
     const vNa = getNum(o.na_vol, div); const vK = getNum(o.k_vol, div);
     const vMg = getNum(o.mg_vol, div); const vTr = getNum(o.trace_vol, div);
     const vCa = getNum(o.ca_vol, div); const vZn = getNum(o.zinc_vol, div);
     const vVit = getNum(o.vit_vol, div); const vOth = getNum(o.add_vol, div);
     const vHep = getNum(o.heparin_vol, div);
-    let cum = 0; const add = (n) => { cum = Math.round((cum + n) * 100) / 100; return cum; };
-    const cumAfter2 = wsShow(add(vW_prep + vD_prep)); const cumAfter3 = wsShow(add(vProt));
-    add(vPhos); const cumAfter5 = wsShow(add(vNa));
+
+    let cum = 0; 
+    const add = (n) => { 
+      cum = Math.round((cum + n) * 100) / 100; 
+      return cum; 
+    };
+
+    const cumAfter2 = wsShow(add(vW_prep + vD_prep)); 
+    const cumAfter3 = wsShow(add(vProt));
+    add(vPhos); 
+    const cumAfter5 = wsShow(add(vNa));
+    
     add(vK); add(vMg); add(vTr); add(vCa); add(vZn); add(vVit); add(vOth); add(vHep);
+
     const row = (num, name, prodKey, type, val, cumVal = '') => {
       const style = getRowStyle(name, prodKey, type);
       return `<tr class="${style.bg}">
@@ -317,13 +334,29 @@
         <td class="val-cumul ${style.cls}">${cumVal}</td>
       </tr>`;
     };
+
     return `<div class="sheet" contenteditable="true">
       <div class="flex justify-between items-start mb-1" style="margin-top:auto;">
-        <div class="flex-1">${div > 1 ? `<div class="bag-badge">PREP x ${div} BAGS</div>` : ''}<h1 class="text-xl font-black italic">TPN WORKSHEET</h1><p class="text-[22px] font-black">${o.patient_name}</p><p class="text-sm font-bold">HN: ${o.hn} | BW: ${o.bw} kg | ${formatThaiDate(o.order_date)}</p></div>
-        <div class="text-right"><p class="text-[9px] font-bold">WARD</p><p class="text-6xl font-black leading-none">${o.ward || '-'}</p></div>
+        <div class="flex-1">
+          ${div > 1 ? `<div class="bag-badge">PREP x ${div} BAGS</div>` : ''}
+          <h1 class="text-xl font-black italic">TPN WORKSHEET</h1>
+          <p class="text-[22px] font-black">${o.patient_name}</p>
+          <p class="text-sm font-bold">HN: ${o.hn} | BW: ${o.bw} kg | ${formatThaiDate(o.order_date)}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[9px] font-bold">WARD</p>
+          <p class="text-6xl font-black leading-none">${o.ward || '-'}</p>
+        </div>
       </div>
       <table>
-        <thead><tr><th style="width:45px;">#</th><th>รายการสารอาหาร</th><th style="width:110px;">Prep (ml)</th><th style="width:115px;">ถุงรวม (ml)</th></tr></thead>
+        <thead>
+          <tr>
+            <th style="width:45px;">#</th>
+            <th>รายการสารอาหาร</th>
+            <th style="width:110px;">Prep (ml)</th>
+            <th style="width:115px;">ถุงรวม (ml)</th>
+          </tr>
+        </thead>
         <tbody>
           ${row(1, `Sterile Water <span class="text-[14px] font-normal">(${wsShow(vW_net)} ml)</span>`, '', '', vW_prep)}
           ${row(2, `50% D-W <span class="text-[14px] font-normal">(${wsShow(vD_net)} ml)</span>`, '', '', vD_prep, cumAfter2)}
@@ -338,12 +371,18 @@
           ${row(11, vitName, '', '', vVit)}
           ${row(12, otherName, '', '', vOth)}
           ${row(13, 'Heparin (1u/ml) 500u/ml', '', 'heparin', vHep)}
-          <tr style="background-color:#ddd;font-weight:900;"><td colspan="2" class="text-right text-lg">Total PN vol + ไล่สาย ${wsShow(getNum(o.pn_flush_vol, div))} ml</td><td colspan="2" class="text-center text-4xl">${wsShow(getNum(o.pn_prep_vol, div))}</td></tr>
+          <tr style="background-color:#ddd;font-weight:900;">
+            <td colspan="2" class="text-right text-lg">Total PN vol + ไล่สาย ${wsShow(getNum(o.pn_flush_vol, div))} ml</td>
+            <td colspan="2" class="text-center text-4xl">${wsShow(getNum(o.pn_prep_vol, div))}</td>
+          </tr>
         </tbody>
       </table>
-      <div class="footer-sign"><div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนเตรียม</p></div><div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนตรวจ</p></div></div>
+      <div class="footer-sign">
+        <div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนเตรียม</p></div>
+        <div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนตรวจ</p></div>
+      </div>
     </div>`;
-  }
+}
 </script>
 </body>
 </html>
