@@ -10,20 +10,41 @@
     * { font-family: 'Sarabun', sans-serif; color: #000; line-height: 1.05; }
     [contenteditable="true"]:hover { background: #fff9c4; outline: 1px dashed #000; cursor: text; }
 
-    @media print {
-      .no-print { display: none !important; }
-      body { background: #fff; margin: 0; padding: 0; }
-      .print-area:not(.active) { display: none !important; }
-      .sticker { box-shadow: none !important; border: none !important; margin: 0 auto !important; display: flex !important; }
-      .sticker-pn { border: 1.5px solid #000 !important; }
-      .sheet { box-shadow: none !important; border: 1.5px solid #000 !important; margin: 0 !important; }
+  @media print {
+        .no-print { display: none !important; }
+        @page {
+            size: auto;
+            margin: 0mm; /* เอา Margin ของ Browser ออกให้หมด */
+        }
+        body { 
+            background: #fff; 
+            margin: 0 !important; 
+            padding: 0 !important; 
+        }
+        .print-area:not(.active) { display: none !important; }
+        
+        /* บังคับให้แต่ละป้าย (Sticker) หรือแผ่น Worksheet ขึ้นหน้าใหม่เสมอ ไม่ให้ตกแผ่น */
+        .sticker, .sheet { 
+            box-shadow: none !important; 
+            border: none !important; 
+            margin: 0 !important; 
+            page-break-after: always; 
+        }
     }
 
-    /* ── PN Label ── */
-    .sticker-pn { width: 8.5cm; min-height: 12.8cm; padding: 1.45cm 0.4cm 0.3cm 0.4cm; background: white; border: 1.5px solid #000; margin: 10px auto; display: flex; flex-direction: column; }
-    .pn-table { width: 100%; font-size: 13.5px; border-collapse: collapse; border: 1.5px solid #000; }
-    .pn-table td, .pn-table th { border: 1px solid #000; padding: 1.5px 5px; background: white !important; }
-
+  /* ── PN Label ── */
+    .sticker-pn { 
+        width: 8.5cm; 
+        /* ปรับจาก 12.8cm เหลือ 12.5cm เพื่อความปลอดภัย */
+        min-height: 12.5cm; 
+        /* ลด Padding ด้านล่างลงเหลือ 0.1cm */
+        padding: 1.45cm 0.4cm 0.1cm 0.4cm; 
+        background: white; 
+        border: 1px solid #000; 
+        margin: 10px auto; 
+        display: flex; 
+        flex-direction: column; 
+    }
     /* ── Fat & Bag Label ── */
     .sticker-small { width: 3.5in; height: 2.48in; padding: 0.1in 0.25in 0.1in 0.25in; background: white; border: none; margin: 10px auto; box-sizing: border-box; position: relative; }
 
@@ -209,7 +230,7 @@
           <tr class="font-bold" style="background: white !important;"><td colspan="2" class="text-right text-xs">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)} ml:</td><td class="text-right">${smartFix(o.pn_prep_vol, div)} ml</td></tr>
         </tbody>
       </table>
-      <div class="flex justify-between items-end mt-0.5 pt-1 border-t-2 border-black">
+     <div class="flex justify-between items-end mt-0 pt-1 border-t-2 border-black">
         <div class="text-[10px] leading-tight font-bold">
           <p>Total cal (รวม fat) : ${parseFloat(o.total_calories).toFixed(1)} kcal/d</p>
           <p>% Glucose: ${o.dex_percent}% &nbsp; GIR: ${girResult.toFixed(2)}</p>
