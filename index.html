@@ -1611,21 +1611,29 @@ async function fetchPatientAndHistory() {
         document.getElementById('totalPrepVolDisplay').textContent = roundToPlace(pnPrepVol, 1);
 
         calculateFatAdmin();
-    // --- เพิ่มตรรกะเช็คปุ่มตรงนี้ค่ะ ---
+// --- เพิ่มตรรกะเช็คปุ่มตรงนี้ค่ะ ---
         const caPBtn = document.getElementById('caPCheckBtn');
         if (caPBtn) {
+            // ดึงค่า Phosphate Source ที่เลือกอยู่ปัจจุบัน
             const phosSource = document.querySelector('input[name="phosSource"]:checked')?.value;
-            const caVolume = parseFloat(document.getElementById('cavol').value) || 0;
             
-            // เช็คเงื่อนไข: Phosphate ต้องเป็น K2HPO4 และ Ca ต้อง > 0
-            if (phosSource === 'K2HPO4' && caVolume > 0) {
-                caPBtn.disabled = false; // เปิดปุ่ม
+            // เปลี่ยนจาก 'cavol' เป็น 'calcium' (ซึ่งเป็นช่องที่ Khym ใช้กรอกตัวเลขจริงๆ)
+            const caInputVal = parseFloat(document.getElementById('calcium').value) || 0;
+            
+            // เงื่อนไข: ถ้าเลือก K2HPO4 และมีการกรอกเลข Ca มากกว่า 0 ให้เปิดปุ่ม
+            if (phosSource === 'K2HPO4' && caInputVal > 0) {
+                caPBtn.disabled = false; // ปลดล็อคปุ่ม
+                caPBtn.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                caPBtn.classList.add('bg-amber-500', 'hover:bg-amber-600', 'cursor-pointer');
+                caPBtn.style.opacity = "1";
             } else {
-                caPBtn.disabled = true;  // ปิดปุ่ม
+                caPBtn.disabled = true;  // ล็อคปุ่ม
+                caPBtn.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                caPBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'cursor-pointer');
+                caPBtn.style.opacity = "0.5";
             }
         }
-        // -------------------------------
-    } // <--- ปีกกาปิดท้ายฟังก์ชัน calculateAll
+    } // <--- ปีกกาปิดท้ายฟังก์ชัน calculateAll อย่าลืมตัวนี้นะคะ
    
 
     // ========== calculateFatAdmin ==========
