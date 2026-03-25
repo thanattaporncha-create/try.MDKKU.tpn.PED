@@ -126,23 +126,37 @@
   <div id="ws-area" class="print-area"></div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbyXyxY5-CnIGGuIMLVlIIlNHfVsqoeqRDjiz1_Qgr_qKXPHwh73lx9mhGjTES9bXqcqbA/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzOHer0V5bz4T5G8YduNU1Ja4aC9qvIWjW453N90Xyc-BcyFGEWB5TjYVckM-pEN3ZNUw/exec';
   let rawData = null;
 
-  document.addEventListener('DOMContentLoaded', async () => {
+ document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const hnValue = urlParams.get('row') || urlParams.get('hn');
+    const hnValue = urlParams.get('hn') || urlParams.get('row');
+    const dateValue = urlParams.get('date'); // ดึงวันที่จาก URL
+
     if (hnValue) {
       try {
-        const res = await fetch(`${API_URL}?action=getLastOrder&hn=${encodeURIComponent(hnValue)}`);
+        // สร้าง URL สำหรับเรียก API
+        let fetchUrl = `${API_URL}?action=getLastOrder&hn=${encodeURIComponent(hnValue)}`;
+        
+        // ถ้ามีวันที่ส่งมาด้วย ให้เปลี่ยน action หรือส่ง date ไปกำกับ (ขึ้นอยู่กับ API ของคุณขิม)
+        // สมมติว่า API รองรับการส่ง date ไปเพื่อค้นหาออเดอร์เก่า
+        if (dateValue) {
+            fetchUrl += `&date=${encodeURIComponent(dateValue)}`;
+        }
+
+        const res = await fetch(fetchUrl);
         rawData = await res.json();
+        
         if (rawData) {
           document.getElementById('display-info').innerText = `${rawData.hn} - ${rawData.patient_name}`;
           renderAll();
         }
-      } catch (e) { document.getElementById('display-info').innerText = "เชื่อมต่อไม่ได้"; }
+      } catch (e) { 
+          document.getElementById('display-info').innerText = "เชื่อมต่อไม่ได้"; 
+      }
     }
-  });
+});
 
   function selectSection(type) {
     document.querySelectorAll('.print-area').forEach(el => el.classList.remove('active'));
