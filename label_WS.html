@@ -10,44 +10,44 @@
     * { font-family: 'Sarabun', sans-serif; color: #000; line-height: 1.05; }
     [contenteditable="true"]:hover { background: #fff9c4; outline: 1px dashed #000; cursor: text; }
 
-  @media print {
-      .no-print { display: none !important; }
-      @page { size: auto; margin: 0mm; }
-      body { background: #fff; margin: 0 !important; padding: 0 !important; }
-      .print-area:not(.active) { display: none !important; }
-      
-      .sticker, .sheet { 
-        box-shadow: none !important; 
-        border: none !important; /* เอาขอบกระดาษออก */
-        margin: 0 !important; 
-        page-break-after: always; 
-      }
-
-      /* ✅ เพิ่มส่วนนี้: บังคับให้เส้นตาราง PN และ Worksheet แสดงผลตอนพิมพ์ */
-      .pn-table, .pn-table td, .pn-table th,
-      .sheet table, .sheet td, .sheet th {
-        border: 1px solid #000 !important;
-        -webkit-print-color-adjust: exact; /* ช่วยให้สีพื้นหลังตารางติดไปด้วย */
-      }
+    @media print {
+        .no-print { display: none !important; }
+        @page { size: auto; margin: 0mm; }
+        body { background: #fff; margin: 0 !important; padding: 0 !important; }
+        .print-area:not(.active) { display: none !important; }
+        .sticker, .sheet { 
+            box-shadow: none !important; 
+            border: none !important; 
+            margin: 0 !important; 
+            page-break-after: always; 
+        }
+        /* บังคับให้เส้นตาราง PN และ Worksheet แสดงผลตอนพิมพ์ */
+        .pn-table, .pn-table td, .pn-table th,
+        .sheet table, .sheet td, .sheet th {
+            border: 1px solid #000 !important;
+        }
     }
-  /* ── PN Label ── */
+
+    /* ── PN Label (ปรับปรุงให้ไม่ตกแผ่น) ── */
     .sticker-pn { 
         width: 8.5cm; 
-        /* ปรับจาก 12.8cm เหลือ 12.5cm เพื่อความปลอดภัย */
-        min-height: 12.5cm; 
-        /* ลด Padding ด้านล่างลงเหลือ 0.1cm */
+        height: 12.5cm; /* ล็อคความสูงคงที่เพื่อไม่ให้ไหล */
         padding: 1.45cm 0.4cm 0.1cm 0.4cm; 
         background: white; 
         border: 1px solid #000; 
         margin: 10px auto; 
         display: flex; 
         flex-direction: column; 
+        box-sizing: border-box;
     }
+    .pn-table { width: 100%; font-size: 13.5px; border-collapse: collapse; border: 1.5px solid #000 !important; }
+    .pn-table td, .pn-table th { border: 1px solid #000 !important; padding: 1.5px 5px; background: white !important; }
+
     /* ── Fat & Bag Label ── */
     .sticker-small { width: 3.5in; height: 2.48in; padding: 0.1in 0.25in 0.1in 0.25in; background: white; border: none; margin: 10px auto; box-sizing: border-box; position: relative; }
 
     /* ── Worksheet ── */
-    .sheet { width: 14.85cm; height: 21cm; padding: 0.5cm 0.7cm 0.3cm 0.7cm; margin: 10px auto; background: white; border: 1.5px solid #000; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
+    .sheet { width: 14.85cm; height: 21cm; padding: 0.5cm 0.7cm; margin: 10px auto; background: white; border: 1.5px solid #000; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
     .sheet table { width: 100%; border-collapse: collapse; margin-top: 5px; table-layout: fixed; }
     .sheet th, .sheet td { border: 1.5px solid #000; padding: 5px 10px; vertical-align: middle; }
     .sheet th { font-weight: 800; font-size: 16px; background: #fff; }
@@ -57,16 +57,16 @@
     .bag-badge { border: 2.5px solid #000; padding: 2px 10px; font-size: 16px; font-weight: 900; display: inline-block; margin-bottom: 4px; }
     .footer-sign { height: 3.0cm; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 1cm 0.5cm 1cm; }
 
-    /* ── Worksheet Colors ── */
-    .c-amiparen      { color: #008000 !important; } 
+    /* ── Colors ── */
+    .c-amiparen { color: #008000 !important; } 
     .c-aminoplasmal { color: #0077cc !important; } 
-    .c-peditrace    { color: #ff8c00 !important; } 
-    .c-cernevit     { color: #228b22 !important; } 
-    .c-bcomplex     { color: #ff1493 !important; } 
+    .c-peditrace { color: #ff8c00 !important; } 
+    .c-cernevit { color: #228b22 !important; } 
+    .c-bcomplex { color: #ff1493 !important; } 
     .bg-yellow-highlight { background-color: #ffff80 !important; } 
-    .bg-pink-highlight   { background-color: #ffb6c1 !important; } 
+    .bg-pink-highlight { background-color: #ffb6c1 !important; } 
     .bg-purple-highlight { background-color: #e6e6fa !important; } 
-    .c-black         { color: #000000 !important; }
+    .c-black { color: #000000 !important; }
   </style>
 </head>
 <body class="bg-white min-h-screen pb-20">
@@ -76,7 +76,6 @@
       <button onclick="history.back()" class="flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-xl transition-all font-bold text-sm border border-white/30 text-white">
         <span>⬅️</span> ย้อนกลับ
       </button>
-      
       <div class="flex gap-2">
         <a href="index.html" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all font-bold text-sm text-white">
           <span>➕</span> คำนวณใหม่
@@ -93,52 +92,38 @@
       <h1 class="text-2xl font-black text-slate-800 italic uppercase">TPN Printing Control</h1>
       <p class="text-slate-500">HN: <span id="display-info" class="font-bold text-blue-600">กำลังโหลด...</span></p>
     </div>
-
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <div id="card-pn" onclick="selectSection('pn')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-blue-400">
         <h3 class="font-black text-blue-600">1. PN LABEL</h3>
         <select id="pnCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full">
-          <option value="1">1 ขวด</option>
-          <option value="2">2 ขวด</option>
-          <option value="3">3 ขวด</option>
-          <option value="4">4 ขวด</option>
+          <option value="1">1 ขวด</option><option value="2">2 ขวด</option><option value="3">3 ขวด</option><option value="4">4 ขวด</option>
         </select>
       </div>
-
       <div id="card-fat" onclick="selectSection('fat')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-amber-400">
         <h3 class="font-black text-amber-600">2. FAT LABEL</h3>
         <select id="fatCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full">
-          <option value="1">1 อัน</option>
-          <option value="2">2 อัน</option>
-          <option value="3">3 อัน</option>
-          <option value="4">4 อัน</option>
+          <option value="1">1 อัน</option><option value="2">2 อัน</option><option value="3">3 อัน</option><option value="4">4 อัน</option>
         </select>
       </div>
-
       <div id="card-bag" onclick="selectSection('bag')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-emerald-400">
         <h3 class="font-black text-emerald-600">3. ฉลากหน้าถุง</h3>
       </div>
-
       <div id="card-ws" onclick="selectSection('ws')" class="bg-white p-4 rounded-2xl border-4 border-slate-100 cursor-pointer transition-all hover:border-rose-400">
         <h3 class="font-black text-rose-600">4. WORKSHEET</h3>
         <select id="wsBagCount" onchange="renderAll()" class="mt-2 p-1 border rounded w-full">
-          <option value="1">1 ถุง</option>
-          <option value="2">2 ถุง</option>
-          <option value="3">3 ถุง</option>
-          <option value="4">4 ถุง</option>
+          <option value="1">1 ถุง</option><option value="2">2 ถุง</option><option value="3">3 ถุง</option><option value="4">4 ถุง</option>
         </select>
       </div>
     </div>
-
     <div id="action-btns" class="hidden">
       <button onclick="window.print()" class="bg-black text-white py-4 px-12 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-all">🖨️ พิมพ์ที่เลือก</button>
     </div>
   </div>
 
-  <div id="pn-area"  class="print-area"></div>
+  <div id="pn-area" class="print-area"></div>
   <div id="fat-area" class="print-area"></div>
   <div id="bag-area" class="print-area"></div>
-  <div id="ws-area"  class="print-area"></div>
+  <div id="ws-area" class="print-area"></div>
 
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbyXyxY5-CnIGGuIMLVlIIlNHfVsqoeqRDjiz1_Qgr_qKXPHwh73lx9mhGjTES9bXqcqbA/exec';
@@ -209,7 +194,7 @@
       <div class="flex justify-between font-bold border-b-2 border-black mb-1 text-[13.5px]"><span>HN: ${o.hn} - ${o.patient_name}</span><span>ขวด: ${bNum}/${div}</span></div>
       <div class="flex justify-between font-bold border-b border-black mb-1 text-[12.5px]"><span>Ward: ${o.ward}</span><span>Route: ${routeDisplay}</span></div>
       <table class="pn-table">
-        <thead><tr style="background: white !important;"><th class="w-8"></th><th class="text-center">รายการ</th><th class="text-center">ปริมาตร (ml)</th></tr></thead>
+        <thead><tr style="background: white !important;"><th class="w-8">#</th><th class="text-center">รายการ</th><th class="text-center">ปริมาตร (ml)</th></tr></thead>
         <tbody>
           <tr><td class="text-center">1</td><td>Sterile Water</td><td class="text-right font-bold">${smartFix(o.water_vol, div)}</td></tr>
           <tr><td class="text-center">2</td><td>50% D-W</td><td class="text-right font-bold">${smartFix(o.dex_50_vol, div)}</td></tr>
@@ -228,7 +213,7 @@
           <tr class="font-bold" style="background: white !important;"><td colspan="2" class="text-right text-xs">Total + ไล่สาย ${smartFix(o.pn_flush_vol, div)} ml:</td><td class="text-right">${smartFix(o.pn_prep_vol, div)} ml</td></tr>
         </tbody>
       </table>
-     <div class="flex justify-between items-end mt-0 pt-1 border-t-2 border-black">
+      <div class="flex justify-between items-end mt-0 pt-1 border-t-2 border-black">
         <div class="text-[10px] leading-tight font-bold">
           <p>Total cal (รวม fat) : ${parseFloat(o.total_calories).toFixed(1)} kcal/d</p>
           <p>% Glucose: ${o.dex_percent}% &nbsp; GIR: ${girResult.toFixed(2)}</p>
@@ -245,20 +230,20 @@
   function createFat(o, fNum, div) {
     const exp = new Date(o.order_date); exp.setDate(exp.getDate() + 1);
     const totalNetFat = parseFloat(o.total_fat_prep) || 0;
-    const vVitTotal   = parseFloat(o.vitalipid_vol)  || 0;
-    const vFluTotal   = parseFloat(o.fat_flush_vol)  || 0;
+    const vVitTotal = parseFloat(o.vitalipid_vol) || 0;
+    const vFluTotal = parseFloat(o.fat_flush_vol) || 0;
     const vSmofOnlyTotal = totalNetFat - vVitTotal - vFluTotal;
     let vSmof, vVit, vFlu, vTotalSyr;
     if (div > 1 && totalNetFat > 250) {
-        if (fNum === 1) {
-            vSmof = vSmofOnlyTotal - (250 * (div - 1));
-            vVit  = vVitTotal; vFlu = vFluTotal;
-            vTotalSyr = vSmof + vVit + vFlu;
-        } else {
-            vSmof = 250; vVit = 0; vFlu = 0; vTotalSyr = 250;
-        }
+      if (fNum === 1) {
+        vSmof = vSmofOnlyTotal - (250 * (div - 1));
+        vVit = vVitTotal; vFlu = vFluTotal;
+        vTotalSyr = vSmof + vVit + vFlu;
+      } else {
+        vSmof = 250; vVit = 0; vFlu = 0; vTotalSyr = 250;
+      }
     } else {
-        vSmof = vSmofOnlyTotal / div; vVit = vVitTotal / div; vFlu = vFluTotal / div; vTotalSyr = totalNetFat / div;
+      vSmof = vSmofOnlyTotal / div; vVit = vVitTotal / div; vFlu = vFluTotal / div; vTotalSyr = totalNetFat / div;
     }
     const getFatName = (n) => { const name = (n || "").toString().toLowerCase(); if (name === 'smof') return '20% SMOF lipid'; if (name === 'intralipid') return '20% Intralipid'; return n || 'Fat Emulsion'; };
     const fixN = (v) => { const n = parseFloat(v) || 0; return n <= 0 ? "-" : Number(n.toFixed(2)); };
@@ -297,7 +282,7 @@
     </div>`;
   }
 
-function createWS(o, div) {
+  function createWS(o, div) {
     const getRowStyle = (name, prodKey, type) => {
       let cls = "c-black"; let bg = "";
       if (prodKey === 'amiparen') cls = "c-amiparen";
@@ -310,40 +295,25 @@ function createWS(o, div) {
       else if (type === 'heparin') { bg = "bg-pink-highlight"; cls = "c-black"; }
       return { cls, bg };
     };
-
     const proteinName = o.protein_product === 'aminoven' ? '10% Aminoven-Infant' : (o.protein_product === 'amiparen' ? '10% Ami-pa-REN' : '15% AminoPlas-MAL');
     const phosName = o.phos_source === 'Glycophos' ? 'Glycophos (P)' : 'K2HPO4 (P)';
     const traceName = o.trace_choice === 'Peditrace' ? 'Peditrace' : 'Addamel-N';
     const vitName = o.vit_choice === 'Soluvit' ? 'Soluvit-N' : 'Cernevit';
     const otherName = o.add_name || 'Additive อื่นๆ';
-
-    // แก้ไข Logic ตรงนี้: ถ้า pn_flush_vol เป็น 0 หรือไม่มีการไล่สาย ให้ Prep = Net เสมอ
-    const vW_net  = getNum(o.water_vol, div);
+    const vW_net = getNum(o.water_vol, div);
     const vW_prep = (parseFloat(o.pn_flush_vol) > 0) ? getNum(o.prep_water_vol, div) : vW_net;
-    
-    const vD_net  = getNum(o.dex_50_vol, div);
+    const vD_net = getNum(o.dex_50_vol, div);
     const vD_prep = (parseFloat(o.pn_flush_vol) > 0) ? getNum(o.prep_dex_vol, div) : vD_net;
-    
     const vProt = getNum(o.protein_vol, div); const vPhos = getNum(o.phos_vol, div);
     const vNa = getNum(o.na_vol, div); const vK = getNum(o.k_vol, div);
     const vMg = getNum(o.mg_vol, div); const vTr = getNum(o.trace_vol, div);
     const vCa = getNum(o.ca_vol, div); const vZn = getNum(o.zinc_vol, div);
     const vVit = getNum(o.vit_vol, div); const vOth = getNum(o.add_vol, div);
     const vHep = getNum(o.heparin_vol, div);
-
-    let cum = 0; 
-    const add = (n) => { 
-      cum = Math.round((cum + n) * 100) / 100; 
-      return cum; 
-    };
-
-    const cumAfter2 = wsShow(add(vW_prep + vD_prep)); 
-    const cumAfter3 = wsShow(add(vProt));
-    add(vPhos); 
-    const cumAfter5 = wsShow(add(vNa));
-    
+    let cum = 0; const add = (n) => { cum = Math.round((cum + n) * 100) / 100; return cum; };
+    const cumAfter2 = wsShow(add(vW_prep + vD_prep)); const cumAfter3 = wsShow(add(vProt));
+    add(vPhos); const cumAfter5 = wsShow(add(vNa));
     add(vK); add(vMg); add(vTr); add(vCa); add(vZn); add(vVit); add(vOth); add(vHep);
-
     const row = (num, name, prodKey, type, val, cumVal = '') => {
       const style = getRowStyle(name, prodKey, type);
       return `<tr class="${style.bg}">
@@ -353,29 +323,13 @@ function createWS(o, div) {
         <td class="val-cumul ${style.cls}">${cumVal}</td>
       </tr>`;
     };
-
     return `<div class="sheet" contenteditable="true">
       <div class="flex justify-between items-start mb-1" style="margin-top:auto;">
-        <div class="flex-1">
-          ${div > 1 ? `<div class="bag-badge">PREP x ${div} BAGS</div>` : ''}
-          <h1 class="text-xl font-black italic">TPN WORKSHEET</h1>
-          <p class="text-[22px] font-black">${o.patient_name}</p>
-          <p class="text-sm font-bold">HN: ${o.hn} | BW: ${o.bw} kg | ${formatThaiDate(o.order_date)}</p>
-        </div>
-        <div class="text-right">
-          <p class="text-[9px] font-bold">WARD</p>
-          <p class="text-6xl font-black leading-none">${o.ward || '-'}</p>
-        </div>
+        <div class="flex-1">${div > 1 ? `<div class="bag-badge">PREP x ${div} BAGS</div>` : ''}<h1 class="text-xl font-black italic">TPN WORKSHEET</h1><p class="text-[22px] font-black">${o.patient_name}</p><p class="text-sm font-bold">HN: ${o.hn} | BW: ${o.bw} kg | ${formatThaiDate(o.order_date)}</p></div>
+        <div class="text-right"><p class="text-[9px] font-bold">WARD</p><p class="text-6xl font-black leading-none">${o.ward || '-'}</p></div>
       </div>
       <table>
-        <thead>
-          <tr>
-            <th style="width:45px;">#</th>
-            <th>รายการสารอาหาร</th>
-            <th style="width:110px;">Prep (ml)</th>
-            <th style="width:115px;">ถุงรวม (ml)</th>
-          </tr>
-        </thead>
+        <thead><tr><th style="width:45px;">#</th><th>รายการสารอาหาร</th><th style="width:110px;">Prep (ml)</th><th style="width:115px;">ถุงรวม (ml)</th></tr></thead>
         <tbody>
           ${row(1, `Sterile Water <span class="text-[14px] font-normal">(${wsShow(vW_net)} ml)</span>`, '', '', vW_prep)}
           ${row(2, `50% D-W <span class="text-[14px] font-normal">(${wsShow(vD_net)} ml)</span>`, '', '', vD_prep, cumAfter2)}
@@ -390,18 +344,12 @@ function createWS(o, div) {
           ${row(11, vitName, '', '', vVit)}
           ${row(12, otherName, '', '', vOth)}
           ${row(13, 'Heparin (1u/ml) 500u/ml', '', 'heparin', vHep)}
-          <tr style="background-color:#ddd;font-weight:900;">
-            <td colspan="2" class="text-right text-lg">Total PN vol + ไล่สาย ${wsShow(getNum(o.pn_flush_vol, div))} ml</td>
-            <td colspan="2" class="text-center text-4xl">${wsShow(getNum(o.pn_prep_vol, div))}</td>
-          </tr>
+          <tr style="background-color:#ddd;font-weight:900;"><td colspan="2" class="text-right text-lg">Total PN vol + ไล่สาย ${wsShow(getNum(o.pn_flush_vol, div))} ml</td><td colspan="2" class="text-center text-4xl">${wsShow(getNum(o.pn_prep_vol, div))}</td></tr>
         </tbody>
       </table>
-      <div class="footer-sign">
-        <div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนเตรียม</p></div>
-        <div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนตรวจ</p></div>
-      </div>
+      <div class="footer-sign"><div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนเตรียม</p></div><div class="text-center"><div class="w-32 border-b-2 border-black"></div><p class="font-black text-xs mt-2">คนตรวจ</p></div></div>
     </div>`;
-}
+  }
 </script>
 </body>
 </html>
