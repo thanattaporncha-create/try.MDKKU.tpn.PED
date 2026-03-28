@@ -9,6 +9,14 @@
   <style>
   #vitInfant:checked + label { background-color: #2563eb !important; color: white; border-color: #1e40af; }
 #vitAdult:checked + label { background-color: #db2777 !important; color: white; border-color: #9d174d; }
+    /* สีปุ่ม Aminoven ตอนเลือก (สีฟ้าเดิม) */
+#aminoven:checked + label { background-color: #3b82f6 !important; color: white; border-color: #2563eb; }
+
+/* สีปุ่ม Amiparen ตอนเลือก (สีเขียว) */
+#amiparen:checked + label { background-color: #10b981 !important; color: white; border-color: #059669; }
+
+/* สีปุ่ม Aminoplasmal ตอนเลือก (สีส้ม) */
+#aminoplasmal:checked + label { background-color: #f97316 !important; color: white; border-color: #ea580c; }
     body {
       box-sizing: border-box;
     }
@@ -541,16 +549,28 @@ body {
   
   <div class="p-4 bg-purple-50 rounded-xl border border-purple-100 mb-6">
     <div class="flex flex-wrap gap-2 mb-3">
-      <span class="text-sm font-bold text-purple-800 w-full mb-1">เลือก Protein Product:</span>
-      <input type="radio" name="proteinProduct" id="aminoven" value="aminoven" class="hidden radio-custom" checked onchange="calculateProteinLogic('prot_dose')">
-      <label for="aminoven" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">10% Aminoven Infant</label>
-      
-      <input type="radio" name="proteinProduct" id="amiparen" value="amiparen" class="hidden radio-custom" onchange="calculateProteinLogic('prot_dose')">
-      <label for="amiparen" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">10% Amiparen</label>
-      
-      <input type="radio" name="proteinProduct" id="aminoplasmal" value="aminoplasmal" class="hidden radio-custom" onchange="calculateProteinLogic('prot_dose')">
-      <label for="aminoplasmal" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg cursor-pointer text-xs font-medium transition-all">15% Aminoplasmal</label>
-    </div>
+    <span class="text-sm font-bold text-purple-800 w-full mb-1">
+        เลือก Protein Product: 
+        <span class="text-red-600 font-black animate-pulse ml-1">
+            *โปรดระบุ Protein Product ให้ถูกต้อง*
+        </span>
+    </span>
+
+    <input type="radio" name="proteinProduct" id="aminoven" value="aminoven" class="hidden radio-custom" checked onchange="calculateProteinLogic('prot_dose')">
+    <label for="aminoven" class="px-4 py-2 bg-white border-2 border-blue-300 rounded-lg cursor-pointer text-sm font-bold transition-all hover:bg-blue-50">
+        10% Aminoven Infant
+    </label>
+    
+    <input type="radio" name="proteinProduct" id="amiparen" value="amiparen" class="hidden radio-custom" onchange="calculateProteinLogic('prot_dose')">
+    <label for="amiparen" class="px-4 py-2 bg-white border-2 border-green-300 rounded-lg cursor-pointer text-sm font-bold transition-all hover:bg-green-50">
+        10% Ami-PA-REN
+    </label>
+    
+    <input type="radio" name="proteinProduct" id="aminoplasmal" value="aminoplasmal" class="hidden radio-custom" onchange="calculateProteinLogic('prot_dose')">
+    <label for="aminoplasmal" class="px-4 py-2 bg-white border-2 border-orange-300 rounded-lg cursor-pointer text-sm font-bold transition-all hover:bg-orange-50">
+        15% Amino-plasmal
+    </label>
+</div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
