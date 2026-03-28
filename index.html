@@ -414,7 +414,9 @@ body {
             </div>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Fat Volume <span class="text-blue-600 italic">*แก้ปัดเศษ*</span></label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+    Fat Volume <span class="text-red-600 font-bold italic ml-1">(*อาจ -5ml สำหรับบางเคส*)</span>
+</label>
             <div class="relative">
                 <input type="number" id="fatVolume" step="0.1" min="0" class="w-full px-4 py-2.5 border border-blue-300 rounded-xl bg-blue-50 font-bold text-blue-700 pr-12" inputmode="decimal" oninput="calculateFatLogic('fat_vol')">
                 <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">ml</span>
@@ -427,7 +429,7 @@ body {
         <label for="vitInfant" class="flex-1 px-2 py-2 bg-white border border-blue-300 rounded-lg cursor-pointer text-[11px] font-bold text-center transition-all hover:bg-blue-50 checked:bg-blue-600">🍼 Vitalipid N-Infant</label>
         
         <input type="radio" name="vitProduct" id="vitAdult" value="Adult" class="hidden radio-custom" onchange="calculateAll()">
-        <label for="vitAdult" class="flex-1 px-2 py-2 bg-white border border-pink-300 rounded-lg cursor-pointer text-[11px] font-bold text-center transition-all hover:bg-pink-50 checked:bg-pink-600">👨🏻 Vitalipid N-Adult</label>
+        <label for="vitAdult" class="flex-1 px-2 py-2 bg-white border border-pink-300 rounded-lg cursor-pointer text-[11px] font-bold text-center transition-all hover:bg-pink-50 checked:bg-pink-600">Vitalipid N-ADULT</label>
     </div>
     <div class="relative">
         <input type="number" id="vitalipid" step="0.1" min="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl input-focus transition-all pr-12 font-semibold text-blue-700" inputmode="decimal" oninput="handleVitalipidManualChange()">
